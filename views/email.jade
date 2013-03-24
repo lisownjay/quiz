@@ -1,0 +1,17 @@
+extends layout
+block head
+    script(src="/js/base.js")
+block body
+    div.email
+        pre
+            | <!doctype html>
+            | <html>
+            |   <head>
+            |       <title>I Want You!</title>
+            |   </head>
+            | </html>
+            | <body>
+            |   <form method="post">
+            |       <input type="email" name="email" value="
+            input#J_Email(name="email",type="email",required,value="#{email}")
+            | ">

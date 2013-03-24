@@ -1,0 +1,190 @@
+<link rel="stylesheet" href="assets/jsbin/css/font.css" />
+<link rel="stylesheet" href="assets/jsbin/css/style.css" />
+
+<div id="control">
+  <div class="control">
+    <div class="buttons">
+      <div class="menu">
+        <span class="button group">添加javascript库,帮助你答题
+        <select id="library"></select>
+        </span>
+      </div>
+      <div id="start-saving" class="menu" style="display: none;">
+        <a href="/isarur/2/save" class="save button group">保存一下</a>
+      </div>
+      <div id="panels"></div>
+      
+    </div>
+  </div>
+</div>
+<div id="bin" class="stretch" style="opacity: 0; filter:alpha(opacity=0);">
+  <div id="source" class="binview stretch">
+  </div>
+  <div id="panelswaiting">
+    <div class="code stretch html panel">
+      <div class="label menu">
+        <span class="name"><strong><a href="#htmlprocessors" class="fake-dropdown button-dropdown">HTML</a></strong></span>
+        <div class="dropdown" id="htmlprocessors">
+          <div class="dropdownmenu processorSelector" data-type="html">
+            <a href="#html">HTML</a>
+            <a href="#markdown">Markdown</a>
+            <a href="#jade">Jade</a>
+            <a href="#convert">Convert to HTML</a>
+          </div>
+        </div> 
+      </div>
+      <div class="editbox">
+        <textarea spellcheck="false" autocapitalize="off" autocorrect="off" id="html"></textarea>
+      </div>
+    </div>
+    <div class="code stretch javascript panel">
+      <div class="label menu"><span class="name"><strong><a  class="fake-dropdown button-dropdown" href="#javascriptprocessors">JavaScript</a></strong></span>
+        <div class="dropdown" id="javascriptprocessors">
+          <div class="dropdownmenu processorSelector" data-type="javascript">
+            <a href="#javascript">JavaScript</a>
+            <a href="#coffeescript">CoffeeScript</a>
+            <a href="#processing">Processing</a>
+            <a href="#traceur">Traceur</a>
+            <a href="#convert">Convert to JavaScript</a>
+          </div>
+        </div> 
+      </div>
+      <div class="editbox">
+        <textarea spellcheck="false" autocapitalize="off" autocorrect="off" id="javascript"></textarea>
+      </div>
+    </div>
+    <div class="code stretch css panel">
+      <div class="label menu"><span class="name"><strong><a class="fake-dropdown button-dropdown" href="#cssprocessors">CSS</a></strong></span>
+        <div class="dropdown" id="cssprocessors">
+          <div class="dropdownmenu processorSelector" data-type="css">
+            <a href="#css">CSS</a>
+            <a href="#less">LESS</a>
+            <a href="#stylus">Stylus</a>
+            <a href="#convert">Convert to CSS</a>
+          </div>
+        </div> 
+      </div>
+      <div class="editbox">
+        <textarea spellcheck="false" autocapitalize="off" autocorrect="off" id="css"></textarea>
+      </div>
+    </div>
+    <div class="stretch console panel">
+      <div class="label">
+        <span class="name"><strong>Console</strong></span>
+        <span class="options">
+          <button id="runconsole" title="ctrl + enter">Run</button>
+        </span>
+      </div>
+      <div id="console" class="stretch"><ul id="output"></ul><form>
+          <textarea autofocus id="exec" spellcheck="false" autocapitalize="off" rows="1" autocorrect="off"></textarea>
+      </form></div>
+    </div>
+    <div id="live" class="stretch live panel">
+      <div class="label">
+        <span class="name"><strong>Output</strong></span>
+        <span class="options">
+          <button id="runwithalerts" title="ctrl + enter
+Include alerts, prompts &amp; confirm boxes">Run with JS</button>
+          <label>Auto-run JS<input type="checkbox" id="enablejs"></label>
+          <a target="_blank" title="Live preview" id="jsbinurl" class="" href="/isarur/2"><img src="http://static.jsbin.com/images/popout.png"></a>
+        </span>
+      </div>
+    </div>
+  </div>
+  <input id="J_ExamId" type="hidden" />
+  <input id="J_QId" type="hidden" />
+  <form  id="saveform" method="post" action="/io/test/solve">
+    <input id="J__Id" type="hidden" name="_id" />
+    <input id="J__Qid" type="hidden" name="_qid" />
+    <input type="hidden" name="method" />
+  </form>
+</div>
+<div id="tip">
+    <p>You can jump to the latest bin by adding <code>/latest</code> to your URL</p><a class="dismiss" href="#">Dismiss x</a>
+</div>
+
+<script>
+window.HASH = window.location.hash.substr(1);
+HASH = eval('(' + HASH + ')');
+
+document.getElementById('J_ExamId').value = top.window.jsonTopics['_id'];
+document.getElementById('J_QId').value = top.window.jsonTopics['docs'][HASH.idx]['_id'];
+
+if( HASH.examover === false){
+  document.getElementById('start-saving').style.display = '';
+  if(document.addEventListener){
+    document.getElementById('start-saving').addEventListener('click', function(){
+      alert('保存成功');
+    })
+  }
+}
+
+var template = top.window.jsonTopics.docs[HASH.idx].answer;
+if( isEmptyObject(template) ){
+  template = { "html": "<!DOCTYPE html>\n<html>\n<head>\n<meta charset=utf-8 />\n<title>中国好前端</title>\n</head>\n<body>\n  <h1>I Want you!</h1>\n  <script>\n    //hello, this is your javascript code\n  <\/script>\n</body>\n</html>\n"};
+}
+
+var jsbin = {
+  "root": "assets/jsbin",
+  // "static": "http://static.jsbin.com",
+  "version": "3.0.11",
+  "state": {
+   "token": "+Z9/I03LPaqjFUqRiNRvMPSY",
+   "stream": false,
+   "code": "isarur",
+   "revision": 2,
+   "processors": {},
+   "checksum": null
+  },
+  "settings": {
+   "panels": []
+  }
+};
+
+function isEmptyObject(o) {
+    for (var p in o) {
+        if (p !== undefined) {
+            return false;
+        }
+    }
+    return true;
+}
+</script>
+<script src="assets/jsbin/jsbin-3.0.11-min.js"></script>
+<script>
+  var isOpening = false;
+  window.G_OpenEdit = function(){
+    if(isOpening === true){
+      return ;
+    }
+    isOpening = true;
+    var skill = top.window.jsonTopics.docs[HASH.idx].skill;
+    skill = (skill=='')?([]):(skill.split(','));
+
+    setTimeout(function(){
+      var btns = document.getElementById('panels').getElementsByTagName('A');
+      btns = {
+        html: btns[0]
+        ,css: btns[1]
+        ,javascript: btns[2]
+        ,console: btns[3]
+        ,live: btns[4]
+      }
+      var hasHtml = false;
+      for(var i = 0; i < skill.length; ++i){
+        if(skill[i] == 'html'){
+          hasHtml = true;
+        }
+        btns[skill[i]].click();
+      }
+
+      if(hasHtml == false){
+        btns['html'].click();
+      }
+      btns['live'].click();
+     
+      //重新调整top容器的信息
+      top.window.G_HandleResizeWindow();
+    },500);
+  }
+</script>

@@ -1,0 +1,28 @@
+extends layout
+block head
+    script(src="/js/test.js")
+block body
+    div.error #{error}
+    div.questions
+        form(method="post", action="/io/test/solve")
+            input(type="hidden", name="_id", value="#{_id}")
+            for question in questions
+                div.question
+                    pre !{question.content}
+                    - if (question.type != 1)
+                        div.coding-question
+                            - if (question.answer.javascript || question.answer.css || question.answer.html)
+                                button.btn-coding(type="button") 继续答题
+                            - else
+                                button.btn-coding(type="button") 开始答题
+                            div.coding-area
+                                textarea(name="#{question._id}[html]") #{question.answer.javascript}
+                                textarea(name="#{question._id}[css]") #{question.answer.css}
+                                textarea(name="#{question._id}[javascript]") #{question.answer.html}
+                    - else if (question.answer.select)
+                        div.select-question
+                            input.i-select(maxlength="1",name="#{question._id}[select]",value="#{question.answer.select}")
+                    - else
+                        div.select-question
+                            input.i-select(maxlength="1",name="#{question._id}[select]",value="")
+            button.btn-b(type="submit") 提交

@@ -1,0 +1,87 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Frontend Design Test_alibaba</title>
+<meta name="viewport" content="width=1024, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<link rel="stylesheet" href="assets/base.css" />
+<link rel="stylesheet" href="assets/answer.css" />
+<script src="http://a.tbcdn.cn/??s/kissy/1.3.0rc/kissy-min.js"></script>
+<script src="js/ace/ace.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body>
+<div id="question" class="section">
+	<div class="g-header">
+		<div class="back">
+			<a href="#TaobaoUED" class="logo">Taobao UED</a>
+		</div>
+		<div class="msg">
+			欢迎参加淘宝UED测试
+		</div>
+	</div>
+	<div class="g-body" id="content">
+			<div class="topic-slide" id="J_TopicSlide">
+				<ul class="slide-content">
+				</ul>
+		</div>
+	</div>
+</div>
+<div id="answer" class="section hidden">
+	<div class="g-header">
+		<div class="back">
+			<a href="#back2question" class="btn btn-back">
+				<i>&crarr;</i>
+				试题
+			</a>
+		</div>
+		<div class="msg">
+			第 1 题 <sup>1/9</sup>
+		</div>
+	</div>
+	<div class="g-body">
+	<textarea></textarea>
+	<div id="editor" class="hidden"></div>
+	</div>
+</div>
+<div id="bottommenu" class="g-header">
+	<div class="msg">
+		<div class="msg-answer">
+			<a href="#answer" class="btn btn-accept answer">填写答案</a>
+		</div>
+		<div class="msg-save hidden">
+			<div class="btn btn-back">
+				<a href="#debug" class="btn btn-decline debug">调试</a>
+				<a href="#answerandviewprev" class="btn btn-action saveandprev">上一题</a>
+				<a href="#answer" class="btn btn-accept save">保存</a>
+				<a href="#answerandviewnext" class="btn btn-accept saveandnext">保存&开始下一题</a>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="topmenu">
+	<div id="starttest">
+		<a href="#answer" class="btn btn-action">开始答题</a>
+	</div>
+	<div id="countingdown" class="tab exam-time-count cd cd-medium cd-slide hidden" data-total="">
+		${h}时${m}分${s}秒
+	</div>
+</div>
+<script>
+KISSY.config({
+    // combine:true,
+    packages:[{
+        name: 'fdt'
+        ,tag: '20120927'
+        ,path: 'assets'
+        ,charset: 'utf-8'
+        ,debug: true
+    }]
+});
+
+//Init main
+KISSY.use("fdt/main", function(KS, Main){
+	Main.init();
+});
+</script>
+</body>
+</html>

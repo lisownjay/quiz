@@ -1,0 +1,45 @@
+extends tests-layout
+
+block body
+    div.tests.clearfix
+        div.side
+            h1 阅卷
+            div.path
+                a(href="/tests") all
+                |&nbsp;/ #{email}
+            div.line
+            div.score
+                form#J_FormGrade(method="post", action="/io/test/grade")
+                    input(type="hidden", name="_id", value="#{_id}")
+                    input#J_ScoreInput(class="i-score",type="number",max="100",min="0",name="score",value="#{score}")
+                    div.btn-box
+                        button(type="submit") 完成阅卷
+        div.main
+            div.questions
+                    - var qindex = 0;
+                    for question in questions
+                        - qindex++;
+                        div.question
+                            a.ac(href="#q#{qindex}",id="q#{qindex}") ##{qindex}
+                            pre !{question.content}
+                            - if (question.answer)
+                                pre.answer
+                                    - if(question.type == 1)
+                                        #{question.answer.select}
+                                    - else
+                                        br
+                                        - if(question.answer.html)
+                                            div.type
+                                                span.skill html:
+                                            #{question.answer.html}
+                                        - if(question.answer.css)
+                                            div.type
+                                                span.skill css:
+                                            #{question.answer.css}
+                                        - if(question.answer.javascript)
+                                            div.type
+                                                span.skill javascript:
+                                            #{question.answer.javascript}
+                            - else
+                                pre.answer
+                                    未解答

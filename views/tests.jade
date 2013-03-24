@@ -1,0 +1,38 @@
+extends tests-layout
+
+block body
+    div.tests.clearfix
+        div.side
+            h1 所有答卷
+            div.line
+            div.status
+                ul
+                    li 已完成答卷：#{finished}
+                        
+                    li 正在答卷：#{ing}
+        div.main
+            table
+                thead
+                    tr
+                        th.tl email
+                        th 状态
+                        th 用时/题量(min)
+                        th 分数
+                        th
+                tbody
+                for test in tests
+                    tr
+                        td.tl #{test.email}
+                        td
+                            - if ( test.finished )
+                              |结束答题
+                            - else
+                              |正在答题
+                        td #{test.spend}/#{test.time}
+                        td
+                            - if ( test.score )
+                                #{test.score}
+                            - else
+                              | -
+                        td 
+                            a(href="/tests/#{test.sha1}") 阅卷

@@ -1,0 +1,128 @@
+/**
+  * frontend design test
+  */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+p,
+blockquote,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+pre,
+form,
+fieldset,
+legend,
+button,
+input,
+textarea,
+th,
+td {
+  margin: 0;
+  padding: 0;
+}
+ul,
+ol {
+  list-style: none;
+}
+#page {
+  width: 100%;
+  min-width: 1000px;
+}
+#content,
+#footer {
+  width: 100%;
+}
+.grid-2 {
+  *zoom: 1;
+}
+.grid-2:after {
+  content: '\20';
+  display: block;
+  height: 0;
+  visibility: hidden;
+  clear: both;
+}
+.grid-2 .col-main {
+  float: left;
+  width: 75%;
+}
+.grid-2 .col-sub {
+  float: left;
+  width: 25%;
+}
+.grid-1 .col-main {
+  display: none;
+}
+.grid-1 .col-sub {
+  width: 100%;
+  overflow: hidden;
+}
+.col-main,
+.col-sub {
+  min-height: 1px;
+}
+#header {
+  *zoom: 1;
+  height: 35px;
+  width: 100%;
+}
+#header:after {
+  content: '\20';
+  display: block;
+  height: 0;
+  visibility: hidden;
+  clear: both;
+}
+#header .logo {
+  float: left;
+  margin: 3px 0 0 5px;
+}
+#header .logo h1 {
+  font-family: "dungeon";
+  color: #73BD8C;
+}
+#header .tab-wrap {
+  float: right;
+}
+#header .tab-wrap li {
+  display: block;
+  float: left;
+  margin-left: 8px;
+}
+#header {
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#cccccc));
+  background-image: -webkit-linear-gradient(top, #ffffff, #cccccc);
+  background-image: linear-gradient(top, #ffffff, #cccccc);
+  background-repeat: repeat-x;
+  -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  -moz-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25), inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+}
+.grid-1 .question {
+  width: 60%;
+  margin: 30px auto;
+  padding: 10px;
+  border: 2px solid #D6E6B5;
+  -webkit-border-radius: 5px 5px 5px 5px;
+  -moz-border-radius: 5px 5px 5px 5px;
+  border-radius: 5px 5px 5px 5px;
+  -webkit-box-shadow: 3px 3px 3px rgba(115, 189, 140, 0.3);
+  -mox-box-shadow: 3px 3px 3px rgba(115, 189, 140, 0.3);
+  box-shadow: 3px 3px 3px rgba(115, 189, 140, 0.3);
+}
+.grid-1 .question h2 {
+  font-size: 18px;
+  margin: 8px 0;
+}
+.question pre {
+  color: #404040;
+}

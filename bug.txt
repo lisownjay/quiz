@@ -1,0 +1,2 @@
+1.GLOBAL.authorized
+2.qq email
