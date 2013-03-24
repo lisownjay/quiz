@@ -22,7 +22,7 @@ app.locals.pretty = false;
 
 // BLOBAL
 GLOBAL.authorized = false;
-GLOBAL.hostname = "test.fedtool.com";
+//GLOBAL.hostname = "test.fedtool.com";
 
 // WTF
 app.enable('trust proxy');
@@ -108,7 +108,7 @@ app.get(/(.*)/,function(req, res, next){
                 });
             }
             else {
-                res.redirect("http://" + GLOBAL.hostname + "/login.html");
+                res.redirect("/login.html");
             }
             break;
         case 'edit.html':
@@ -213,11 +213,11 @@ app.post(/(.*)/,function(req, res, next){
         case 'login.html':
             if (auth.check(req, res)) {
                 GLOBAL.authorized = true;
-                res.redirect("http://" + GLOBAL.hostname + "/admin");
+                res.redirect("/admin");
             }
             else {
                 GLOBAL.authorized = false;
-                res.redirect("http://" + GLOBAL.hostname + "/admin");
+                res.redirect("/admin");
             }
             break;
         default:
