@@ -30,7 +30,7 @@ return ''+
              + '</label>'
              +'<span>{{doc.time}}分</span>'
              +'<span class="test-actions">'
-             +'<a href="edit.php?id={{doc._id}}" target="_blank" class="J_Edit ks-button ks-button-primary" data-id="{{doc._id}}">编辑</a>  '
+             +'<a href="edit.html?id={{doc._id}}" target="_blank" class="J_Edit ks-button ks-button-primary" data-id="{{doc._id}}">编辑</a>  '
              +'<span class="J_Del ks-button ks-button-danger" data-id="{{doc._id}}">删除</span>'
              +'</span>'
         +'</div>'

@@ -5,7 +5,7 @@
 /var/www/host/fed2/u/yanmu/fetest/question/mods/edit.js
 
 */
-KISSY.add("mods/edit",function(S,Core){
+KISSY.add("tests/edit",function(S,Core){
   var Template = S.Template,
       D = S.DOM;
 
