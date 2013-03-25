@@ -27,7 +27,7 @@ var
         level: {
             "type": Number,
             "required": true,
-            "enmu": [1, 2, 3],
+            "enmu": [4, 5, 6, 7, 8],
             "default": 1
         },
         skill: {

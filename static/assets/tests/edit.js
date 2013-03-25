@@ -75,12 +75,16 @@ KISSY.add(function(S,Core){
         }
 
         switch (doc.level){
-          case 1:
+          case 4:
           this.$levels.item(0).attr('checked',true);break;
-          case 2:
+          case 5:
           this.$levels.item(1).attr('checked',true);break;
-          case 3:
+          case 6:
           this.$levels.item(2).attr('checked',true);break;
+          case 7:
+          this.$levels.item(3).attr('checked',true);break;
+          case 8:
+          this.$levels.item(4).attr('checked',true);break;
         }
 
         if(doc.skill){
