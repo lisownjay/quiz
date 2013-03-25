@@ -22,7 +22,7 @@ app.locals.pretty = false;
 
 // BLOBAL
 GLOBAL.authorized = false;
-//GLOBAL.hostname = "test.fedtool.com";
+GLOBAL.hostname = "http://test.ued.taobao.com";
 
 // WTF
 app.enable('trust proxy');
@@ -94,7 +94,7 @@ app.get(/(.*)/,function(req, res, next){
                 return;
             }
             else {
-                res.redirect("/login.html")
+                res.redirect(GLOBAL.hostname + "/login.html")
             }
             break;
         case 'login.html':
@@ -108,7 +108,7 @@ app.get(/(.*)/,function(req, res, next){
                 });
             }
             else {
-                res.redirect("/login.html");
+                res.redirect(GLOBAL.hostname + "/login.html")
             }
             break;
         case 'edit.html':
@@ -117,7 +117,7 @@ app.get(/(.*)/,function(req, res, next){
                 staticMiddleware(req, res, next);
             }
             else {
-                res.redirect("/login.html");
+                res.redirect(GLOBAL.hostname + "/login.html")
             }
             break;
         case 'list.html':
@@ -126,7 +126,7 @@ app.get(/(.*)/,function(req, res, next){
                 staticMiddleware(req, res, next);
             }
             else {
-                res.redirect("/login.html");
+                res.redirect(GLOBAL.hostname + "/login.html")
             }
             break;
         default:
@@ -138,7 +138,7 @@ app.get(/(.*)/,function(req, res, next){
                     routes.tests(req, res);
                 }
                 else {
-                    res.redirect("/login.html");
+                    res.redirect(GLOBAL.hostname + "/login.html")
                     return;
                 }
             }
@@ -213,11 +213,11 @@ app.post(/(.*)/,function(req, res, next){
         case 'login.html':
             if (auth.check(req, res)) {
                 GLOBAL.authorized = true;
-                res.redirect("/admin");
+                res.redirect(GLOBAL.hostname + "/login.html")
             }
             else {
                 GLOBAL.authorized = false;
-                res.redirect("/admin");
+                res.redirect(GLOBAL.hostname + "/login.html")
             }
             break;
         default:
