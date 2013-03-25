@@ -279,5 +279,5 @@ app.all('*', function(req, res){
     routes.notfound(req, res);
 });
 
-app.listen(8888);
-console.log("fetest on port %d in %s mode", 8888, app.settings.env);
+app.listen(3001);
+console.log("fetest on port %d in %s mode", 3001, app.settings.env);
