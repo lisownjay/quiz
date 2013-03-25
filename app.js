@@ -213,11 +213,11 @@ app.post(/(.*)/,function(req, res, next){
         case 'login.html':
             if (auth.check(req, res)) {
                 GLOBAL.authorized = true;
-                res.redirect(GLOBAL.hostname + "/admin")
+                res.redirect(GLOBAL.hostname + "/admin");
             }
             else {
                 GLOBAL.authorized = false;
-                res.redirect(GLOBAL.hostname + "/admin")
+                res.redirect(GLOBAL.hostname + "/login.html");
             }
             break;
         default:
