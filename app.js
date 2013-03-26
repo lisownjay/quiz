@@ -74,10 +74,6 @@ app.get(/(.*)/,function(req, res, next){
     }
 
     switch(sub.toLowerCase()){
-        case '':
-        case 'index':
-            routes.index(req, res);
-            break;
         case 'question':
             routes.question(req, res);
             break;

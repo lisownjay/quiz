@@ -63,7 +63,7 @@ return ''+
              +'<label>'
              +'难易程度: '
              + '</label>'
-             +'<span>{{doc.level}}</span>'
+             +'<span>P{{doc.level}}</span>'
              +'<label>'
              +'耗时: '
              + '</label>'
