@@ -350,7 +350,7 @@ exports.index = function(req, res) {
                  * 没有发送过email
                  */
                 else {
-                    util.sendURL(email, req.headers.host, function(d){
+                    util.sendURL(email, GLOBAL.host, function(d){
                         if (!d || !d.success) {
                             res.send("error");
                         }
@@ -377,7 +377,7 @@ exports.index = function(req, res) {
                         return;
                     }
 
-                    util.sendURL(email, req.headers.host, function(d){
+                    util.sendURL(email, GLOBAL.host, function(d){
                         if (!d || !d.success) {
                             res.send("error");
                         }
@@ -446,7 +446,7 @@ exports.email = function(req, res) {
             return;
         }
 
-        util.sendURL(d.docs[0].email, req.headers.host, function(d){
+        util.sendURL(d.docs[0].email, GLOBAL.host, function(d){
             res.json(d);
         });
     });
