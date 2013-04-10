@@ -20,7 +20,7 @@ var question = {
             if (!doc.level || !doc.skill || !doc.time || !doc.content || !doc.content.replace(/^\s+/, '').replace(/\s+$/, '')) {
                 res.json({
                     success: false,
-                    message: "PARAM ERR"
+                    message: "有未填写字段！题目、知识点、难度、耗时都是必填项！"
                 });
                 return;
             }
@@ -41,7 +41,7 @@ var question = {
             if(!query._id) {
                 res.json({
                     success: false,
-                    message: "PARAM ERR"
+                    message: "参数错误，没有找到该id！"
                 });
                 return;
             }
@@ -50,7 +50,7 @@ var question = {
                 if (!d || !d.success || !d.docs.length) {
                     res.json({
                         success: false,
-                        message: "NOT EXSITED"
+                        message: "该题目不存在！"
                     });
                     return;
                 }
@@ -101,7 +101,7 @@ var question = {
             if(!query._id) {
                 res.json({
                     success: false,
-                    message: "PARAM ERR"
+                    message: "参数错误，没找到该题目！"
                 });
                 return;
             }
