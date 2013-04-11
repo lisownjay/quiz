@@ -1,0 +1,96 @@
+.side
+    .tags
+        li
+            display inline-block
+            padding 8px 0
+            color #666
+            text-shadow 1px 1px 2px #FFF
+            a
+                display inline-block
+                height 20px
+                color #333
+                margin 0 3px 0 0
+                padding 0 10px
+                text-decoration none
+                vertical-align middle
+                background #DDD
+                border-radius 10px
+                box-shadow inset -1px -1px 1px #AAA
+                cursor pointer
+            a:hover
+                background #FFF
+            a.active
+            a:active
+                padding 2px 9px 0 11px
+                height 18px
+                background #FFF
+                box-shadow inset 1px 1px 1px #999
+.list
+    padding 40px
+.question
+    border 1px solid #EEE
+    border-radius 6px
+    relative left 0 top 0
+    margin-bottom 30px
+    clearfix()
+    .i-chk
+        display none
+    .question-chk
+        display block
+        width 30px
+        height 30px
+        color #FFF
+        line-height 30px
+        text-align center
+        font-size 24px
+        text-decoration none
+        background #EEE
+        absolute right -1px top -1px
+        border-radius 0 6px 0 6px
+        cursor pointer
+    .question-chk.hover
+    .question-chk:hover
+        background #1abc9c
+    pre
+        padding 20px
+    .question-meta
+        color #666
+        padding 5px 10px
+        background #EEE
+        border-radius 0 0 6px 6px
+        relative left 0 top 0
+        .qm-item
+            margin-left 10px
+    .question-panel
+        height 30px
+        line-height 30px
+        absolute right 10px bottom 0
+        opacity .5
+        a
+            padding 3px 5px
+            margin 0 5px
+            color #FFF
+            text-decoration none
+            background #FFF
+            border-radius 3px
+            i
+                margin-right 3px
+        .qp-edit
+            background #3498db
+        .qp-edit:hover
+            background #5dade2
+        .qp-del
+            background #f00
+        .qp-del:hover
+            background #E74C3C
+    .question-meta.hover
+    .question-meta:hover
+        color #333
+.question-checked
+    border-color #1abc9c
+    .question-chk
+        background #1abc9c
+.question-hover
+.question:hover
+    .question-panel
+        opacity 1

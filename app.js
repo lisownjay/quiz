@@ -17,12 +17,16 @@ var os = require("os"),
 
     app = module.exports = express();
 
+var stylus = require('stylus')
+    , nib = require('nib');
+
 // locals
-app.locals.pretty = false;
+app.locals.pretty = true;
 
 // BLOBAL
 GLOBAL.authorized = false;
-GLOBAL.hostname = "http://test.ued.taobao.com";
+//GLOBAL.hostname = "http://test.ued.taobao.com";
+GLOBAL.hostname = "http://localhost:3001";
 
 // WTF
 app.enable('trust proxy');
@@ -36,6 +40,18 @@ app.configure(function(){
     // must set 'secret' for session
     app.use(express.cookieParser('secret'));
     app.use(express.methodOverride());
+
+    app.use(stylus.middleware({
+        src: __dirname + '/static'
+        , compile: function(str, path) {
+            return stylus(str)
+                .set('filename', path)
+                .set('compress', true)
+                .use(nib())
+                .import('nib');
+        }
+    }));
+
     // 能否直接读取某个静态文件返回？
     app.use(express.static(__dirname + '/static'));
     //app.use(gzippo.staticGzip(__dirname + '/static'));
@@ -73,9 +89,15 @@ app.get(/(.*)/,function(req, res, next){
         GLOBAL.authorized = false;
     }
 
+    console.log(sub)
+
     switch(sub.toLowerCase()){
         case 'question':
+        case 'question/':
             routes.question(req, res);
+            break;
+        case 'question/create':
+            routes.questionCreate(req, res);
             break;
         case 'io/question':
             if (GLOBAL.authorized) {
@@ -144,9 +166,13 @@ app.get(/(.*)/,function(req, res, next){
             else if (/^(?:io\/question\/)[^.]+$/.test(sub) && GLOBAL.authorized) {
                 routes.io.question.get(req, res);
             }
-            else if (/^(mods\/)/) {
+            else if (/^(mods\/)/.test(sub)) {
                 res.charset = "utf-8";
                 staticMiddleware(req, res, next);
+            }
+            else if (/^question\/edit\/[a-zA-Z0-9]{24}/.test(sub)) {
+                routes.questionCreate(req, res);
+            break;
             }
             else {
                 next();
@@ -204,6 +230,11 @@ app.post(/(.*)/,function(req, res, next){
         case 'io/tests/update':
             if (GLOBAL.authorized) {
                 routes.io.test.post(req, res, true);
+            }
+            break;
+        case 'io/quiz/create':
+            if (GLOBAL.authorized) {
+                routes.io.quiz.put(req, res);
             }
             break;
         case 'login.html':

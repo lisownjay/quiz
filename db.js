@@ -239,6 +239,24 @@ var DB = {
         del4ever: function(query, callback) {
             return DB.del4ever("question", query, callback);
         }
+    },
+
+    quiz = {
+        put: function(doc, callback) {
+            return DB.put("quiz", doc, callback);
+        },
+        get: function(query, options, callback) {
+            return DB.get("quiz", query, options, callback);
+        },
+        post: function(query, doc, callback) {
+            return DB.post("quiz", query, doc, callback);
+        },
+        del: function(query, callback) {
+            return DB.del("quiz", query, callback);
+        },
+        del4ever: function(query, callback) {
+            return DB.del4ever("quiz", query, callback);
+        }
     };
 
 // exports

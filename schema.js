@@ -127,6 +127,23 @@ var
             "type": Number
         }
     });
+    /*
+     * Quiz
+     */
+    Quiz = new Schema({
+        author: {
+            "type": String,
+            "trim": true,
+            "required": true
+        },
+        questions: {
+            "type": Array
+        },
+        created: {
+            "type": Date,
+            "required": true
+        },
+    });
 
 exports.Test = Test;
 exports.Question = Question;

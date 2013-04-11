@@ -70,7 +70,11 @@ var question = {
 
             query.deleted = false;
 
-            DB.Question.get(query, function(d){
+            DB.Question.get(query, {
+                sort: {
+                    created: -1
+                }
+            }, function(d){
                 var docs = [];
                 if (d.docs) {
                     d.docs.forEach(function(doc){
@@ -308,6 +312,31 @@ var question = {
                 }
             });
         }
+    },
+    
+    quiz = {
+        get: function(req, res) {
+        },
+        put: function(req, res) {
+            var doc = _.pick(req.body, "author", "questions");
+
+            if (!doc.author || !doc.questions) {
+                res.json({
+                    success: false,
+                    message: "PARAM ERR"
+                });
+                return;
+            }
+
+            doc.created = new Date();
+
+            DB.Quiz.put(doc, function(d){
+                res.json({
+                    success: d && d.success,
+                    _id: d._id
+                })
+            });
+        }
     };
 
 exports.index = function(req, res) {
@@ -512,7 +541,8 @@ exports.tests = function(req, res) {
 
 exports.io = {
     question: question,
-    test: test
+    test: test,
+    quiz: quiz
 };
 
 exports.notfound = function(req, res) {
@@ -520,3 +550,9 @@ exports.notfound = function(req, res) {
         title: "FETest"
     });
 };
+
+exports.questionCreate = function(req, res) {
+    res.render("question-create", {
+        title: "question.create"
+    });
+}
