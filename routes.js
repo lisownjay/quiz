@@ -419,9 +419,9 @@ exports.index = function(req, res) {
                  * 没有发送过email
                  */
                 else {
-                    util.sendURL(email, GLOBAL.hostname, function(d){
+                    util.sendURL(email, GLOBAL.host, function(d){
                         if (!d || !d.success) {
-                            res.send("error");
+                            res.send(d.message);
                         }
 
                         res.render("emailed", {

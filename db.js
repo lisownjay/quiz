@@ -221,6 +221,41 @@ var DB = {
     },
 
     test = {
+        random: function(callback) {
+            callback = _.isFunction(callback) ? callback : function(){};
+            question.get({}, function(d){
+                if (!d.success) {
+                    callback(d);
+                    return;
+                }
+
+                var _docs = _.shuffle(d.docs),
+                    _selectQ = _.filter(_docs, function(q){return q.type == 1}),
+                    _otherQ = _.filter(_docs, function(q){return q.type != 1}),
+                    questions = [],
+                    time = 0;
+                
+                _selectQ.forEach(function(q){
+                    if (questions.length < 5) {
+                        questions.push({_id: q._id});
+                        time += q.time;
+                    }
+                });
+
+                _otherQ.forEach(function(q){
+                    if (time < 90) {
+                        questions.push({_id: q._id});
+                        time += q.time;
+                    }
+                });
+
+                callback({
+                    success: true,
+                    docs: questions,
+                    time: time
+                });
+            });
+        },
         put: function(doc, callback) {
             DB.put("test", doc, function(u){
                 if (!u.success) {
@@ -228,37 +263,17 @@ var DB = {
                     return;
                 }
 
-                question.get({}, function(q){
-                    if (!q.success) {
-                        callback(q);
+                test.random(function(d){
+                    if (!d.success) {
+                        callback(d);
                         return;
                     }
-
-                    var _q = _.shuffle(q.docs),
-                        _selectQ = _.filter(_q, function(q){return q.type == 1}),
-                        _otherQ = _.filter(_q, function(q){return q.type != 1}),
-                        questions = [],
-                        time = 0;
-                    
-                    _selectQ.forEach(function(q){
-                        if (questions.length < 5) {
-                            questions.push({_id: q._id});
-                            time += q.time;
-                        }
-                    });
-
-                    _otherQ.forEach(function(q){
-                        if (time < 90) {
-                            questions.push({_id: q._id});
-                            time += q.time;
-                        }
-                    });
 
                     test.post({
                         _id: u._id
                     }, {
-                        questions: questions,
-                        time: time
+                        questions: d.docs,
+                        time: d.time
                     }, function(d){
                         callback(d);
                     });

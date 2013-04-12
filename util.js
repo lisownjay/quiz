@@ -61,7 +61,7 @@ var util = {
                 }
 
                 //Email(email, "http://" + host + "/test/" + d.docs[0].sha1, function(d){
-                Email(email, "http://" + host + "/test.html?i=" + d.docs[0].sha1, function(d){
+                Email(email, host + "/test.html?i=" + d.docs[0].sha1, function(d){
                     if (!d.success) {
                         callback({
                             success: false,

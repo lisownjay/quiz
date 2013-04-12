@@ -27,8 +27,8 @@ app.locals.pretty = true;
 
 // BLOBAL
 GLOBAL.authorized = false;
-GLOBAL.hostname = "http://test.ued.taobao.com";
-//GLOBAL.hostname = "http://localhost:3001";
+//GLOBAL.host = "http://test.ued.taobao.com";
+GLOBAL.host = "http://localhost:3001";
 
 // WTF
 app.enable('trust proxy');
@@ -98,7 +98,7 @@ app.get(/(.*)/,function(req, res, next){
                 routes.question.render(req, res);
             }
             else {
-                res.redirect(GLOBAL.hostname + "/login.html")
+                res.redirect(GLOBAL.host + "/login.html")
             }
             break;
         case 'question/create':
@@ -106,7 +106,7 @@ app.get(/(.*)/,function(req, res, next){
                 routes.question.create(req, res);
             }
             else {
-                res.redirect(GLOBAL.hostname + "/login.html")
+                res.redirect(GLOBAL.host + "/login.html")
             }
             break;
         case 'io/question':
@@ -114,7 +114,7 @@ app.get(/(.*)/,function(req, res, next){
                 routes.io.question.get(req, res);
             }
             else {
-                res.redirect(GLOBAL.hostname + "/login.html")
+                res.redirect(GLOBAL.host + "/login.html")
             }
             break;
         case 'tests':
@@ -122,7 +122,7 @@ app.get(/(.*)/,function(req, res, next){
                 routes.tests(req, res);
             }
             else {
-                res.redirect(GLOBAL.hostname + "/login.html")
+                res.redirect(GLOBAL.host + "/login.html")
             }
             break;
         case 'login.html':
@@ -136,7 +136,7 @@ app.get(/(.*)/,function(req, res, next){
                 });
             }
             else {
-                res.redirect(GLOBAL.hostname + "/login.html")
+                res.redirect(GLOBAL.host + "/login.html")
             }
             break;
         case 'edit.html':
@@ -145,7 +145,7 @@ app.get(/(.*)/,function(req, res, next){
                 staticMiddleware(req, res, next);
             }
             else {
-                res.redirect(GLOBAL.hostname + "/login.html")
+                res.redirect(GLOBAL.host + "/login.html")
             }
             break;
         case 'list.html':
@@ -154,7 +154,7 @@ app.get(/(.*)/,function(req, res, next){
                 staticMiddleware(req, res, next);
             }
             else {
-                res.redirect(GLOBAL.hostname + "/login.html")
+                res.redirect(GLOBAL.host + "/login.html")
             }
             break;
         default:
@@ -166,28 +166,19 @@ app.get(/(.*)/,function(req, res, next){
                     routes.tests(req, res);
                 }
                 else {
-                    res.redirect(GLOBAL.hostname + "/login.html")
+                    res.redirect(GLOBAL.host + "/login.html")
                 }
             }
             else if (/^(?:io\/test\/)[^.]+$/.test(sub)) {
-                if (GLOBAL.authorized) {
-                    routes.io.test.get(req, res);
-                }
-                else {
-                    res.redirect(GLOBAL.hostname + "/login.html")
-                }
+                routes.io.test.get(req, res);
             }
             else if (/^(?:io\/question\/)[^.]+$/.test(sub) && GLOBAL.authorized) {
                 if (GLOBAL.authorized) {
                     routes.io.question.get(req, res);
                 }
                 else {
-                    res.redirect(GLOBAL.hostname + "/login.html")
+                    res.redirect(GLOBAL.host + "/login.html")
                 }
-            }
-            else if (/^(mods\/)/.test(sub)) {
-                res.charset = "utf-8";
-                staticMiddleware(req, res, next);
             }
             else if (/^question\/edit\/[a-zA-Z0-9]{24}/.test(sub)) {
                 if (GLOBAL.authorized) {
@@ -195,7 +186,7 @@ app.get(/(.*)/,function(req, res, next){
                     routes.question.edit(req, res);
                 }
                 else {
-                    res.redirect(GLOBAL.hostname + "/login.html")
+                    res.redirect(GLOBAL.host + "/login.html")
                 }
             }
             else if (/^quiz\/[a-zA-Z0-9]{24}/.test(sub)) {
@@ -204,7 +195,7 @@ app.get(/(.*)/,function(req, res, next){
                     routes.io.quiz.render(req, res);
                 }
                 else {
-                    res.redirect(GLOBAL.hostname + "/login.html")
+                    res.redirect(GLOBAL.host + "/login.html")
                 }
             }
             else {
@@ -238,7 +229,7 @@ app.post(/(.*)/,function(req, res, next){
                 routes.io.question.put(req, res);
             }
             else {
-                res.redirect(GLOBAL.hostname + "/login.html")
+                res.redirect(GLOBAL.host + "/login.html")
             }
             break;
         case 'io/question/edit':
@@ -247,7 +238,7 @@ app.post(/(.*)/,function(req, res, next){
                 routes.io.question.post(req, res);
             }
             else {
-                res.redirect(GLOBAL.hostname + "/login.html")
+                res.redirect(GLOBAL.host + "/login.html")
             }
             break;
         case 'io/question/del':
@@ -255,7 +246,7 @@ app.post(/(.*)/,function(req, res, next){
                 routes.io.question.del(req, res);
             }
             else {
-                res.redirect(GLOBAL.hostname + "/login.html")
+                res.redirect(GLOBAL.host + "/login.html")
             }
             break;
         case 'io/test/solve':
@@ -266,7 +257,7 @@ app.post(/(.*)/,function(req, res, next){
                 routes.io.test.grade(req, res);
             }
             else {
-                res.redirect(GLOBAL.hostname + "/login.html")
+                res.redirect(GLOBAL.host + "/login.html")
             }
             break;
         case 'io/test/del':
@@ -279,7 +270,7 @@ app.post(/(.*)/,function(req, res, next){
                 routes.io.test.post(req, res, true);
             }
             else {
-                res.redirect(GLOBAL.hostname + "/login.html")
+                res.redirect(GLOBAL.host + "/login.html")
             }
             break;
         case 'io/quiz/create':
@@ -287,17 +278,17 @@ app.post(/(.*)/,function(req, res, next){
                 routes.io.quiz.put(req, res);
             }
             else {
-                res.redirect(GLOBAL.hostname + "/login.html")
+                res.redirect(GLOBAL.host + "/login.html")
             }
             break;
         case 'login.html':
             if (auth.check(req, res)) {
                 GLOBAL.authorized = true;
-                res.redirect(GLOBAL.hostname + "/admin");
+                res.redirect(GLOBAL.host + "/admin");
             }
             else {
                 GLOBAL.authorized = false;
-                res.redirect(GLOBAL.hostname + "/login.html");
+                res.redirect(GLOBAL.host + "/login.html");
             }
             break;
         default:
