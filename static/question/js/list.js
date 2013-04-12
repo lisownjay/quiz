@@ -102,6 +102,8 @@ KISSY.ready(function(S) {
         }
         else if(!data) {
             randomly = true;
+            alert("come soon...");
+            return;
         }
 
         S.io({
