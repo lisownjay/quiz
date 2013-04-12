@@ -12,6 +12,7 @@ var mongoose = require('mongoose'),
     schema = require('./schema'),
     testSchema = schema.Test,
     questionSchema = schema.Question,
+    quizSchema = schema.Quiz,
     dbName = 'fetest';
 
 var DB = {
@@ -19,15 +20,24 @@ var DB = {
          * create a document
          */
         put: function(collection, doc, callback) {
+            var callback = _.isFunction(callback) ? callback : function(){};
             if(!_.isString(collection) || !_.isObject(doc) || _.isFunction(doc)){
+                callback({
+                    success: false,
+                    message: "param error"
+                });
                 return false;
             }
 
-            var callback = _.isFunction(callback) ? callback : function(){};
-
             var config = DB.config(collection);
             
-            if(!config.collection || !config.schema) return false;
+            if(!config.collection || !config.schema) {
+                callback({
+                    success: false,
+                    message: "no collection"
+                });
+                return;
+            }
 
             var Mod = config.connection.model(collection, config.schema, config.collection),
                 mod = new Mod();
@@ -39,7 +49,8 @@ var DB = {
             mod.save(function(err, doc){
                 if (err) {
                     callback({
-                        success: false
+                        success: false,
+                        message: err.message
                     });
                 }
                 else {
@@ -63,15 +74,29 @@ var DB = {
 
             var config = DB.config(collection);
 
-            if(!config.collection || !config.schema) return false;
+            if(!config.collection || !config.schema) {
+                callback({
+                    success: false,
+                    message: "no collection"
+                });
+                return;
+            }
 
             var Mod = config.connection.model(config.collection, config.schema, config.collection);
 
             Mod.find(query, null, options, function(err, docs){
-                callback({
-                    success: !err,
-                    docs: docs
-                });
+                if (err) {
+                    callback({
+                        success: false,
+                        message: err.message
+                    });
+                }
+                else {
+                    callback({
+                        success: true,
+                        docs: docs
+                    });
+                }
             });
         },
         /*
@@ -86,15 +111,29 @@ var DB = {
 
             var config = DB.config(collection);
             
-            if(!config.collection || !config.schema) return false;
+            if(!config.collection || !config.schema) {
+                callback({
+                    success: false,
+                    message: "no collection"
+                });
+                return;
+            }
 
             var Mod = config.connection.model(collection, config.schema, config.collection);
 
             Mod.update(query, doc, function(err, numAffected){
-                callback({
-                    success: !err,
-                    numAffected: err ? 0 : numAffected
-                });
+                if (err) {
+                    callback({
+                        success: false,
+                        message: err.message
+                    });
+                }
+                else {
+                    callback({
+                        success: true,
+                        numAffected: numAffected
+                    });
+                }
             });
         },
         /*
@@ -108,9 +147,7 @@ var DB = {
             var callback = _.isFunction(callback) ? callback : function(){};
 
             DB.post(collection, query, {deleted: true}, function(d){
-                callback({
-                    success: d.success
-                });
+                callback(d);
             });
         },
         del4ever: function(collection, query, callback) {
@@ -122,14 +159,28 @@ var DB = {
 
             var config = DB.config(collection);
             
-            if(!config.collection || !config.schema) return false;
+            if(!config.collection || !config.schema) {
+                callback({
+                    success: false,
+                    message: "no collection"
+                });
+                return;
+            }
 
             var Mod = config.connection.model(collection, config.schema, config.collection);
 
             Mod.remove(query, function(err){
-                callback({
-                    success: !err
-                });
+                if (err) {
+                    callback({
+                        success: false,
+                        message: err.message
+                    });
+                }
+                else {
+                    callback({
+                        success: true
+                    });
+                }
             });
         },
         /*
@@ -153,11 +204,17 @@ var DB = {
                         schema: questionSchema
                     };
                     break;
+                case 'quiz':
+                    cfg = {
+                        collection: "quiz",
+                        schema: quizSchema
+                    };
+                    break;
                 default:
                     break;
             }
 
-            cfg.connection = mongoose.createConnection('mongodb://localhost/' + dbName)
+            cfg.connection = mongoose.createConnection('mongodb://localhost/' + dbName);
 
             return cfg;
         }
@@ -262,3 +319,4 @@ var DB = {
 // exports
 exports.Test = test;
 exports.Question = question;
+exports.Quiz = quiz;

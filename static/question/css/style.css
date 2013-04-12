@@ -1,13 +1,13 @@
-.side .tags li{display:inline-block;padding:8px 0;color:#666;text-shadow:1px 1px 2px #fff;}
+.side .tags li{display:inline-block;padding:5px 0;color:#666;text-shadow:1px 1px 2px #fff;}
 .side .tags li a{display:inline-block;height:20px;color:#333;margin:0 3px 0 0;padding:0 10px;text-decoration:none;vertical-align:middle;background:#ddd;-webkit-border-radius:10px;border-radius:10px;-webkit-box-shadow:inset -1px -1px 1px #aaa;box-shadow:inset -1px -1px 1px #aaa;cursor:pointer}
 .side .tags li a:hover{background:#fff}
 .side .tags li a.active,.side .tags li a:active{padding:2px 9px 0 11px;height:18px;background:#fff;-webkit-box-shadow:inset 1px 1px 1px #999;box-shadow:inset 1px 1px 1px #999}
 .list{padding:40px}
-.question{border:1px solid #eee;-webkit-border-radius:6px;border-radius:6px;position:relative;left:0;top:0;margin-bottom:30px;zoom:1;}
+.question{border:1px solid #ddd;-webkit-border-radius:6px;border-radius:6px;position:relative;left:0;top:0;margin-bottom:30px;zoom:1;}
 .question:before,.question:after{content:"";display:table}
 .question:after{clear:both}
 .question .i-chk{display:none}
-.question .question-chk{display:block;width:30px;height:30px;color:#fff;line-height:30px;text-align:center;font-size:24px;text-decoration:none;background:#eee;position:absolute;right:-1px;top:-1px;-webkit-border-radius:0 6px 0 6px;border-radius:0 6px 0 6px;cursor:pointer}
+.question .question-chk{display:block;width:30px;height:30px;color:#fff;line-height:30px;text-align:center;font-size:24px;text-decoration:none;background:#ddd;position:absolute;right:0;top:0;-webkit-border-radius:0 4px 0 4px;border-radius:0 4px 0 4px;cursor:pointer}
 .question .question-chk.hover,.question .question-chk:hover{background:#1abc9c}
 .question pre{padding:20px}
 .question .question-meta{color:#666;padding:5px 10px;background:#eee;-webkit-border-radius:0 0 6px 6px;border-radius:0 0 6px 6px;position:relative;left:0;top:0;}
@@ -22,4 +22,7 @@
 .question .question-meta.hover,.question .question-meta:hover{color:#333}
 .question-checked{border-color:#1abc9c;}
 .question-checked .question-chk{background:#1abc9c}
+.question-hover,.question:hover{border-color:#999;}
+.question-hover .question-meta,.question:hover .question-meta{background:#ddd}
 .question-hover .question-panel,.question:hover .question-panel{opacity:1;-ms-filter:none;filter:none}
+.question-hover .question-chk,.question:hover .question-chk{border-color:#999}

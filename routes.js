@@ -317,24 +317,64 @@ var question = {
     quiz = {
         get: function(req, res) {
         },
+        render: function(req, res) {
+            var _id = req.params._id;
+
+            if (!_id) {
+                res.send("can not find quiz.");
+                return;
+            }
+
+            DB.Quiz.get({
+                _id: _id
+            }, function(d){
+                if (!d || !d.success) {
+                    res.json({
+                        success: false,
+                        message: "find quiz error."
+                    })
+                    return;
+                }
+
+                DB.Question.get({
+                    _id: {$in: d.docs[0].questions}
+                }, function(d){
+                    if (!d || !d.success) {
+                        res.json({
+                            success: false,
+                            message: "find question error."
+                        })
+                        return;
+                    }
+
+                    d.docs.forEach(function(doc){
+                        doc.content = util.escapeQuestion(doc.content);
+                    });
+
+                    res.render("quiz", {
+                        title: "quiz",
+                        quizs: d.docs
+                    });
+                })
+            })
+
+        },
         put: function(req, res) {
             var doc = _.pick(req.body, "author", "questions");
+
+            doc.author = doc.author || "root";
 
             if (!doc.author || !doc.questions) {
                 res.json({
                     success: false,
-                    message: "PARAM ERR"
+                    message: "未选择题目！"
                 });
                 return;
             }
 
             doc.created = new Date();
-
             DB.Quiz.put(doc, function(d){
-                res.json({
-                    success: d && d.success,
-                    _id: d._id
-                })
+                res.json(d)
             });
         }
     };
@@ -435,10 +475,69 @@ exports.test = function(req, res) {
     });
 };
 
-exports.question = function(req, res) {
-    res.render("question", {
-        title: "question"
-    });
+exports.question = {
+    render: function(req, res) {
+        res.render("question", {
+            title: "question"
+        });
+    },
+    create: function(req, res) {
+        res.render("question-form", {
+            title: "question.create",
+            content: "",
+            _id: "",
+            type: -1,
+            skill: {
+                html: false,
+                javascript: false,
+                css: false
+            },
+            level: -1,
+            time: "",
+            remark: "",
+            author: ""
+        });
+    },
+    edit: function(req, res) {
+        var _id = req.params._id,
+            doc;
+
+        if (!_id) {
+            res.send("can not find the question.");
+            return;
+        }
+
+        if (_id) {
+            DB.Question.get({
+                _id: _id
+            },
+            function (d) {
+                if (!d.success || !(doc = d.docs[0])) {
+                    res.json({
+                        success: false,
+                        message: "can not find the question."
+                    });
+                    return;
+                }
+
+                res.render("question-form", {
+                    title: "question.edit",
+                    content: doc.content,
+                    _id: doc._id,
+                    type: doc.type,
+                    skill: {
+                        html: doc.skill.indexOf("html") >= 0,
+                        javascript: doc.skill.indexOf("javascript") >= 0,
+                        css: doc.skill.indexOf("css") >= 0
+                    },
+                    level: doc.level,
+                    time: doc.time,
+                    remark: doc.remark,
+                    author: doc.author
+                });
+            })
+        }
+    }
 };
 
 /*
@@ -550,9 +649,3 @@ exports.notfound = function(req, res) {
         title: "FETest"
     });
 };
-
-exports.questionCreate = function(req, res) {
-    res.render("question-create", {
-        title: "question.create"
-    });
-}

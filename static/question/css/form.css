@@ -2,7 +2,7 @@
 .question-form table{width:100%;}
 .question-form table th{width:150px;padding:10px 20px 10px 0;text-align:right;border-bottom:1px solid #ddd;background:url("/images/bg.png")}
 .question-form table td{padding:10px 20px;border-bottom:1px solid #ddd}
-.question-form table textarea{width:600px;height:180px;border:1px solid #ccc;padding:5px}
+.question-form table textarea{width:600px;height:180px;border:1px solid #ccc;padding:5px;color:#404040}
 .question-form table .ta-remark{height:80px}
-.question-form table .btn{width:180px}
+.question-form table .btn{width:100px;display:inline-block;margin-right:10px}
 .question-form table .td-item{display:inline-block;margin-right:20px}

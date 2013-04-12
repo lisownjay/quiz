@@ -39,12 +39,13 @@ var
         /*
          * 1:选择题
          * 2:编码题
+         * 3:开放题
          * 0:默认
          */
         type: {
             "type": Number,
             "required": false,
-            "enmu": [0, 1, 2],
+            "enmu": [0, 1, 2, 3],
             "default": 0
         },
         created: {
@@ -147,3 +148,4 @@ var
 
 exports.Test = Test;
 exports.Question = Question;
+exports.Quiz = Quiz;

@@ -11,12 +11,15 @@ html,body,.page,.body{height:100%;font:13px/1.6 'Terminal Dosis','Helvetica Neue
 .side .btns .btn{margin:5px 0}
 .main{height:100%;overflow-y:auto;margin-left:240px}
 .btn{color:#fff;font-size:14px;font-family:"Lato",sans-serif;border:none;padding:8px 0;text-decoration:none;text-align:center;display:block;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;width:100%;line-height:20px;cursor:pointer;-webkit-border-radius:6px;border-radius:6px;background:#34495e}
-.btn:hover{background:#4e6d8d}
+.btn:hover{text-decoration:none;background:#4e6d8d}
 .btn-green{background:#1abc9c}
 .btn-green:hover{background:#2fe2bf}
 .btn-blue{background:#3498db}
 .btn-blue:hover{background:#5dade2}
+.btn-gray{color:#404040;background:#ccc}
+.btn-gray:hover{background:#ddd}
 .i-text{padding:3px 5px;border:1px solid #ccc}
+pre{font-family:courier new,courier,monospace}
 .clearfix{zoom:1}
 .clearfix:before,.clearfix:after{content:"";display:table}
 .clearfix:after{clear:both}

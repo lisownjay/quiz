@@ -8,11 +8,13 @@
  * @changelog: 
  */
 KISSY.ready(function(S) {
-    S.one("#J_QuestionCreateForm").on("submit", function(evt){
+    S.one("#J_QuestionForm").on("submit", function(evt){
         evt.halt();
 
+        var data = S.unparam(S.io.serialize(this));
+
         S.io({
-            url: "/io/question/create",
+            url: data._id ? "/io/question/edit" : "/io/question/create",
             type: "post",
             form: this,
             complete: function(d) {
@@ -21,7 +23,12 @@ KISSY.ready(function(S) {
                     return;
                 }
 
-                alert("添加成功！");
+                if (data._id) {
+                    alert("编辑成功！");
+                }
+                else {
+                    alert("添加成功！");
+                }
             }
         });
     });

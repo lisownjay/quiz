@@ -13,20 +13,22 @@ var os = require("os"),
     util = require('util'),
     _ = require('underscore'),
     routes = require('./routes'),
-    auth = require('./auth');
+    auth = require('./auth'); 
+
 
     app = module.exports = express();
 
 var stylus = require('stylus')
     , nib = require('nib');
 
+require('jade/lib/inline-tags').push('textarea');
 // locals
 app.locals.pretty = true;
 
 // BLOBAL
 GLOBAL.authorized = false;
-//GLOBAL.hostname = "http://test.ued.taobao.com";
-GLOBAL.hostname = "http://localhost:3001";
+GLOBAL.hostname = "http://test.ued.taobao.com";
+//GLOBAL.hostname = "http://localhost:3001";
 
 // WTF
 app.enable('trust proxy');
@@ -89,15 +91,13 @@ app.get(/(.*)/,function(req, res, next){
         GLOBAL.authorized = false;
     }
 
-    console.log(sub)
-
     switch(sub.toLowerCase()){
         case 'question':
         case 'question/':
-            routes.question(req, res);
+            routes.question.render(req, res);
             break;
         case 'question/create':
-            routes.questionCreate(req, res);
+            routes.question.create(req, res);
             break;
         case 'io/question':
             if (GLOBAL.authorized) {
@@ -171,8 +171,12 @@ app.get(/(.*)/,function(req, res, next){
                 staticMiddleware(req, res, next);
             }
             else if (/^question\/edit\/[a-zA-Z0-9]{24}/.test(sub)) {
-                routes.questionCreate(req, res);
-            break;
+                req.params._id = sub.replace(/^question\/edit\/([a-zA-Z0-9]{24})/, "$1");
+                routes.question.edit(req, res);
+            }
+            else if (/^quiz\/[a-zA-Z0-9]{24}/.test(sub)) {
+                req.params._id = sub.replace(/^quiz\/([a-zA-Z0-9]{24})/, "$1");
+                routes.io.quiz.render(req, res);
             }
             else {
                 next();
@@ -180,6 +184,7 @@ app.get(/(.*)/,function(req, res, next){
             break;
     }
 });
+
 
 /*
  * POST
@@ -204,6 +209,7 @@ app.post(/(.*)/,function(req, res, next){
                 routes.io.question.put(req, res);
             }
             break;
+        case 'io/question/edit':
         case 'io/question/update':
             if (GLOBAL.authorized) {
                 routes.io.question.post(req, res);

@@ -10,10 +10,38 @@
 KISSY.ready(function(S) {
     var $ = S.all;
 
+    window._CACHE_ = null;
+    window._FILTER_ = {
+        "type": []
+        , "skill": []
+        , "level": []
+    };
+
     $(".label").on("click", function(evt) {
         evt.halt();
 
-        $(this).toggleClass("active");
+        var el = $(this),
+            type = el.attr("data-type"),
+            tag = el.attr("data-tag");
+
+        el.toggleClass("active");
+
+        if (S.isUndefined(type) || S.isUndefined(tag)) return;
+
+        tag = type != "skill" ? window.parseInt(tag, 10) : tag;
+
+        if (el.hasClass("active")) {
+            window._FILTER_[type].push(tag);
+        }
+        else {
+            S.each(window._FILTER_[type], function(t, index) {
+                if (t === tag) {
+                    window._FILTER_[type].splice(index, 1);
+                }
+            });
+        }
+
+        filter(window._CACHE_);
     });
 
     // select
@@ -66,39 +94,115 @@ KISSY.ready(function(S) {
 
         if (!form) return;
 
+        var data = S.unparam(S.io.serialize(form[0])),
+            randomly = false;
+
+        if (!data.questions && !confirm("你没有选择题目，是否要随机生成！")) {
+            return;
+        }
+        else if(!data) {
+            randomly = true;
+        }
+
         S.io({
             url: "/io/quiz/create",
             form: form[0],
             type: "post",
+            timeout: 3,
             complete: function(d) {
                 if (!d || !d.success) {
                     alert("失败，请重试！");
                     return;
                 }
 
-                alert("成功！")
-            }
-        });
-    });
-
-    // render list
-    var tpl = S.one("#J_Template").html(),
-        list = S.one("#J_List");
-
-    if (!tpl || !list) return;
-
-    S.use("xtemplate", function(S, XTemplate) {
-        S.io({
-            url: "/io/question",
-            type: "get",
-            complete: function(d) {
-                if (!d || !d.success) {
-                    alert("数据读取失败！请刷新重试！");
-                    return;
+                if (d._id) {
+                    window.top.location.href = "/quiz/" + d._id;
                 }
-
-                list.html(new XTemplate(tpl).render({questions: d.docs}));
+                else {
+                    alert("生成考卷成功！");
+                }
             }
         });
     });
+
+    render();
+
+    function render(data) {
+        // render list
+        var tpl = S.one("#J_Template").html(),
+            list = S.one("#J_List");
+
+        if (!tpl || !list) return;
+
+        S.use("xtemplate", function(S, XTemplate) {
+            if (data = data || window._CACHE_) {
+                list.html(new XTemplate(tpl).render({questions: data}));
+                return;
+            }
+
+            S.io({
+                url: "/io/question",
+                type: "get",
+                complete: function(d) {
+                    if (!d || !d.success) {
+                        alert("数据读取失败！请刷新重试！");
+                        return;
+                    }
+
+                    window._CACHE_ = d.docs;
+
+                    list.html(new XTemplate(tpl).render({questions: d.docs}));
+                }
+            });
+        });
+    }
+
+    function filter(data) {
+        var f = window._FILTER_,
+            d = data.slice(0),
+            ret = d;
+
+        if (!f.type.length && !f.skill.length && !f.level.length) {
+            render();
+            return;
+        }
+
+        if (f.type.length) {
+            ret = [];
+            S.each(f.type, function(type) {
+                S.each(d, function(q, index) {
+                    if (q && q.type === type) {
+                        ret.push(q);
+                    }
+                });
+            });
+        }
+
+        if (f.level.length) {
+            d = ret.slice(0);
+            ret = [];
+            S.each(f.level, function(level) {
+                S.each(d, function(q, index) {
+                    if (q && q.level === level) {
+                        ret.push(q);
+                    }
+                });
+            });
+        }
+
+
+        if (f.skill.length) {
+            d = ret.slice(0);
+            ret = [];
+            S.each(f.skill, function(skill) {
+                S.each(d, function(q, index) {
+                    if (q && q.skill.indexOf(skill) >= 0) {
+                        ret.push(q);
+                    }
+                });
+            });
+        }
+
+        render(ret);
+    }
 });

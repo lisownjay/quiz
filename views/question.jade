@@ -15,33 +15,35 @@ block body
                 h1 分类
                 ul
                     li
-                        a.label.label-skill(data-tag="javascript", href="#nogo") JavaScript
+                        a.label(data-type="skill", data-tag="javascript", href="#nogo") JavaScript
                     li
-                        a.label.label-skill(data-tag="html", href="#nogo") HTML
+                        a.label(data-type="skill", data-tag="html", href="#nogo") HTML
                     li
-                        a.label.label-skill(data-tag="css", href="#nogo") CSS
+                        a.label(data-type="skill", data-tag="css", href="#nogo") CSS
             section.tags.level
                 h1 难度
                 ul
                     li
-                        a.label.label-level(data-tag="4", href="#nogo") P4
+                        a.label(data-type="level", data-tag="4", href="#nogo") P4
                     li
-                        a.label.label-level(data-tag="5", href="#nogo") P5
+                        a.label(data-type="level", data-tag="5", href="#nogo") P5
                     li
-                        a.label.label-level(data-tag="6", href="#nogo") P6
+                        a.label(data-type="level", data-tag="6", href="#nogo") P6
                     li
-                        a.label.label-level(data-tag="7", href="#nogo") P7
+                        a.label(data-type="level", data-tag="7", href="#nogo") P7
                     li
-                        a.label.label-level(data-tag="8", href="#nogo") P8
+                        a.label(data-type="level", data-tag="8", href="#nogo") P8
             section.tags.type
                 h1 题型
                 ul
                     li
-                        a.label.label-type(data-tag="1", href="#nogo") 选择题
+                        a.label(data-type="type", data-tag="1", href="#nogo") 选择题
                     li
-                        a.label.label-type(data-tag="2", href="#nogo") 编码题
+                        a.label(data-type="type", data-tag="2", href="#nogo") 编码题
                     li
-                        a.label.label-type(data-tag="0", href="#nogo") 其他
+                        a.label(data-type="type", data-tag="3", href="#nogo") 开放题
+                    li
+                        a.label(data-type="type", data-tag="0", href="#nogo") 综合
         div.main
             form#J_ListForm(method="post")
                 div.list#J_List
@@ -60,6 +62,7 @@ block body
                                 span.qm-tag
                                     | {{#if type === 1}}选择题{{/if}}
                                     | {{#if type === 2}}编码题{{/if}}
+                                    | {{#if type === 3}}开放题{{/if}}
                                     | {{#if type === 0}}综合{{/if}}
                             span.qm-item.qm-time 耗时：
                                 span.qm-tag {{time}}m
