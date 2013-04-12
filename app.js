@@ -94,22 +94,32 @@ app.get(/(.*)/,function(req, res, next){
     switch(sub.toLowerCase()){
         case 'question':
         case 'question/':
-            routes.question.render(req, res);
+            if (GLOBAL.authorized) {
+                routes.question.render(req, res);
+            }
+            else {
+                res.redirect(GLOBAL.hostname + "/login.html")
+            }
             break;
         case 'question/create':
-            routes.question.create(req, res);
+            if (GLOBAL.authorized) {
+                routes.question.create(req, res);
+            }
+            else {
+                res.redirect(GLOBAL.hostname + "/login.html")
+            }
             break;
         case 'io/question':
             if (GLOBAL.authorized) {
                 routes.io.question.get(req, res);
-                return;
             }
-            next();
+            else {
+                res.redirect(GLOBAL.hostname + "/login.html")
+            }
             break;
         case 'tests':
             if (GLOBAL.authorized) {
                 routes.tests(req, res);
-                return;
             }
             else {
                 res.redirect(GLOBAL.hostname + "/login.html")
@@ -157,26 +167,45 @@ app.get(/(.*)/,function(req, res, next){
                 }
                 else {
                     res.redirect(GLOBAL.hostname + "/login.html")
-                    return;
                 }
             }
             else if (/^(?:io\/test\/)[^.]+$/.test(sub)) {
-                routes.io.test.get(req, res);
+                if (GLOBAL.authorized) {
+                    routes.io.test.get(req, res);
+                }
+                else {
+                    res.redirect(GLOBAL.hostname + "/login.html")
+                }
             }
             else if (/^(?:io\/question\/)[^.]+$/.test(sub) && GLOBAL.authorized) {
-                routes.io.question.get(req, res);
+                if (GLOBAL.authorized) {
+                    routes.io.question.get(req, res);
+                }
+                else {
+                    res.redirect(GLOBAL.hostname + "/login.html")
+                }
             }
             else if (/^(mods\/)/.test(sub)) {
                 res.charset = "utf-8";
                 staticMiddleware(req, res, next);
             }
             else if (/^question\/edit\/[a-zA-Z0-9]{24}/.test(sub)) {
-                req.params._id = sub.replace(/^question\/edit\/([a-zA-Z0-9]{24})/, "$1");
-                routes.question.edit(req, res);
+                if (GLOBAL.authorized) {
+                    req.params._id = sub.replace(/^question\/edit\/([a-zA-Z0-9]{24})/, "$1");
+                    routes.question.edit(req, res);
+                }
+                else {
+                    res.redirect(GLOBAL.hostname + "/login.html")
+                }
             }
             else if (/^quiz\/[a-zA-Z0-9]{24}/.test(sub)) {
-                req.params._id = sub.replace(/^quiz\/([a-zA-Z0-9]{24})/, "$1");
-                routes.io.quiz.render(req, res);
+                if (GLOBAL.authorized) {
+                    req.params._id = sub.replace(/^quiz\/([a-zA-Z0-9]{24})/, "$1");
+                    routes.io.quiz.render(req, res);
+                }
+                else {
+                    res.redirect(GLOBAL.hostname + "/login.html")
+                }
             }
             else {
                 next();
@@ -208,16 +237,25 @@ app.post(/(.*)/,function(req, res, next){
             if (GLOBAL.authorized) {
                 routes.io.question.put(req, res);
             }
+            else {
+                res.redirect(GLOBAL.hostname + "/login.html")
+            }
             break;
         case 'io/question/edit':
         case 'io/question/update':
             if (GLOBAL.authorized) {
                 routes.io.question.post(req, res);
             }
+            else {
+                res.redirect(GLOBAL.hostname + "/login.html")
+            }
             break;
         case 'io/question/del':
             if (GLOBAL.authorized) {
                 routes.io.question.del(req, res);
+            }
+            else {
+                res.redirect(GLOBAL.hostname + "/login.html")
             }
             break;
         case 'io/test/solve':
@@ -226,6 +264,9 @@ app.post(/(.*)/,function(req, res, next){
         case 'io/test/grade':
             if (GLOBAL.authorized) {
                 routes.io.test.grade(req, res);
+            }
+            else {
+                res.redirect(GLOBAL.hostname + "/login.html")
             }
             break;
         case 'io/test/del':
@@ -237,10 +278,16 @@ app.post(/(.*)/,function(req, res, next){
             if (GLOBAL.authorized) {
                 routes.io.test.post(req, res, true);
             }
+            else {
+                res.redirect(GLOBAL.hostname + "/login.html")
+            }
             break;
         case 'io/quiz/create':
             if (GLOBAL.authorized) {
                 routes.io.quiz.put(req, res);
+            }
+            else {
+                res.redirect(GLOBAL.hostname + "/login.html")
             }
             break;
         case 'login.html':
