@@ -79,7 +79,7 @@ KISSY.ready(function(S) {
                 }
 
                 el.parent().parent().remove();
-                alert("删除成功");
+                //alert("删除成功");
             }
         });
     });
@@ -94,21 +94,23 @@ KISSY.ready(function(S) {
 
         if (!form) return;
 
-        var data = S.unparam(S.io.serialize(form[0])),
-            randomly = false;
+        var data = S.unparam(S.io.serialize(form[0]));
 
-        if (!data.questions && !confirm("你没有选择题目，是否要随机生成！")) {
+        if (!data.questions && !confirm("你没有选择题目，是否要随机生成？")) {
             return;
         }
-        else if(!data) {
-            randomly = true;
-            alert("come soon...");
-            return;
+        else if(!data.question) {
+            data.randomly = true;
         }
+
+        // for mongoose regexp query
+        data.type = window._FILTER_.type.join("|");
+        data.skill = window._FILTER_.skill.join("|");
+        data.level = window._FILTER_.level.join("|");
 
         S.io({
             url: "/io/quiz/create",
-            form: form[0],
+            data: data,
             type: "post",
             timeout: 3,
             complete: function(d) {

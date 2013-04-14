@@ -221,9 +221,14 @@ var DB = {
     },
 
     test = {
-        random: function(callback) {
-            callback = _.isFunction(callback) ? callback : function(){};
-            question.get({}, function(d){
+        random: function(query, callback) {
+            callback = _.isFunction(callback) ? callback : (_.isFunction(query) ? query : function(){});
+            query = _.isObject(query) && !_.isFunction(query) ? query : {};
+            query.deleted = false;
+
+            console.log(query)
+
+            question.get(query, function(d){
                 if (!d.success) {
                     callback(d);
                     return;
@@ -257,28 +262,19 @@ var DB = {
             });
         },
         put: function(doc, callback) {
-            DB.put("test", doc, function(u){
-                if (!u.success) {
-                    callback(u);
+            test.random(function(d) {
+                if (!d.success) {
+                    callback(d);
                     return;
                 }
 
-                test.random(function(d){
-                    if (!d.success) {
-                        callback(d);
-                        return;
-                    }
-
-                    test.post({
-                        _id: u._id
-                    }, {
-                        questions: d.docs,
-                        time: d.time
-                    }, function(d){
-                        callback(d);
-                    });
+                DB.put("test", {
+                    email: doc.email,
+                    sha1: doc.sha1,
+                    questions: d.docs
+                }, function(d){
+                    callback(d);
                 });
-
             });
         },
         get: function(query, options, callback) {
@@ -314,8 +310,30 @@ var DB = {
     },
 
     quiz = {
-        put: function(doc, callback) {
+        put: function(query, doc, callback) {
+            if (_.isUndefined(callback)) {
+                callback = doc;
+                doc = query;
+            }
+
             return DB.put("quiz", doc, callback);
+        },
+        random: function(query, doc, callback) {
+            test.random(query, function(d) {
+                console.log(d)
+                if (!d.success) {
+                    callback(d);
+                    return;
+                }
+
+                quiz.put({
+                    author: doc.author,
+                    created: doc.created,
+                    questions: d.docs
+                }, function(d) {
+                    callback(d);
+                });
+            });
         },
         get: function(query, options, callback) {
             return DB.get("quiz", query, options, callback);

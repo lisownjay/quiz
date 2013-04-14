@@ -360,11 +360,12 @@ var question = {
 
         },
         put: function(req, res) {
-            var doc = _.pick(req.body, "author", "questions");
+            var doc = _.pick(req.body, "author", "questions", "randomly", "type", "skill", "level"),
+                query = {};
 
             doc.author = doc.author || "root";
 
-            if (!doc.author || !doc.questions) {
+            if (!doc.author || (!doc.randomly && !doc.questions)) {
                 res.json({
                     success: false,
                     message: "未选择题目！"
@@ -372,8 +373,19 @@ var question = {
                 return;
             }
 
+            if (doc.skill) {
+                query.skill = new RegExp('\\b' + doc.skill.split('|').join('\\b|\\b') + '\\b', 'i');
+            }
+            if (doc.type) {
+                query.type = {'$in': doc.type.split('|')}
+            }
+            if (doc.level) {
+                query.level = {'$in': doc.level.split('|')}
+            }
+
             doc.created = new Date();
-            DB.Quiz.put(doc, function(d){
+
+            DB.Quiz[doc.randomly ? "random" : "put"](query, doc, function(d){
                 res.json(d)
             });
         }
@@ -433,7 +445,7 @@ exports.index = function(req, res) {
                 }
             }
             /*
-             * 创建账号
+             * 创建考卷
              */
             else {
                 hash = sha1(email + new Date());

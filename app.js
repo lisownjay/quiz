@@ -27,8 +27,8 @@ app.locals.pretty = true;
 
 // BLOBAL
 GLOBAL.authorized = false;
-//GLOBAL.host = "http://test.ued.taobao.com";
-GLOBAL.host = "http://localhost:3001";
+GLOBAL.host = "http://test.ued.taobao.com";
+//GLOBAL.host = "http://localhost:3001";
 
 // WTF
 app.enable('trust proxy');
