@@ -99,7 +99,7 @@ var
             "type": Array
         },
         /*
-         * 邮件发送数量，最多5次
+         * 邮件发送数量，最多20次
          */
         emailed: {
             "type": Array

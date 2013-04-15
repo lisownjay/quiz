@@ -409,23 +409,51 @@ exports.index = function(req, res) {
                 /*
                  * 发送过email
                  */
+                hash = d.docs[0].sha1;
                 if (d.docs[0].emailed.length > 0) {
                     // 访问过
                     if (d.docs[0].visited.length) {
-                        res.render("emailed", {
-                            title: "The F2E of world!",
-                            sha1: d.docs[0].sha1,
-                            text: "答题地址已发送至您的邮箱！"
-                        });
+                        //console.log("visited")
+                        /*
+                         *res.render("emailed", {
+                         *    title: "The F2E of world!",
+                         *    sha1: d.docs[0].sha1,
+                         *    text: "答题地址已发送至您的邮箱！"
+                         *});
+                         */
                     }
                     // 未访问过
+                    // 可能没有收到email，再次发送
                     else {
+/*
+ *                        util.sendURL(email, GLOBAL.host, function(d){
+ *                            if (!d || !d.success) {
+ *                                res.send("error");
+ *                            }
+ *
+ *                            res.render("emailed", {
+ *                                title: "The F2E of world!",
+ *                                sha1: d.docs[0].sha1,
+ *                                text: "答题地址已发送至您的邮箱！"
+ *                            });
+ *                        });
+ */
+                        //console.log("not visited")
+                    }
+
+                    util.sendURL(email, GLOBAL.host, function(d){
+                        console.log(d)
+                        if (!d || !d.success) {
+                            res.send("error");
+                            return;
+                        }
+
                         res.render("emailed", {
                             title: "The F2E of world!",
-                            sha1: d.docs[0].sha1,
+                            sha1: hash,
                             text: "答题地址已发送至您的邮箱！"
                         });
-                    }
+                    });
                 }
                 /*
                  * 没有发送过email
@@ -578,7 +606,7 @@ exports.email = function(req, res) {
         }
 
         // 最多发送5次
-        if (d.docs[0].emailed.length >= 5) {
+        if (d.docs[0].emailed.length >= 20) {
             res.json({
                 success: false,
                 message: "times limited"

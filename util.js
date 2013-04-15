@@ -50,7 +50,7 @@ var util = {
                 /*
                  *未到上限
                  */
-                else if (l < 5){
+                else if (l < 20){
                     pushData = {$push: {emailed: now}};
                 }
                 else {
@@ -58,6 +58,7 @@ var util = {
                         success: false,
                         message: "TIMES LIMITED"
                     });
+                    return;
                 }
 
                 //Email(email, "http://" + host + "/test/" + d.docs[0].sha1, function(d){
