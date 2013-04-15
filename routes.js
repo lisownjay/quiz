@@ -385,7 +385,7 @@ var question = {
 
             doc.created = new Date();
 
-            DB.Quiz[doc.randomly ? "random" : "put"](query, doc, function(d){
+            DB.Quiz[doc.randomly && !doc.questions ? "random" : "put"](query, doc, function(d){
                 res.json(d)
             });
         }
