@@ -8,13 +8,12 @@
  * @todo: 
  * @changelog: 
  */
-var os = require("os"),
+var http = require("http"),
     express = require('express'),
     util = require('util'),
     _ = require('underscore'),
     routes = require('./routes'),
-    auth = require('./auth'); 
-
+    nobuc = require('./auth/nobuc'),
 
     app = module.exports = express();
 
@@ -26,22 +25,27 @@ require('jade/lib/inline-tags').push('textarea');
 app.locals.pretty = true;
 
 // BLOBAL
-GLOBAL.authorized = false;
 GLOBAL.host = "http://test.ued.taobao.com";
-//GLOBAL.host = "http://localhost:3001";
 
 // WTF
-app.enable('trust proxy');
+//app.enable('trust proxy');
 
 // Configuration 
 app.configure(function(){
+    app.set('port', process.env.PORT || 8000);
+    app.use(express.favicon());
     app.use(express.logger("dev"));
     app.set('views', __dirname + '/views');
     app.set('view engine', 'jade');
     app.use(express.bodyParser());
-    // must set 'secret' for session
-    app.use(express.cookieParser('secret'));
+    app.use(express.cookieParser('tbued1366988767'));
+    app.use(express.cookieSession());
     app.use(express.methodOverride());
+
+    app.use(nobuc(/\/(?:question|tests|admin).*/, {
+        hostname: "login-test.alibaba-inc.com",
+        appname: "tbuedquiz"
+    }));
 
     app.use(stylus.middleware({
         src: __dirname + '/static'
@@ -58,16 +62,16 @@ app.configure(function(){
     app.use(express.static(__dirname + '/static'));
     //app.use(gzippo.staticGzip(__dirname + '/static'));
     app.use(app.router);
+
+    GLOBAL.env = app.get("env");
 });
 
 app.configure('development', function(){
     app.use(express.errorHandler({dumpExceptions: true, showStack: true}));
-    GLOBAL.env = 'development';
 });
 
 app.configure('production', function(){
     app.use(express.errorHandler());
-    GLOBAL.env = 'production';
 });
 
 var staticMiddleware = express.static(__dirname + '/question');
@@ -84,119 +88,49 @@ var staticMiddleware = express.static(__dirname + '/question');
 app.get(/(.*)/,function(req, res, next){
     var sub = req.params[0].replace(/^\//,'');
 
-    if (auth.check(req, res)) {
-        GLOBAL.authorized = true;
-    }
-    else {
-        GLOBAL.authorized = false;
-    }
-
     switch(sub.toLowerCase()){
         case 'question':
         case 'question/':
-            if (GLOBAL.authorized) {
-                routes.question.render(req, res);
-            }
-            else {
-                res.redirect(GLOBAL.host + "/login.html")
-            }
+            routes.question.render(req, res);
             break;
         case 'question/create':
-            if (GLOBAL.authorized) {
-                routes.question.create(req, res);
-            }
-            else {
-                res.redirect(GLOBAL.host + "/login.html")
-            }
+            routes.question.create(req, res);
             break;
         case 'io/question':
-            if (GLOBAL.authorized) {
-                routes.io.question.get(req, res);
-            }
-            else {
-                res.redirect(GLOBAL.host + "/login.html")
-            }
+            routes.io.question.get(req, res);
             break;
         case 'tests':
-            if (GLOBAL.authorized) {
-                routes.tests(req, res);
-            }
-            else {
-                res.redirect(GLOBAL.host + "/login.html")
-            }
+            routes.tests(req, res);
             break;
         case 'login.html':
             res.charset = "utf-8";
             staticMiddleware(req, res, next);
             break;
         case 'admin':
-            if (GLOBAL.authorized) {
-                res.render("admin", {
-                    title: "admin"
-                });
-            }
-            else {
-                res.redirect(GLOBAL.host + "/login.html")
-            }
-            break;
-        case 'edit.html':
-            if (GLOBAL.authorized) {
-                res.charset = "utf-8";
-                staticMiddleware(req, res, next);
-            }
-            else {
-                res.redirect(GLOBAL.host + "/login.html")
-            }
-            break;
-        case 'list.html':
-            if (GLOBAL.authorized) {
-                res.charset = "utf-8";
-                staticMiddleware(req, res, next);
-            }
-            else {
-                res.redirect(GLOBAL.host + "/login.html")
-            }
+            res.render("admin", {
+                title: "admin"
+            });
             break;
         default:
             if (/^(?:test\/)[^.]+$/.test(sub)) {
                 routes.test(req, res);
             }
             else if (/^(?:tests\/)[^.]+$/.test(sub)) {
-                if (GLOBAL.authorized) {
-                    routes.tests(req, res);
-                }
-                else {
-                    res.redirect(GLOBAL.host + "/login.html")
-                }
+                routes.tests(req, res);
             }
             else if (/^(?:io\/test\/)[^.]+$/.test(sub)) {
                 routes.io.test.get(req, res);
             }
             else if (/^(?:io\/question\/)[^.]+$/.test(sub) && GLOBAL.authorized) {
-                if (GLOBAL.authorized) {
-                    routes.io.question.get(req, res);
-                }
-                else {
-                    res.redirect(GLOBAL.host + "/login.html")
-                }
+                routes.io.question.get(req, res);
             }
             else if (/^question\/edit\/[a-zA-Z0-9]{24}/.test(sub)) {
-                if (GLOBAL.authorized) {
-                    req.params._id = sub.replace(/^question\/edit\/([a-zA-Z0-9]{24})/, "$1");
-                    routes.question.edit(req, res);
-                }
-                else {
-                    res.redirect(GLOBAL.host + "/login.html")
-                }
+                req.params._id = sub.replace(/^question\/edit\/([a-zA-Z0-9]{24})/, "$1");
+                routes.question.edit(req, res);
             }
             else if (/^quiz\/[a-zA-Z0-9]{24}/.test(sub)) {
-                if (GLOBAL.authorized) {
-                    req.params._id = sub.replace(/^quiz\/([a-zA-Z0-9]{24})/, "$1");
-                    routes.io.quiz.render(req, res);
-                }
-                else {
-                    res.redirect(GLOBAL.host + "/login.html")
-                }
+                req.params._id = sub.replace(/^quiz\/([a-zA-Z0-9]{24})/, "$1");
+                routes.io.quiz.render(req, res);
             }
             else {
                 next();
@@ -212,84 +146,35 @@ app.get(/(.*)/,function(req, res, next){
 app.post(/(.*)/,function(req, res, next){
     var sub = req.params[0].replace(/^\//,'');
 
-    if (auth.check(req, res)) {
-        GLOBAL.authorized = true;
-    }
-    else {
-        GLOBAL.authorized = false;
-    }
-
     switch(sub.toLowerCase()){
         case '':
         case 'index':
             routes.index(req, res);
             break;
         case 'io/question/create':
-            if (GLOBAL.authorized) {
-                routes.io.question.put(req, res);
-            }
-            else {
-                res.redirect(GLOBAL.host + "/login.html")
-            }
+            routes.io.question.put(req, res);
             break;
         case 'io/question/edit':
         case 'io/question/update':
-            if (GLOBAL.authorized) {
-                routes.io.question.post(req, res);
-            }
-            else {
-                res.redirect(GLOBAL.host + "/login.html")
-            }
+            routes.io.question.post(req, res);
             break;
         case 'io/question/del':
-            if (GLOBAL.authorized) {
-                routes.io.question.del(req, res);
-            }
-            else {
-                res.redirect(GLOBAL.host + "/login.html")
-            }
+            routes.io.question.del(req, res);
             break;
         case 'io/test/solve':
             routes.io.test.solve(req, res);
             break;
         case 'io/test/grade':
-            if (GLOBAL.authorized) {
-                routes.io.test.grade(req, res);
-            }
-            else {
-                res.redirect(GLOBAL.host + "/login.html")
-            }
+            routes.io.test.grade(req, res);
             break;
         case 'io/test/del':
-            if (GLOBAL.authorized) {
-                routes.io.test.del(req, res);
-            }
+            routes.io.test.del(req, res);
             break;
         case 'io/tests/update':
-            if (GLOBAL.authorized) {
-                routes.io.test.post(req, res, true);
-            }
-            else {
-                res.redirect(GLOBAL.host + "/login.html")
-            }
+            routes.io.test.post(req, res, true);
             break;
         case 'io/quiz/create':
-            if (GLOBAL.authorized) {
-                routes.io.quiz.put(req, res);
-            }
-            else {
-                res.redirect(GLOBAL.host + "/login.html")
-            }
-            break;
-        case 'login.html':
-            if (auth.check(req, res)) {
-                GLOBAL.authorized = true;
-                res.redirect(GLOBAL.host + "/admin");
-            }
-            else {
-                GLOBAL.authorized = false;
-                res.redirect(GLOBAL.host + "/login.html");
-            }
+            routes.io.quiz.put(req, res);
             break;
         default:
             if (/^(?:io\/email\/).+$/.test(sub)) {
@@ -350,5 +235,6 @@ app.all('*', function(req, res){
     routes.notfound(req, res);
 });
 
-app.listen(3001);
-console.log("fetest on port %d in %s mode", 3001, app.settings.env);
+http.createServer(app).listen(app.get('port'), function(){
+    console.log("Express server listening on port " + app.get('port') + " on " + app.get("env"));
+});

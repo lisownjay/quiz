@@ -535,7 +535,7 @@ exports.question = {
             level: -1,
             time: "",
             remark: "",
-            author: ""
+            author: req.user.nickNameCn
         });
     },
     edit: function(req, res) {
