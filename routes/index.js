@@ -8,16 +8,16 @@
  * @changelog: 
  */
 var _ = require("underscore"),
-    DB = require("./db"),
-    Email = require("./email"),
-    sha1 = require("./util").testSha1,
-    util = require("./util");
+    DB = require("../db"),
+    Email = require("../email"),
+    sha1 = require("../util").testSha1,
+    util = require("../util");
 
 var question = {
         put: function(req, res) {
-            var doc = _.pick(req.body, "level", "skill", "type", "content", "time", "remark", "author");
+            var doc = _.pick(req.body, "level", "skill", "type", "content", "time", "remark", "author", "authorNick");
 
-            if (!doc.level || !doc.skill || !doc.time || !doc.content || !doc.content.replace(/^\s+/, '').replace(/\s+$/, '')) {
+            if (!doc.level || !doc.skill || !doc.time || !doc.content || !doc.author || !doc.content.replace(/^\s+/, '').replace(/\s+$/, '')) {
                 res.json({
                     success: false,
                     message: "有未填写字段！题目、知识点、难度、耗时都是必填项！"
@@ -27,12 +27,42 @@ var question = {
 
             doc.created = new Date();
 
-            DB.Question.put(doc, function(d){
-                res.json({
-                    success: d && d.success,
-                    _id: d._id
-                })
-            });
+            if (req.user.type === "user") {
+                doc.author = req.user.loginName;
+                doc.authorNick = req.user.nick;
+
+                create();
+            }
+            else {
+                DB.User.get({
+                    loginName: doc.author,
+                    deleted: false
+                }, function(d) {
+                    if (!d.success) {
+                        res.send(d.message || "DB error.");
+                        return;
+                    }
+
+                    if (!d.docs.length) {
+                        res.send("No user.");
+                        return;
+                    }
+
+                    doc.authorNick = d.docs[0].nick;
+
+                    create();
+                });
+            }
+
+            function create() {
+                console.log(doc);
+                DB.Question.put(doc, function(d){
+                    res.json({
+                        success: d && d.success,
+                        _id: d._id
+                    })
+                });
+            }
         },
         post: function(req, res) {
             var query = _.pick(req.body, "_id"),
@@ -84,6 +114,7 @@ var question = {
                             content: content,
                             created: doc.created,
                             author: doc.author,
+                            authorNick: doc.authorNick,
                             time: doc.time,
                             type: doc.type,
                             level: doc.level,
@@ -535,7 +566,8 @@ exports.question = {
             level: -1,
             time: "",
             remark: "",
-            author: req.user.nickNameCn
+            author: req.user.email,
+            authorNick: req.user.nick
         });
     },
     edit: function(req, res) {
@@ -573,7 +605,8 @@ exports.question = {
                     level: doc.level,
                     time: doc.time,
                     remark: doc.remark,
-                    author: doc.author
+                    author: doc.author,
+                    authorNick: doc.authorNick
                 });
             })
         }

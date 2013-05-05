@@ -13,6 +13,7 @@ var mongoose = require('mongoose'),
     testSchema = schema.Test,
     questionSchema = schema.Question,
     quizSchema = schema.Quiz,
+    userSchema = schema.User,
     dbName = 'fetest';
 
 var DB = {
@@ -210,6 +211,12 @@ var DB = {
                         schema: quizSchema
                     };
                     break;
+                case 'user':
+                    cfg = {
+                        collection: "user",
+                        schema: userSchema
+                    };
+                    break;
                 default:
                     break;
             }
@@ -347,9 +354,25 @@ var DB = {
         del4ever: function(query, callback) {
             return DB.del4ever("quiz", query, callback);
         }
+    },
+
+    user = {
+        put: function(doc, callback) {
+            return DB.put("user", doc, callback);
+        },
+        get: function(query, options, callback) {
+            return DB.get("user", query, options, callback);
+        },
+        post: function(query, doc, callback) {
+            return DB.post("user", query, doc, callback);
+        },
+        del: function(query, callback) {
+            return DB.del("user", query, callback);
+        }
     };
 
 // exports
 exports.Test = test;
 exports.Question = question;
 exports.Quiz = quiz;
+exports.User = user;

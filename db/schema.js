@@ -52,7 +52,13 @@ var
             "type": Date,
             "required": true
         },
+        // 对应user的loginName
         author: {
+            "type": String,
+            "default": ""
+        },
+        // 对应user的nickNameCn / loginName
+        authorNick: {
             "type": String,
             "default": ""
         },
@@ -127,7 +133,7 @@ var
         score: {
             "type": Number
         }
-    });
+    }),
     /*
      * Quiz
      */
@@ -144,8 +150,46 @@ var
             "type": Date,
             "required": true
         },
+    }),
+    /*
+     * User
+     */
+    User = new Schema({
+        loginName: {
+            "type": String,
+            "trim": true,
+            "required": true
+        },
+        // 权限
+        // guest 无任何权限
+        // user 普通用户，添加、编辑、删除自己题目
+        // administrator 管理员，添加、编辑、删除任何题目权限
+        // root 题目操作权限+授权权限
+        type: {
+            "type": String,
+            "required": true,
+            "enmu": ["guest", "user", "administrator", "root"],
+            "default": "guest"
+        },
+        nick: {
+            "type": String,
+            "trim": true,
+            "required": false
+        },
+        email: {
+            "type": String,
+            "trim": true,
+            "required": true,
+            "validate": /[-\w\.]+@\w+(?:(?:\.\w+)+)$/
+        },
+        deleted: {
+            "type": Boolean,
+            "default": false,
+            "required": true
+        }
     });
 
 exports.Test = Test;
 exports.Question = Question;
 exports.Quiz = Quiz;
+exports.User = User;

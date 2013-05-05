@@ -1,9 +1,9 @@
 extends layout
 block head
     link(type="text/css", rel="stylesheet", href="/global/css/global.css")
-    link(type="text/css", rel="stylesheet", href="/question/css/style.css")
-    link(type="text/css", rel="stylesheet", href="/question/css/form.css")
-    script(type="text/javascript", src="/question/js/form.js")
+    link(type="text/css", rel="stylesheet", href="/assets/question/css/style.css")
+    link(type="text/css", rel="stylesheet", href="/assets/question/css/form.css")
+    script(type="text/javascript", src="/assets/question/js/form.js")
 block body
     form.question-form#J_QuestionForm
         table
@@ -111,7 +111,8 @@ block body
                 th
                     label(for="J_Author") 出题人
                 td
-                    input.i-text#J_Author(type="text", name="author", value="#{author}")
+                    input.i-text#J_Author(type="hidden", name="author", value="#{author}")
+                    input.i-text#J_AuthorNick(type="text", name="authorNick", readonly, value="#{authorNick}")
             tr
                 th
                 td

@@ -1,0 +1,27 @@
+extends layout
+block head
+    link(type="text/css", rel="stylesheet", href="/global/css/global.css")
+    link(type="text/css", rel="stylesheet", href="/assets/question/css/style.css")
+    link(type="text/css", rel="stylesheet", href="/assets/question/css/form.css")
+block body
+    form.question-form#J_AuthorizeForm
+        table
+            tr
+                th
+                    label(for="J_Type") 权限类型 
+                td
+                    select#J_Type(name="type")
+                        option(value="user") 普通用户（仅能操作个人数据）
+                        option(value="administrator") 管理员（可操作其他用户数据）
+            tr
+                th
+                    label(for="J_Auditor") 审核人
+                td
+                    select#J_Auditor(name="auditor")
+            tr
+                th
+                td
+                    button.btn.btn-blue(type="submit") 申请
+    script
+        var reviewers = !{reviewers};
+        console.log(reviewers);

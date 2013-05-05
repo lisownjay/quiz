@@ -1,8 +1,8 @@
 extends layout
 block head
     link(type="text/css", rel="stylesheet", href="/global/css/global.css")
-    link(type="text/css", rel="stylesheet", href="/question/css/style.css")
-    script(type="text/javascript", src="/question/js/list.js")
+    link(type="text/css", rel="stylesheet", href="/assets/question/css/style.css")
+    script(type="text/javascript", src="/assets/question/js/list.js")
 block body
     div.box
         div.side
@@ -66,6 +66,10 @@ block body
                                     | {{#if type === 0}}综合{{/if}}
                             span.qm-item.qm-time 耗时：
                                 span.qm-tag {{time}}m
+                            {{#if authorNick}}
+                            span.qm-item.qm-author 出题人：
+                                span.qm-tag {{authorNick}}
+                            {{/if}}
                         div.question-panel
                             a.qp-edit(href="/question/edit/{{_id}}", data-id="{{_id}}")
                                 i ∈

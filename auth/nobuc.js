@@ -20,7 +20,6 @@ var https = require("https");
  *      "/nobuc/sendBucSSOToken"
  */
 module.exports = exports = function(filter, options) {
-
     filter = Object.prototype.toString.call(filter) === "[object RegExp]" ? filter : /.*/;
     options = Object.prototype.toString.call(options) === "[object Object]" ? options : null;
 
@@ -31,6 +30,7 @@ module.exports = exports = function(filter, options) {
     // BUC不支持login callback url自定义
     //options.sendBucSSOTokenPath = options.sendBucSSOTokenPath || "/sendBucSSOToken.do";
     options.sendBucSSOTokenPath = "/sendBucSSOToken.do";
+    options.key = Object.prototype.toString.call(options) === "[object String]" ? options.key : "_user";
 
     function registerClient(backurl, callback) {
         if (!backurl) {
@@ -60,6 +60,20 @@ module.exports = exports = function(filter, options) {
 
         req.on('error', function(e) {
             callback(e);
+        });
+    }
+
+    function register(req, res) {
+        var registerBackUrl = encodeURIComponent(getUrl(req)),
+            sendBucSSOTokenUrl = encodeURIComponent(getUrl(req, options.sendBucSSOTokenPath));
+
+        registerClient(registerBackUrl, function(err) {
+            if (!err) {
+                res.redirect("https://" + options.hostname + "/ssoLogin.htm?APP_NAME=" + options.appname + "&BACK_URL=" + registerBackUrl);
+            }
+            else {
+                res.send("Register app " + err.message);
+            }
         });
     }
 
@@ -95,7 +109,7 @@ module.exports = exports = function(filter, options) {
     }
 
     function getUrl(req, path) {
-        return req.protocol + "://" + req.headers.host + (path || req.url);
+        return req.protocol + "://" + req.host + (path || req.url);
     }
 
     return function(req, res, next) {
@@ -106,7 +120,8 @@ module.exports = exports = function(filter, options) {
                 getUser(req.query.SSO_TOKEN, function(err, data){
 
                     if (err) {
-                        res.send("Get user info " + err.message);
+                        //res.send("Get user info " + err.message + "<br /><a href='#nogo'>重新登录</a>");
+                        register(req, res);
                         return;
                     }
 
@@ -129,28 +144,18 @@ module.exports = exports = function(filter, options) {
 
         else {
             if (!req.signedCookies._nb_uid_ || !req.signedCookies._nb_tk_) {
-                var registerBackUrl = encodeURIComponent(getUrl(req)),
-                    sendBucSSOTokenUrl = encodeURIComponent(getUrl(req, options.sendBucSSOTokenPath));
-
-                registerClient(registerBackUrl, function(err) {
-                    if (!err) {
-                        res.redirect("https://" + options.hostname + "/ssoLogin.htm?APP_NAME=" + options.appname + "&BACK_URL=" + registerBackUrl);
-                    }
-                    else {
-                        res.send("Register app " + err.message);
-                    }
-                });
+                register(req, res);
             }
             else {
                 getUser(req.signedCookies._nb_tk_, function(err, data){
                     if (err) {
-                        res.send("Get user info " + err.message);
+                        //res.send("Get user info " + err.message + "<br /><a href='#nogo'>重新登录</a>");
+                        register(req, res);
                         return;
                     }
 
                     if (data) {
-                        req.user = {
-                            email: data.emailAddr,
+                        req[options.key] = {
                             available: data.available,
                             authType: data.authType,
                             account: data.account,
@@ -174,13 +179,15 @@ module.exports = exports = function(filter, options) {
                             depDesc: data.depDesc,
                             supervisorName: data.supervisorName
                         };
-                        req._user = data;
+                        req["_" + options.key] = data;
                         res.cookie("_nb_tk_", String(data.token), {signed: true});
                         res.cookie("_nb_uid_", String(data.id), {signed: true});
                         next();
                     }
                     else {
-                        res.send("Get user info error");
+                        res.clearCookie("_nb_tk_");
+                        res.clearCookie("_nb_uid_");
+                        register(req, res);
                     }
                 });
             }

@@ -13,7 +13,9 @@ var http = require("http"),
     util = require('util'),
     _ = require('underscore'),
     routes = require('./routes'),
+    authorize = require('./routes/authorize'),
     nobuc = require('./auth/nobuc'),
+    user = require('./auth/user'),
 
     app = module.exports = express();
 
@@ -32,7 +34,7 @@ GLOBAL.host = "http://test.ued.taobao.com";
 
 // Configuration 
 app.configure(function(){
-    app.set('port', process.env.PORT || 8000);
+    app.set('port', process.env.PORT || 80);
     app.use(express.favicon());
     app.use(express.logger("dev"));
     app.set('views', __dirname + '/views');
@@ -42,10 +44,12 @@ app.configure(function(){
     app.use(express.cookieSession());
     app.use(express.methodOverride());
 
-    app.use(nobuc(/\/(?:question|tests|admin).*/, {
+    app.use(nobuc(/^\/(?:question|tests|admin|authorize|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz\/create).*/, {
         hostname: "login-test.alibaba-inc.com",
         appname: "tbuedquiz"
     }));
+
+    app.use(user(/^\/(?:question|tests|admin|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz\/create).*/));
 
     app.use(stylus.middleware({
         src: __dirname + '/static'
@@ -89,6 +93,10 @@ app.get(/(.*)/,function(req, res, next){
     var sub = req.params[0].replace(/^\//,'');
 
     switch(sub.toLowerCase()){
+        case 'authorize':
+        case 'authorize/':
+            authorize.render(req, res);
+            break;
         case 'question':
         case 'question/':
             routes.question.render(req, res);
@@ -166,12 +174,6 @@ app.post(/(.*)/,function(req, res, next){
             break;
         case 'io/test/grade':
             routes.io.test.grade(req, res);
-            break;
-        case 'io/test/del':
-            routes.io.test.del(req, res);
-            break;
-        case 'io/tests/update':
-            routes.io.test.post(req, res, true);
             break;
         case 'io/quiz/create':
             routes.io.quiz.put(req, res);

@@ -19,7 +19,7 @@ KISSY.ready(function(S) {
             form: this,
             complete: function(d) {
                 if (!d || !d.success) {
-                    alert("出错了，请重试！");
+                    alert(d.message || "出错了，请重试！");
                     return;
                 }
 
