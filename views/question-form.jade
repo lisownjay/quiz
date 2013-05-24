@@ -112,7 +112,9 @@ block body
                     label(for="J_Author") 出题人
                 td
                     input.i-text#J_Author(type="hidden", name="author", value="#{author}")
-                    input.i-text#J_AuthorNick(type="text", name="authorNick", readonly, value="#{authorNick}")
+                    input.i-text#J_AuthorNick(type="hidden", name="authorNick", value="#{authorNick}")
+                    span #{authorNick}
+                    a.chuser(href="https://login.alibaba-inc.com/ssoLogin.htm") 更换账户
             tr
                 th
                 td

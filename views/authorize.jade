@@ -23,5 +23,5 @@ block body
                 td
                     button.btn.btn-blue(type="submit") 申请
     script
-        var reviewers = !{reviewers};
-        console.log(reviewers);
+        window.reviewers = !{reviewers};
+    script(src="/assets/authorize/authorize.js")

@@ -202,6 +202,7 @@ var question = {
                     if (d.docs) {
                         d.docs.forEach(function(doc){
                             var content = util.escapeQuestion(doc.content);
+                            // todo: authorized remove
                             docs.push({
                                 _id: doc._id,
                                 content: content,
@@ -473,7 +474,6 @@ exports.index = function(req, res) {
                     }
 
                     util.sendURL(email, GLOBAL.host, function(d){
-                        console.log(d)
                         if (!d || !d.success) {
                             res.send("error");
                             return;

@@ -52,6 +52,11 @@ var
             "type": Date,
             "required": true
         },
+        // 来源
+        from: {
+            "type": String,
+            "default": ""
+        },
         // 对应user的loginName
         author: {
             "type": String,

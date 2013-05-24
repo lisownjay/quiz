@@ -28,6 +28,7 @@ app.locals.pretty = true;
 
 // BLOBAL
 GLOBAL.host = "http://test.ued.taobao.com";
+GLOBAL.env = app.get("env");
 
 // WTF
 //app.enable('trust proxy');
@@ -44,12 +45,12 @@ app.configure(function(){
     app.use(express.cookieSession());
     app.use(express.methodOverride());
 
-    app.use(nobuc(/^\/(?:question|tests|admin|authorize|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz\/create).*/, {
-        hostname: "login-test.alibaba-inc.com",
+    app.use(nobuc(/^\/(?:__u__|question|tests|admin|authorize|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz\/create).*/, {
+        hostname: GLOBAL.env === "product" ? "login.alibaba-inc.com" : "login-test.alibaba-inc.com",
         appname: "tbuedquiz"
     }));
 
-    app.use(user(/^\/(?:question|tests|admin|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz\/create).*/));
+    app.use(user(/^\/(?:__u__|question|tests|admin|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz\/create).*/));
 
     app.use(stylus.middleware({
         src: __dirname + '/static'
@@ -119,6 +120,9 @@ app.get(/(.*)/,function(req, res, next){
                 title: "admin"
             });
             break;
+        case '__u__':
+            res.json(req.user);
+            break;
         default:
             if (/^(?:test\/)[^.]+$/.test(sub)) {
                 routes.test(req, res);
@@ -129,7 +133,7 @@ app.get(/(.*)/,function(req, res, next){
             else if (/^(?:io\/test\/)[^.]+$/.test(sub)) {
                 routes.io.test.get(req, res);
             }
-            else if (/^(?:io\/question\/)[^.]+$/.test(sub) && GLOBAL.authorized) {
+            else if (/^(?:io\/question\/)[^.]+$/.test(sub)) {
                 routes.io.question.get(req, res);
             }
             else if (/^question\/edit\/[a-zA-Z0-9]{24}/.test(sub)) {
