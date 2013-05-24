@@ -70,6 +70,10 @@ block body
                             span.qm-item.qm-author 出题人：
                                 span.qm-tag {{authorNick}}
                             {{/if}}
+                            {{#if from}}
+                            span.qm-item.qm-from 来源：
+                                span.qm-tag {{from}}
+                            {{/if}}
                         div.question-panel
                             a.qp-edit(href="/question/edit/{{_id}}", data-id="{{_id}}")
                                 i ∈

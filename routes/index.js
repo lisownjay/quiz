@@ -15,7 +15,7 @@ var _ = require("underscore"),
 
 var question = {
         put: function(req, res) {
-            var doc = _.pick(req.body, "level", "skill", "type", "content", "time", "remark", "author", "authorNick");
+            var doc = _.pick(req.body, "level", "skill", "type", "content", "time", "remark", "from", "author", "authorNick");
 
             if (!doc.level || !doc.skill || !doc.time || !doc.content || !doc.author || !doc.content.replace(/^\s+/, '').replace(/\s+$/, '')) {
                 res.json({
@@ -55,7 +55,6 @@ var question = {
             }
 
             function create() {
-                console.log(doc);
                 DB.Question.put(doc, function(d){
                     res.json({
                         success: d && d.success,
@@ -66,7 +65,7 @@ var question = {
         },
         post: function(req, res) {
             var query = _.pick(req.body, "_id"),
-                doc = _.pick(req.body, "content", "skill", "type", "level", "time", "remark", "author");
+                doc = _.pick(req.body, "content", "skill", "type", "level", "time", "remark", "from", "author");
 
             if(!query._id) {
                 res.json({
@@ -119,6 +118,7 @@ var question = {
                             type: doc.type,
                             level: doc.level,
                             skill: doc.skill,
+                            from: doc.from,
                             remark: doc.remark
                         });
                     });
@@ -566,6 +566,7 @@ exports.question = {
             level: -1,
             time: "",
             remark: "",
+            from: "",
             author: req.user.email,
             authorNick: req.user.nick
         });
@@ -605,6 +606,7 @@ exports.question = {
                     level: doc.level,
                     time: doc.time,
                     remark: doc.remark,
+                    from: doc.from || "",
                     author: doc.author,
                     authorNick: doc.authorNick
                 });

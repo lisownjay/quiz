@@ -147,6 +147,7 @@ KISSY.ready(function(S) {
             S.io({
                 url: "/io/question",
                 type: "get",
+                cache: false,
                 complete: function(d) {
                     if (!d || !d.success) {
                         alert("数据读取失败！请刷新重试！");

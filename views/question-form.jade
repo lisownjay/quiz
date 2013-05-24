@@ -109,6 +109,11 @@ block body
                     textarea.ta-remark#J_Remark(name="remark") #{remark}
             tr
                 th
+                    label(for="J_From") 来源
+                td
+                    input.i-text#J_From(type="text", name="from", value="#{from}")
+            tr
+                th
                     label(for="J_Author") 出题人
                 td
                     input.i-text#J_Author(type="hidden", name="author", value="#{author}")
