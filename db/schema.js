@@ -15,6 +15,12 @@ var
      * 问题
      */
     Question = new Schema({
+        id: {
+            "type": Number,
+            "default": -1,
+            "required": true,
+            "validate": /\d+/
+        },
         content: {
             "type": String,
             "required": true,
@@ -80,82 +86,88 @@ var
         remark: {
             "type": String
         },
-        deleted: {
+        _deleted: {
             "type": Boolean,
             "default": false,
             "required": true
         }
     }),
-    /*
-     * 答卷
-     */
-    Test = new Schema({
-        email: {
-            "type": String,
-            "trim": true,
-            "required": true,
-            "validate": /[-\w\.]+@\w+(?:(?:\.\w+)+)$/
-        },
-        /*
-         *[
-         *    {
-         *        _id: ObjectId,
-         *        ret: String,
-         *        score: Number,
-         *        time: Number
-         *    }
-         *]
-         */
-        questions: {
-            "type": Array
-        },
-        /*
-         * 邮件发送数量，最多20次
-         */
-        emailed: {
-            "type": Array
-        },
-        remark: {
-            "type": String,
-            "default": ""
-        },
-        sha1: {
-            "type": String
-        },
-        visited: {
-            "type": Array
-        },
-        finished: {
-            "type": Boolean,
-            "default": false
-        },
-        /*
-         * 题量所需总时间
-         */
-        time: {
-            "type": Number
-        },
-        score: {
-            "type": Number
-        }
-    }),
+
     /*
      * Quiz
      */
     Quiz = new Schema({
+        id: {
+            "type": Number,
+            "default": -1,
+            "required": true,
+            "validate": /\d+/
+        },
         author: {
             "type": String,
             "trim": true,
             "required": true
         },
-        questions: {
-            "type": Array
-        },
         created: {
             "type": Date,
             "required": true
         },
+        questions: {
+            "type": Array,
+            "required": true
+        },
+        answers: {
+            "type": Array,
+            "required": true
+        },
+
+        /*
+         * email存在：在线测试版
+         *    不存在：打印版
+         */
+        email: {
+            "type": String,
+            "trim": true,
+            "required": false,
+            "validate": /[-\w\.]+@\w+(?:(?:\.\w+)+)$/
+        },
+
+        /*
+         * email发送次数
+         */
+        emailed: {
+            "type": Array
+        },
+
+        /*
+         * 访问次数
+         */
+        visited: {
+            "type": Array
+        },
+
+        /*
+         * 完成时间
+         */
+        finished: {
+            "type": Date
+        },
+
+        /*
+         * 题量时间
+         */
+        time: {
+            "type": Number,
+            "required": true
+        },
+        _deleted: {
+            "type": Boolean,
+            "default": false,
+            "required": true
+        }
     }),
+
+
     /*
      * User
      */
@@ -187,7 +199,7 @@ var
             "required": true,
             "validate": /[-\w\.]+@\w+(?:(?:\.\w+)+)$/
         },
-        deleted: {
+        _deleted: {
             "type": Boolean,
             "default": false,
             "required": true

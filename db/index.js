@@ -1,375 +1,137 @@
 /*
- * @name:db.js
- * @description:CRUD implements
- * @author:wondger@gmail.com
- * @date:2012-07-08
- * @param:
- * @todo:
- * @changelog:
+ * @name: .js
+ * @description: 
+ * @author: wondger@gmail.com
+ * @date: 2013-05-27
+ * @param: 
+ * @todo: 
+ * @changelog: 
  */
-var mongoose = require('mongoose'),
-    _ = require('underscore'),
-    schema = require('./schema'),
-    testSchema = schema.Test,
-    questionSchema = schema.Question,
-    quizSchema = schema.Quiz,
-    userSchema = schema.User,
-    dbName = 'fetest';
 
-var DB = {
-        /*
-         * create a document
-         */
-        put: function(collection, doc, callback) {
-            var callback = _.isFunction(callback) ? callback : function(){};
-            if(!_.isString(collection) || !_.isObject(doc) || _.isFunction(doc)){
-                callback({
-                    success: false,
-                    message: "param error"
-                });
-                return false;
-            }
+var mongoose = require("mongoose"),
+    _ = require("underscore"),
+    schema = require("./schema"),
+    DB_NAME = "fetest";
 
-            var config = DB.config(collection);
-            
-            if(!config.collection || !config.schema) {
-                callback({
-                    success: false,
-                    message: "no collection"
-                });
-                return;
-            }
+mongoose.connect("mongodb://localhost/" + DB_NAME);
 
-            var Mod = config.connection.model(collection, config.schema, config.collection),
-                mod = new Mod();
+module.exports = db = {
+    // create
+    put: function(opt) {
+       opt = _.isObject(opt) ? opt : null;
 
-            var _doc = doc;
+       if (!opt) return;
 
-            _.extend(mod, doc);
+       var doc = _.isObject(opt.doc) ? opt.doc : null,
+           collection = _.isString(opt.collection) ? opt.collection : "",
+           complete = _.isFunction(opt.complete) ? opt.complete : function(){};
 
-            mod.save(function(err, doc){
-                if (err) {
-                    callback({
-                        success: false,
-                        message: err.message
-                    });
-                }
-                else {
-                    callback({
-                        success: true,
-                        _id: doc && doc._id || ""
-                    });
-                }
-            });
-        },
-        /*
-         * get documents
-         */
-        get: function(collection, query, options, callback) {
-            if(!_.isString(collection) || !_.isObject(query) || _.isFunction(query)){
-                return false;
-            }
+       if (!doc || !collection || !schema[collection]) {
+           complete(new Error("Param error"));
+           return;
+       }
 
-            var callback = _.isFunction(callback) ? callback : (_.isFunction(options) ? options : function(){}),
-                options = _.isFunction(options) ? {} : (_.isObject(options) ? options : {});
+       var Mod = mongoose.model(collection, schema[collection], collection);
 
-            var config = DB.config(collection);
+       doc._deleted = false;
+       delete doc._id;
 
-            if(!config.collection || !config.schema) {
-                callback({
-                    success: false,
-                    message: "no collection"
-                });
-                return;
-            }
+       Mod.count(function(err, count) {
+           if (err) {
+               complete(err, doc);
+               return;
+           }
 
-            var Mod = config.connection.model(config.collection, config.schema, config.collection);
+           doc.id = count + 1;
 
-            Mod.find(query, null, options, function(err, docs){
-                if (err) {
-                    callback({
-                        success: false,
-                        message: err.message
-                    });
-                }
-                else {
-                    callback({
-                        success: true,
-                        docs: docs
-                    });
-                }
-            });
-        },
-        /*
-         * modify document
-         */
-        post: function(collection, query, doc, callback) {
-            if(!_.isString(collection) || !_.isObject(doc) || _.isFunction(doc)){
-                return false;
-            }
+           new Mod(doc).save(function(err, doc) {
+               complete(err, doc);
+           });
+       });
 
-            var callback = _.isFunction(callback) ? callback : function(){};
-
-            var config = DB.config(collection);
-            
-            if(!config.collection || !config.schema) {
-                callback({
-                    success: false,
-                    message: "no collection"
-                });
-                return;
-            }
-
-            var Mod = config.connection.model(collection, config.schema, config.collection);
-
-            Mod.update(query, doc, function(err, numAffected){
-                if (err) {
-                    callback({
-                        success: false,
-                        message: err.message
-                    });
-                }
-                else {
-                    callback({
-                        success: true,
-                        numAffected: numAffected
-                    });
-                }
-            });
-        },
-        /*
-         * delete document
-         */
-        del: function(collection, query, callback) {
-            if(!_.isString(collection) || !_.isObject(query) || _.isFunction(query)){
-                return false;
-            }
-
-            var callback = _.isFunction(callback) ? callback : function(){};
-
-            DB.post(collection, query, {deleted: true}, function(d){
-                callback(d);
-            });
-        },
-        del4ever: function(collection, query, callback) {
-            if(!_.isString(collection) || !_.isObject(query) || _.isFunction(query)){
-                return false;
-            }
-
-            var callback = _.isFunction(callback) ? callback : function(){};
-
-            var config = DB.config(collection);
-            
-            if(!config.collection || !config.schema) {
-                callback({
-                    success: false,
-                    message: "no collection"
-                });
-                return;
-            }
-
-            var Mod = config.connection.model(collection, config.schema, config.collection);
-
-            Mod.remove(query, function(err){
-                if (err) {
-                    callback({
-                        success: false,
-                        message: err.message
-                    });
-                }
-                else {
-                    callback({
-                        success: true
-                    });
-                }
-            });
-        },
-        /*
-         * config db connection
-         */
-        config: function(collection) {
-            if (!_.isString(collection)) return {};
-
-            var cfg = {};
-
-            switch(collection){
-                case 'test':
-                    cfg = {
-                        collection: "test",
-                        schema: testSchema
-                    };
-                    break;
-                case 'question':
-                    cfg = {
-                        collection: "question",
-                        schema: questionSchema
-                    };
-                    break;
-                case 'quiz':
-                    cfg = {
-                        collection: "quiz",
-                        schema: quizSchema
-                    };
-                    break;
-                case 'user':
-                    cfg = {
-                        collection: "user",
-                        schema: userSchema
-                    };
-                    break;
-                default:
-                    break;
-            }
-
-            cfg.connection = mongoose.createConnection('mongodb://localhost/' + dbName);
-
-            return cfg;
-        }
     },
+    // update
+    post: function(opt) {
+       opt = _.isObject(opt) ? opt : null;
 
-    test = {
-        random: function(query, callback) {
-            callback = _.isFunction(callback) ? callback : (_.isFunction(query) ? query : function(){});
-            query = _.isObject(query) && !_.isFunction(query) ? query : {};
-            query.deleted = false;
+       if (!opt) return;
 
-            question.get(query, function(d){
-                if (!d.success) {
-                    callback(d);
-                    return;
-                }
+       var query = _.isObject(opt.query) ? opt.query : {},
+           options = _.isObject(opt.options) ? opt.options : null,
+           doc = _.isObject(opt.doc) ? opt.doc : null,
+           collection = _.isString(opt.collection) ? opt.collection : "",
+           complete = _.isFunction(opt.complete) ? opt.complete : function(){};
 
-                var _docs = _.shuffle(d.docs),
-                    _selectQ = _.filter(_docs, function(q){return q.type == 1}),
-                    _otherQ = _.filter(_docs, function(q){return q.type != 1}),
-                    questions = [],
-                    time = 0;
-                
-                _selectQ.forEach(function(q){
-                    if (questions.length < 5) {
-                        questions.push({_id: q._id});
-                        time += q.time;
-                    }
-                });
+       if (!doc || !collection || !schema[collection]) {
+           complete(new Error("Param error"));
+           return;
+       }
 
-                _otherQ.forEach(function(q){
-                    if (time < 90) {
-                        questions.push({_id: q._id});
-                        time += q.time;
-                    }
-                });
+       var mod = mongoose.model(collection, schema[collection], collection);
 
-                callback({
-                    success: true,
-                    docs: questions,
-                    time: time
-                });
-            });
-        },
-        put: function(doc, callback) {
-            test.random(function(d) {
-                if (!d.success) {
-                    callback(d);
-                    return;
-                }
+       query._deleted = false;
+       doc._deleted = !!opt.del;
 
-                DB.put("test", {
-                    email: doc.email,
-                    sha1: doc.sha1,
-                    questions: d.docs
-                }, function(d){
-                    callback(d);
-                });
-            });
-        },
-        get: function(query, options, callback) {
-            return DB.get("test", query, options, callback);
-        },
-        post: function(query, doc, callback) {
-            return DB.post("test", query, doc, callback);
-        },
-        del: function(query, callback) {
-            return DB.del("test", query, callback);
-        },
-        del4ever: function(query, callback) {
-            return DB.del4ever("test", query, callback);
-        }
+       delete doc._id;
+
+       mod.update(query, doc, options, function(err, numAffected) {
+           complete(err, numAffected);
+       });
     },
+    // delete
+    del: function(opt) {
+       opt = _.isObject(opt) ? opt : null;
 
-    question = {
-        put: function(doc, callback) {
-            return DB.put("question", doc, callback);
-        },
-        get: function(query, options, callback) {
-            return DB.get("question", query, options, callback);
-        },
-        post: function(query, doc, callback) {
-            return DB.post("question", query, doc, callback);
-        },
-        del: function(query, callback) {
-            return DB.del("question", query, callback);
-        },
-        del4ever: function(query, callback) {
-            return DB.del4ever("question", query, callback);
-        }
+       if (!opt) return;
+
+       var query = _.isObject(opt.query) ? opt.query : {},
+           collection = _.isString(opt.collection) ? opt.collection : "",
+           complete = _.isFunction(opt.complete) ? opt.complete : function(){};
+
+       if (!query || !collection || !schema[collection]) {
+           complete(new Error("Param error"));
+           return;
+       }
+       
+       // set _deleted true
+       query._deleted = true;
+
+       this.post({
+           query: query,
+           collection: collection,
+           options: {
+               multi: true
+           },
+           doc: {
+               _deleted: true
+           },
+           del: true,
+           complete: complete
+       });
     },
+    // read
+    get: function(opt) {
+       opt = _.isObject(opt) ? opt : null;
 
-    quiz = {
-        put: function(query, doc, callback) {
-            if (_.isUndefined(callback)) {
-                callback = doc;
-                doc = query;
-            }
+       if (!opt) return;
 
-            return DB.put("quiz", doc, callback);
-        },
-        random: function(query, doc, callback) {
-            test.random(query, function(d) {
-                if (!d.success) {
-                    callback(d);
-                    return;
-                }
+       var query = _.isObject(opt.query) ? opt.query : {},
+           options = _.isObject(opt.options) ? opt.options : {},
+           collection = _.isString(opt.collection) ? opt.collection : "",
+           complete = _.isFunction(opt.complete) ? opt.complete : function(){};
 
-                quiz.put({
-                    author: doc.author,
-                    created: doc.created,
-                    questions: d.docs
-                }, function(d) {
-                    callback(d);
-                });
-            });
-        },
-        get: function(query, options, callback) {
-            return DB.get("quiz", query, options, callback);
-        },
-        post: function(query, doc, callback) {
-            return DB.post("quiz", query, doc, callback);
-        },
-        del: function(query, callback) {
-            return DB.del("quiz", query, callback);
-        },
-        del4ever: function(query, callback) {
-            return DB.del4ever("quiz", query, callback);
-        }
-    },
+       if (!collection || !schema[collection]) {
+           complete(new Error("Param error"));
+           return;
+       }
 
-    user = {
-        put: function(doc, callback) {
-            return DB.put("user", doc, callback);
-        },
-        get: function(query, options, callback) {
-            return DB.get("user", query, options, callback);
-        },
-        post: function(query, doc, callback) {
-            return DB.post("user", query, doc, callback);
-        },
-        del: function(query, callback) {
-            return DB.del("user", query, callback);
-        }
-    };
+       var mod = mongoose.model(collection, schema[collection], collection);
 
-// exports
-exports.Test = test;
-exports.Question = question;
-exports.Quiz = quiz;
-exports.User = user;
+       query._deleted = false;
+       options["sort"] = options["sort"] || {id: -1};
+
+       mod.find(query, null, options, function(err, docs) {
+           complete(err, docs);
+       });
+    }
+};
