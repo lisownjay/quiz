@@ -10,11 +10,11 @@
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema;
 
-var
+module.exports = {
     /*
      * 问题
      */
-    Question = new Schema({
+    Question: new Schema({
         id: {
             "type": Number,
             "default": -1,
@@ -96,7 +96,7 @@ var
     /*
      * Quiz
      */
-    Quiz = new Schema({
+    Quiz: new Schema({
         id: {
             "type": Number,
             "default": -1,
@@ -171,7 +171,7 @@ var
     /*
      * User
      */
-    User = new Schema({
+    User: new Schema({
         loginName: {
             "type": String,
             "trim": true,
@@ -204,9 +204,5 @@ var
             "default": false,
             "required": true
         }
-    });
-
-exports.Test = Test;
-exports.Question = Question;
-exports.Quiz = Quiz;
-exports.User = User;
+    })
+};
