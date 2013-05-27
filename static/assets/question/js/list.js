@@ -99,7 +99,7 @@ KISSY.ready(function(S) {
         if (!data.questions && !confirm("你没有选择题目，是否要随机生成？")) {
             return;
         }
-        else if(!data.question) {
+        else if(!data.questions) {
             data.randomly = true;
         }
 

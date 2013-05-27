@@ -130,7 +130,7 @@ var
             "default": false
         },
         /*
-         * 体量所需总时间
+         * 题量所需总时间
          */
         time: {
             "type": Number

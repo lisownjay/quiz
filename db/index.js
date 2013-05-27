@@ -233,8 +233,6 @@ var DB = {
             query = _.isObject(query) && !_.isFunction(query) ? query : {};
             query.deleted = false;
 
-            console.log(query)
-
             question.get(query, function(d){
                 if (!d.success) {
                     callback(d);
@@ -327,7 +325,6 @@ var DB = {
         },
         random: function(query, doc, callback) {
             test.random(query, function(d) {
-                console.log(d)
                 if (!d.success) {
                     callback(d);
                     return;
