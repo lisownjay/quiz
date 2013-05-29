@@ -14,7 +14,7 @@ module.exports = {
     /*
      * 问题
      */
-    Question: new Schema({
+    question: new Schema({
         id: {
             "type": Number,
             "default": -1,
@@ -43,10 +43,10 @@ module.exports = {
             "default": "mixed"
         },
         /*
-         * 1:选择题
-         * 2:编码题
-         * 3:开放题
-         * 0:默认
+         * 1: 选择题
+         * 2: 编码题
+         * 3: 开放题
+         * 0: 默认
          */
         type: {
             "type": Number,
@@ -96,7 +96,7 @@ module.exports = {
     /*
      * Quiz
      */
-    Quiz: new Schema({
+    quiz: new Schema({
         id: {
             "type": Number,
             "default": -1,
@@ -106,6 +106,7 @@ module.exports = {
         author: {
             "type": String,
             "trim": true,
+            "default": "",
             "required": true
         },
         created: {
@@ -171,21 +172,23 @@ module.exports = {
     /*
      * User
      */
-    User: new Schema({
+    user: new Schema({
         loginName: {
             "type": String,
             "trim": true,
             "required": true
         },
-        // 权限
-        // guest 无任何权限
-        // user 普通用户，添加、编辑、删除自己题目
-        // administrator 管理员，添加、编辑、删除任何题目权限
-        // root 题目操作权限+授权权限
+        /*
+         * 权限
+         * guest 无任何权限
+         * member 普通用户，添加、编辑、删除自己题目
+         * administrator 管理员，添加、编辑、删除任何题目权限
+         * root 题目操作权限+授权权限
+         */
         type: {
             "type": String,
             "required": true,
-            "enmu": ["guest", "user", "administrator", "root"],
+            "enmu": ["guest", "member", "administrator", "root"],
             "default": "guest"
         },
         nick: {

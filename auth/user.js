@@ -25,40 +25,53 @@ module.exports = exports = function(filter) {
         }
 
         if (req._user && req._user.loginName) {
-            db.User.get({
-                loginName: req._user.loginName,
-                deleted: false
-            }, function(d) {
-                if (!d.success) {
-                    res.send("DB error " + d.message);
-                    return;
-                }
-
-                if (d.docs.length) {
-                    req.user = {
-                        loginName: d.docs[0].loginName,
-                        nick: d.docs[0].nick || "",
-                        email: d.docs[0].email || "",
-                        type: d.docs[0].type
-                    };
-
-                    if (req.user.type === "guest") {
-                        res.redirect("/authorize");
+            db.get({
+                collection: "user",
+                query: {
+                    loginName: req._user.loginName,
+                },
+                complete: function(err, docs) {
+                    if (err) {
+                        res.send(err.message);
                         return;
                     }
 
-                    next();
-                }
-                else {
-                    db.User.put({
-                        loginName: req._user.loginName,
-                        email: req._user.emailAddr,
-                        nick: req._user.nickNameCn || ""
-                    }, function(d) {
-                        console.log(d)
-                    });
+                    if (docs.length) {
+                        req.user = {
+                            loginName: docs[0].loginName,
+                            nick: docs[0].nick || "",
+                            email: docs[0].email || "",
+                            type: docs[0].type
+                        };
 
-                    res.redirect("/authorize");
+                        /*
+                         *if (req.user.type === "guest") {
+                         *    res.redirect("/authorize");
+                         *    return;
+                         *}
+                         */
+
+                        next();
+                    }
+                    else {
+                        db.put({
+                            collection: "user",
+                            doc: {
+                                loginName: req._user.loginName,
+                                email: req._user.emailAddr,
+                                nick: req._user.nickNameCn || ""
+                            }
+                        }, function(err, doc) {
+                            if (err) {
+                                res.send(err.message);
+                                return;
+                            }
+
+                            next();
+                        });
+
+                        //res.redirect("/authorize");
+                    }
                 }
 
             });

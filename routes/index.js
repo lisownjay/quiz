@@ -27,123 +27,143 @@ var question = {
 
             doc.created = new Date();
 
-            if (req.user.type === "user") {
-                doc.author = req.user.loginName;
-                doc.authorNick = req.user.nick;
+            doc.author = req.user.loginName;
+            doc.authorNick = req.user.nick;
 
-                create();
-            }
-            else {
-                DB.User.get({
-                    loginName: doc.author,
-                    deleted: false
-                }, function(d) {
-                    if (!d.success) {
-                        res.send(d.message || "DB error.");
-                        return;
-                    }
-
-                    if (!d.docs.length) {
-                        res.send("No user.");
-                        return;
-                    }
-
-                    doc.authorNick = d.docs[0].nick;
-
-                    create();
-                });
-            }
+            create();
 
             function create() {
-                DB.Question.put(doc, function(d){
-                    res.json({
-                        success: d && d.success,
-                        _id: d._id
-                    })
+                DB.put({
+                    collection: "question",
+                    doc: doc,
+                    complete: function(err, doc) {
+                        if (err) {
+                            res.json({
+                                success: false,
+                                message: "DB error"
+                            });
+                            return;
+                        }
+
+                        res.json({
+                            success: true,
+                            doc: doc
+                        });
+                    }
                 });
             }
         },
         post: function(req, res) {
-            var query = _.pick(req.body, "_id"),
-                doc = _.pick(req.body, "content", "skill", "type", "level", "time", "remark", "from", "author");
+            var doc = _.pick(req.body, "content", "skill", "type", "level", "time", "remark", "from", "author");
 
-            if(!query._id) {
+            if(!req.body._id) {
                 res.json({
                     success: false,
-                    message: "参数错误，没有找到该id！"
+                    message: "Param error"
                 });
                 return;
             }
 
-            DB.Question.get(query, function(d){
-                if (!d || !d.success || !d.docs.length) {
+            DB.post({
+                collection: "question",
+                query: {
+                    _id: req.body._id
+                },
+                doc: doc,
+                complete: function(err, numAffected) {
+                    if (err) {
+                        res.json({
+                            success: false,
+                            message: err.message
+                        });
+                        return;
+                    }
+
                     res.json({
-                        success: false,
-                        message: "该题目不存在！"
+                        success: true,
+                        numAffected: numAffected
                     });
-                    return;
                 }
-
-                var d = _.union(d.docs[0], doc);
-
-                DB.Question.post(query, doc, function(d){
-                    res.json(d);
-                });
             });
         },
         get: function(req, res) {
-            var _id = req.params[0].replace(/^(?:\/io\/question)(?:\/(.+))*$/, "$1"),
+            var _id = req.params[0],
                 query = {};
 
             if (_id) query._id = _id;
 
-            query.deleted = false;
-
-            DB.Question.get(query, {
-                sort: {
-                    created: -1
-                }
-            }, function(d){
-                var docs = [];
-                if (d.docs) {
-                    d.docs.forEach(function(doc){
-                        var content = query._id ? doc.content : util.escapeQuestion(doc.content);
-                        docs.push({
-                            _id: doc._id,
-                            content: content,
-                            created: doc.created,
-                            author: doc.author,
-                            authorNick: doc.authorNick,
-                            time: doc.time,
-                            type: doc.type,
-                            level: doc.level,
-                            skill: doc.skill,
-                            from: doc.from,
-                            remark: doc.remark
+            DB.get({
+                query: query,
+                collection: "question",
+                options: {
+                    sort: {
+                        created: -1
+                    }
+                },
+                complete: function(err, docs) {
+                    if (err) {
+                        res.json({
+                            success: false,
+                            message: err.message
                         });
+                        return;
+                    }
+
+                    if (docs) {
+                        docs.forEach(function(doc, index){
+                            var content = query._id ? doc.content : util.escapeQuestion(doc.content);
+                            docs[index] = {
+                                _id: doc._id,
+                                content: content,
+                                created: doc.created,
+                                author: doc.author,
+                                authorNick: doc.authorNick,
+                                time: doc.time,
+                                type: doc.type,
+                                level: doc.level,
+                                skill: doc.skill,
+                                from: doc.from,
+                                remark: doc.remark
+                            };
+                        });
+                    }
+
+                    res.json({
+                        success: true,
+                        docs: docs
                     });
                 }
-
-                res.json({
-                    success: d.success,
-                    docs: docs
-                });
             });
         },
         del: function(req, res) {
-            var query = _.pick(req.body, "_id");
-
-            if(!query._id) {
+            if(!req.body._id) {
                 res.json({
                     success: false,
-                    message: "参数错误，没找到该题目！"
+                    message: "Param error"
                 });
                 return;
             }
 
 
-            DB.Question.del(query, function(d){
-                res.json(d);
+            DB.del({
+                collection: "question",
+                query: {
+                    _id: req.body._id
+                },
+                complete: function(err, numAffected) {
+                    if (err) {
+                        res.json({
+                            success: false,
+                            message: err.message
+                        });
+                        return;
+                    }
+
+                    res.json({
+                        success: true,
+                        numAffected: numAffected
+                    });
+                }
             });
         }
     },
@@ -392,10 +412,10 @@ var question = {
 
         },
         put: function(req, res) {
-            var doc = _.pick(req.body, "author", "questions", "randomly", "type", "skill", "level"),
+            var doc = _.pick(req.body, "email", "author", "questions", "type", "skill", "level"),
                 query = {};
 
-            doc.author = doc.author || "root";
+            doc.author = doc.author || "system";
 
             if (!doc.author || (!doc.randomly && !doc.questions)) {
                 res.json({
@@ -547,7 +567,7 @@ exports.test = function(req, res) {
 };
 
 exports.question = {
-    render: function(req, res) {
+    list: function(req, res) {
         res.render("question", {
             title: "question"
         });
@@ -572,46 +592,41 @@ exports.question = {
         });
     },
     edit: function(req, res) {
-        var _id = req.params._id,
-            doc;
-
-        if (!_id) {
-            res.send("can not find the question.");
+        if (!req.params._id) {
+            res.send("Param _id error");
             return;
         }
 
-        if (_id) {
-            DB.Question.get({
-                _id: _id
+        DB.get({
+            collection: "question",
+            query: {
+                _id: req.params._id
             },
-            function (d) {
-                if (!d.success || !(doc = d.docs[0])) {
-                    res.json({
-                        success: false,
-                        message: "can not find the question."
-                    });
+            complete: function(err, docs) {
+                if (err) {
+                    res.send(err.message);
                     return;
                 }
 
                 res.render("question-form", {
                     title: "question.edit",
-                    content: doc.content,
-                    _id: doc._id,
-                    type: doc.type,
+                    content: docs[0].content,
+                    _id: docs[0]._id,
+                    type: docs[0].type,
                     skill: {
-                        html: doc.skill.indexOf("html") >= 0,
-                        javascript: doc.skill.indexOf("javascript") >= 0,
-                        css: doc.skill.indexOf("css") >= 0
+                        html: docs[0].skill.indexOf("html") >= 0,
+                        javascript: docs[0].skill.indexOf("javascript") >= 0,
+                        css: docs[0].skill.indexOf("css") >= 0
                     },
-                    level: doc.level,
-                    time: doc.time,
-                    remark: doc.remark,
-                    from: doc.from || "",
-                    author: doc.author,
-                    authorNick: doc.authorNick
+                    level: docs[0].level,
+                    time: docs[0].time,
+                    remark: docs[0].remark,
+                    from: docs[0].from || "",
+                    author: docs[0].author,
+                    authorNick: docs[0].authorNick
                 });
-            })
-        }
+            }
+        });
     }
 };
 
@@ -720,7 +735,7 @@ exports.io = {
 };
 
 exports.notfound = function(req, res) {
-    res.render("404", {
+    res.status(404).render("404", {
         title: "FETest"
     });
 };

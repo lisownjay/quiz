@@ -36,7 +36,7 @@ GLOBAL.env = app.get("env");
 // Configuration 
 app.configure(function(){
     app.set('port', process.env.PORT || 80);
-    app.use(express.favicon());
+    app.use(express.favicon(__dirname + "/static/favicon.ico"));
     app.use(express.logger("dev"));
     app.set('views', __dirname + '/views');
     app.set('view engine', 'jade');
@@ -79,17 +79,54 @@ app.configure('production', function(){
     app.use(express.errorHandler());
 });
 
-var staticMiddleware = express.static(__dirname + '/question');
-
-/*
- * 所有非io接口上线后删除
- */
+//var staticMiddleware = express.static(__dirname + '/question');
 
 // Routes
 
 /*
  * GET
  */
+
+/*
+ * question
+ */
+app.get(/^\/question\/*$/, function(req, res, next) {
+    routes.question.list(req, res);
+});
+
+app.get(/^\/io\/question(?:\/([a-zA-Z0-9]+))*$/, function(req, res, next) {
+    routes.io.question.get(req, res);
+});
+
+app.get("/question/create", function(req, res, next) {
+    routes.question.create(req, res);
+});
+
+app.post("/io/question/create", function(req, res, next) {
+    routes.io.question.put(req, res);
+});
+
+app.get("/question/edit/:_id", function(req, res, next) {
+    routes.question.edit(req, res);
+});
+
+app.post("/io/question/edit", function(req, res, next) {
+    routes.io.question.post(req, res);
+});
+
+app.post("/io/question/del", function(req, res, next) {
+    routes.io.question.del(req, res);
+});
+
+/*
+ * quiz
+ */
+app.post("/io/quiz/create", function(req, res, next) {
+    routes.io.quiz.put(req, res);
+});
+
+
+/*
 app.get(/(.*)/,function(req, res, next){
     var sub = req.params[0].replace(/^\//,'');
 
@@ -97,10 +134,6 @@ app.get(/(.*)/,function(req, res, next){
         case 'authorize':
         case 'authorize/':
             authorize.render(req, res);
-            break;
-        case 'question':
-        case 'question/':
-            routes.question.render(req, res);
             break;
         case 'question/create':
             routes.question.create(req, res);
@@ -150,11 +183,13 @@ app.get(/(.*)/,function(req, res, next){
             break;
     }
 });
+*/
 
 
 /*
  * POST
  */
+/*
 app.post(/(.*)/,function(req, res, next){
     var sub = req.params[0].replace(/^\//,'');
 
@@ -191,50 +226,11 @@ app.post(/(.*)/,function(req, res, next){
             break;
     }
 });
+*/
 
-/*
- * PUT
- */
-/*
- *app.put(/(.*)/,function(req, res, next){
- *
- *    var sub = req.params[0].replace(/^\//,'');
- *
- *    switch(sub.toLowerCase()){
- *        case 'question':
- *            routes.io.question.put(req, res);
- *            break;
- *        case 'user':
- *            routes.io.user.put(req, res);
- *            break;
- *        default:
- *            next();
- *            break;
- *    }
- *});
- */
-
-/*
- * DELETE
- */
-/*
- *app.del(/(.*)/,function(req, res, next){
- *
- *    var sub = req.params[0].replace(/^\//,'');
- *
- *    switch(sub.toLowerCase()){
- *        case 'question':
- *            routes.io.question.del(req, res);
- *            break;
- *        case 'test':
- *            routes.io.test.del(req, res);
- *            break;
- *        default:
- *            next();
- *            break;
- *    }
- *});
- */
+app.get("/__u__", function(req, res, next) {
+    res.json(req.user);
+});
 
 // pass exsits Routes
 app.all('*', function(req, res){
