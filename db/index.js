@@ -1,5 +1,5 @@
 /*
- * @name: .js
+ * @name: index.js
  * @description: 
  * @author: wondger@gmail.com
  * @date: 2013-05-27
@@ -116,6 +116,7 @@ module.exports = db = {
        if (!opt) return;
 
        var query = _.isObject(opt.query) ? opt.query : {},
+           fields = _.isObject(opt.fields) ? opt.fields : null,
            options = _.isObject(opt.options) ? opt.options : {},
            collection = _.isString(opt.collection) ? opt.collection : "",
            complete = _.isFunction(opt.complete) ? opt.complete : function(){};
@@ -130,7 +131,7 @@ module.exports = db = {
        query._deleted = false;
        options["sort"] = options["sort"] || {};
 
-       mod.find(query, null, options, function(err, docs) {
+       mod.find(query, fields, options, function(err, docs) {
            complete(err, docs);
        });
     }

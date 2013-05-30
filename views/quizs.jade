@@ -1,0 +1,57 @@
+extends layout
+block head
+    link(type="text/css", rel="stylesheet", href="/global/css/global.css")
+    link(type="text/css", rel="stylesheet", href="/assets/question/css/style.css")
+    script(type="text/javascript", src="/assets/quiz/js/list.js")
+block body
+    div.box
+        div.side
+            header
+                h1 Quiz
+            section.btns
+                a.btn.btn-blue(href="/question") 返回题库
+            section.tags.online
+                h1 分类
+                ul
+                    li
+                        a.label(data-type="category", data-tag="online", href="#nogo") 在线答题
+                    li
+                        a.label(data-type="category", data-tag="print", href="#nogo") 打印
+        div.main
+            form#J_ListForm(method="post")
+                div.list#J_List
+                script#J_Template(type="javascript/template")
+                    {{#each questions}}
+                    div.question
+                        input.i-chk(type="checkbox", name="questions", value="{{_id}}")
+                        a.question-chk(href="#nogo", data-id="{{_id}}")✓
+                        pre {{{content}}}
+                        div.question-meta
+                            span.qm-item.qm-skill 分类：
+                                span.qm-tag {{skill}}
+                            span.qm-item.qm-level 难度：
+                                span.qm-tag P{{level}}
+                            span.qm-item.qm-type 题型：
+                                span.qm-tag
+                                    | {{#if type === 1}}选择题{{/if}}
+                                    | {{#if type === 2}}编码题{{/if}}
+                                    | {{#if type === 3}}开放题{{/if}}
+                                    | {{#if type === 0}}综合{{/if}}
+                            span.qm-item.qm-time 耗时：
+                                span.qm-tag {{time}}m
+                            {{#if authorNick}}
+                            span.qm-item.qm-author 出题人：
+                                span.qm-tag {{authorNick}}
+                            {{/if}}
+                            {{#if from}}
+                            span.qm-item.qm-from 来源：
+                                span.qm-tag {{from}}
+                            {{/if}}
+                        div.question-panel
+                            a.qp-edit(href="/question/edit/{{_id}}", data-id="{{_id}}")
+                                i ∈
+                                | 编辑
+                            a.qp-del(href="#nogo", data-id="{{_id}}")
+                                i Х
+                                | 删除
+                    {{/each}}

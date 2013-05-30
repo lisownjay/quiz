@@ -26,10 +26,6 @@ module.exports = {
             "required": true,
             "validate": /.+/
         },
-        steps: {
-            "type": Array,
-            "required": false
-        },
         level: {
             "type": Number,
             "required": true,
@@ -113,11 +109,12 @@ module.exports = {
             "type": Date,
             "required": true
         },
+        
+        /*
+         * item key:
+         * _id, id, content, answer, level, remark, skill, time, type
+         */
         questions: {
-            "type": Array,
-            "required": true
-        },
-        answers: {
             "type": Array,
             "required": true
         },
@@ -134,14 +131,14 @@ module.exports = {
         },
 
         /*
-         * email发送次数
+         * email时间
          */
         emailed: {
             "type": Array
         },
 
         /*
-         * 访问次数
+         * 访问时间
          */
         visited: {
             "type": Array
@@ -154,13 +151,6 @@ module.exports = {
             "type": Date
         },
 
-        /*
-         * 题量时间
-         */
-        time: {
-            "type": Number,
-            "required": true
-        },
         _deleted: {
             "type": Boolean,
             "default": false,

@@ -100,7 +100,7 @@ KISSY.ready(function(S) {
             return;
         }
         else if(!data.questions) {
-            data.randomly = true;
+            data.random = 1;
         }
 
         // for mongoose regexp query

@@ -368,6 +368,30 @@ var question = {
     
     quiz = {
         get: function(req, res) {
+            var query = {};
+
+            if (req.params._id) {
+                query._id = req.params._id;
+            }
+
+            DB.get({
+                collection: "quiz",
+                query: query,
+                complete: function(err, docs) {
+                    if (err) {
+                        res.json({
+                            success: false,
+                            message: err.message
+                        });
+                        return;
+                    }
+
+                    res.json({
+                        success: true,
+                        docs: docs
+                    });
+                }
+            });
         },
         render: function(req, res) {
             var _id = req.params._id;
@@ -411,34 +435,167 @@ var question = {
             })
 
         },
-        put: function(req, res) {
-            var doc = _.pick(req.body, "email", "author", "questions", "type", "skill", "level"),
+        generate: function(docs) {
+            var docs = _.shuffle(docs),
+                ret = [],
+                time = 0;
+
+            docs.some(function(doc, index) {
+                if (time > 60) return true;
+
+                time += doc.time;
+                ret.push(doc);
+            });
+
+            return ret;
+        },
+        random: function(req, res) {
+            var doc = _.pick(req.body, "email"),
                 query = {};
 
-            doc.author = doc.author || "system";
+            if (req.body.skill) {
+                query.skill = new RegExp('\\b' + req.body.skill.split('|').join('\\b|\\b') + '\\b', 'i');
+            }
+            if (req.body.type) {
+                query.type = {'$in': req.body.type.split('|')};
+            }
+            if (req.body.level) {
+                query.level = {'$in': req.body.level.split('|')};
+            }
 
-            if (!doc.author || (!doc.randomly && !doc.questions)) {
+            // not interviewee
+            if (!doc.email) {
+                doc.author = req.user.loginName;
+            }
+
+            DB.get({
+                collection: "question",
+                query: query,
+                fields: {
+                    _id: 1,
+                    id: 1,
+                    content: 1,
+                    level: 1,
+                    remark: 1,
+                    skill: 1,
+                    time: 1,
+                    type: 1
+                },
+                complete: function(err, docs) {
+                    if (err) {
+                        res.json({
+                            success: false,
+                            message: err.message
+                        });
+                        return;
+                    }
+
+                    doc.questions = quiz.generate(docs);
+                    doc.created = new Date();
+
+                    if (!doc.questions|| !doc.questions.length) {
+                        res.json({
+                            success: false,
+                            message: "No question"
+                        });
+                        return;
+                    }
+
+                    DB.put({
+                        collection: "quiz",
+                        doc: doc,
+                        complete: function(err, doc) {
+                            if (err) {
+                                res.json({
+                                    success: false,
+                                    message: err.message
+                                });
+                                return;
+                            }
+
+                            res.json({
+                                success: true,
+                                doc: doc
+                            });
+                        }
+                    });
+                }
+            });
+        },
+        put: function(req, res) {
+            if (req.body.random) {
+                this.random(req, res);
+                return;
+            }
+
+            /*
+             * 非随机模式下无题目
+             */
+            if (!req.body.questions || !req.body.questions.length) {
                 res.json({
                     success: false,
-                    message: "未选择题目！"
+                    message: "No question"
                 });
                 return;
             }
 
-            if (doc.skill) {
-                query.skill = new RegExp('\\b' + doc.skill.split('|').join('\\b|\\b') + '\\b', 'i');
-            }
-            if (doc.type) {
-                query.type = {'$in': doc.type.split('|')}
-            }
-            if (doc.level) {
-                query.level = {'$in': doc.level.split('|')}
-            }
 
-            doc.created = new Date();
+            DB.get({
+                collection: "question",
+                query: {
+                    _id: {$in: req.body.questions}
+                },
+                fields: {
+                    _id: 1,
+                    id: 1,
+                    content: 1,
+                    level: 1,
+                    remark: 1,
+                    skill: 1,
+                    time: 1,
+                    type: 1
+                },
+                complete: function(err, docs) {
+                    if (err) {
+                        res.json({
+                            success: false,
+                            message: err.message
+                        });
+                        return;
+                    }
 
-            DB.Quiz[doc.randomly && !doc.questions ? "random" : "put"](query, doc, function(d){
-                res.json(d)
+                    if (!docs || !docs.length) {
+                        res.json({
+                            success: false,
+                            message: "No question"
+                        });
+                        return;
+                    }
+
+
+                    DB.put({
+                        collection: "quiz",
+                        doc: {
+                            questions: docs,
+                            created: new Date(),
+                            author: req.user.loginName
+                        },
+                        complete: function(err, doc) {
+                            if (err) {
+                                res.json({
+                                    success: false,
+                                    message: err.message
+                                });
+                                return;
+                            }
+
+                            res.json({
+                                success: true,
+                                doc: doc
+                            });
+                        }
+                    });
+                }
             });
         }
     };
@@ -566,6 +723,10 @@ exports.test = function(req, res) {
     });
 };
 
+
+/*
+ * question render
+ */
 exports.question = {
     list: function(req, res) {
         res.render("question", {
@@ -629,6 +790,18 @@ exports.question = {
         });
     }
 };
+
+/*
+ * quiz render
+ */
+exports.quiz = {
+    list: function(req, res) {
+        res.render("quizs", {
+            title: "quiz"
+        });
+    }
+};
+
 
 /*
  * 发送email

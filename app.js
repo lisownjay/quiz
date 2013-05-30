@@ -121,8 +121,20 @@ app.post("/io/question/del", function(req, res, next) {
 /*
  * quiz
  */
+app.get(/^\/quiz\/*$/, function(req, res, next) {
+    routes.quiz.list(req, res);
+});
+
 app.post("/io/quiz/create", function(req, res, next) {
     routes.io.quiz.put(req, res);
+});
+
+app.get("/io/quiz/:_id", function(req, res, next) {
+    routes.io.quiz.get(req, res);
+});
+
+app.get("/io/quiz", function(req, res, next) {
+    routes.io.quiz.get(req, res);
 });
 
 
