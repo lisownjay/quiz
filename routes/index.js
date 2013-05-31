@@ -11,7 +11,8 @@ var _ = require("underscore"),
     DB = require("../db"),
     Email = require("../email"),
     sha1 = require("../util").testSha1,
-    util = require("../util");
+    util = require("../util"),
+    moment = require("moment");
 
 var question = {
         put: function(req, res) {
@@ -377,6 +378,11 @@ var question = {
             DB.get({
                 collection: "quiz",
                 query: query,
+                options: {
+                    sort: {
+                        created: -1
+                    }
+                },
                 complete: function(err, docs) {
                     if (err) {
                         res.json({
@@ -385,6 +391,10 @@ var question = {
                         });
                         return;
                     }
+
+                    docs.forEach(function(doc, index) {
+                        doc.created = moment(doc.created).format("YYYY-MM-DD HH:mm:ss");
+                    });
 
                     res.json({
                         success: true,
@@ -435,17 +445,25 @@ var question = {
             })
 
         },
-        generate: function(docs) {
-            var docs = _.shuffle(docs),
-                ret = [],
-                time = 0;
+        generate: function(questions, random) {
+            var questions = random ? _.shuffle(questions) : questions,
+                ret = {
+                    questions: [],
+                    time: 0,
+                    level: 0
+                };
 
-            docs.some(function(doc, index) {
-                if (time > 60) return true;
+            if (!questions.length) return ret;
 
-                time += doc.time;
-                ret.push(doc);
+            questions[random ? "some" : "forEach"](function(doc, index) {
+                ret.time += doc.time;
+                ret.level += doc.level;
+                ret.questions.push(doc);
+
+                if (random && ret.time > 60) return true;
             });
+
+            ret.level = Math.round(ret.level / ret.questions.length);
 
             return ret;
         },
@@ -466,21 +484,12 @@ var question = {
             // not interviewee
             if (!doc.email) {
                 doc.author = req.user.loginName;
+                doc.authorNick = req.user.nick;
             }
 
             DB.get({
                 collection: "question",
                 query: query,
-                fields: {
-                    _id: 1,
-                    id: 1,
-                    content: 1,
-                    level: 1,
-                    remark: 1,
-                    skill: 1,
-                    time: 1,
-                    type: 1
-                },
                 complete: function(err, docs) {
                     if (err) {
                         res.json({
@@ -490,10 +499,7 @@ var question = {
                         return;
                     }
 
-                    doc.questions = quiz.generate(docs);
-                    doc.created = new Date();
-
-                    if (!doc.questions|| !doc.questions.length) {
+                    if (!docs || !docs.length) {
                         res.json({
                             success: false,
                             message: "No question"
@@ -501,9 +507,11 @@ var question = {
                         return;
                     }
 
+                    doc.created = new Date();
+
                     DB.put({
                         collection: "quiz",
-                        doc: doc,
+                        doc: _.extend(doc, quiz.generate(docs, true)),
                         complete: function(err, doc) {
                             if (err) {
                                 res.json({
@@ -545,16 +553,6 @@ var question = {
                 query: {
                     _id: {$in: req.body.questions}
                 },
-                fields: {
-                    _id: 1,
-                    id: 1,
-                    content: 1,
-                    level: 1,
-                    remark: 1,
-                    skill: 1,
-                    time: 1,
-                    type: 1
-                },
                 complete: function(err, docs) {
                     if (err) {
                         res.json({
@@ -572,14 +570,15 @@ var question = {
                         return;
                     }
 
+                    var doc = _.extend({
+                            created: new Date(),
+                            author: req.user.loginName,
+                            authorNick: req.user.nick
+                        }, quiz.generate(docs));
 
                     DB.put({
                         collection: "quiz",
-                        doc: {
-                            questions: docs,
-                            created: new Date(),
-                            author: req.user.loginName
-                        },
+                        doc: doc,
                         complete: function(err, doc) {
                             if (err) {
                                 res.json({
@@ -798,6 +797,45 @@ exports.quiz = {
     list: function(req, res) {
         res.render("quizs", {
             title: "quiz"
+        });
+    },
+    one: function(req, res) {
+        if (!req.params._id) {
+            res.json({
+                success: false,
+                message: "No _id"
+            });
+            return;
+        }
+
+        DB.get({
+            collection: "quiz",
+            query: {_id: req.params._id},
+            complete: function(err, docs) {
+                if (err) {
+                    res.json({
+                        success: false,
+                        message: err.message
+                    });
+                    return;
+                }
+
+                if (!docs || !docs.length) {
+                    res.json({
+                        success: false,
+                        message: "No quiz"
+                    });
+                    return;
+                }
+
+                res.render("quiz", {
+                    title: "quiz",
+                    questions: docs[0].questions,
+                    level: docs[0].level,
+                    time: docs[0].time,
+                    backurl: req.header("referer")
+                });
+            }
         });
     }
 };

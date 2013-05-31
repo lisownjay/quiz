@@ -13,7 +13,7 @@
 .question .question-meta{color:#666;padding:5px 10px;background:#eee;-webkit-border-radius:0 0 6px 6px;border-radius:0 0 6px 6px;position:relative;left:0;top:0;}
 .question .question-meta .qm-item{margin-left:10px}
 .question .question-panel{height:30px;line-height:30px;position:absolute;right:10px;bottom:0;opacity:.5;filter:alpha(opacity=50);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";}
-.question .question-panel a{padding:3px 5px;margin:0 5px;color:#fff;text-decoration:none;background:#fff;-webkit-border-radius:3px;border-radius:3px;}
+.question .question-panel a{padding:3px 5px;margin:0 5px;color:#fff;text-decoration:none;background:#fff;-webkit-border-radius:50px;border-radius:50px;}
 .question .question-panel a i{margin-right:3px}
 .question .question-panel .qp-edit{background:#3498db}
 .question .question-panel .qp-edit:hover{background:#5dade2}

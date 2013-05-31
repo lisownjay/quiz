@@ -1,0 +1,18 @@
+body{background:#fff;}
+body .page{padding:40px;}
+body .page .question{margin:10px 0;padding:20px 0 100px 24px;border-bottom:1px solid #ccc;position:relative;}
+body .page .question pre{font:normal 14px/1.6 courier new,courier,monospace}
+body .page .question .question-index{font-size:14px;position:absolute;left:0;top:20px;line-height:1.6}
+body .page .question:last-child{border-bottom:none}
+body .box{height:auto;padding-bottom:50px}
+body .bar{position:fixed;width:100%;height:40px;line-height:40px;color:#fff;font-size:14px;text-align:center;background:#000;opacity:.8;filter:alpha(opacity=80);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";left:0;bottom:0;}
+body .bar .meta{display:inline-block;}
+body .bar .meta span{margin:0 10px}
+body .bar .btn-s{font-size:14px;padding:5px 10px;margin:0 5px;color:#fff;text-decoration:none;background:#fff;-webkit-border-radius:50px;border-radius:50px;}
+body .bar .btn-s i{margin-right:3px}
+body .bar .btn-s-blue{background:#3498db}
+body .bar .btn-s-blue:hover{background:#3498db}
+body .bar .btn-s-green{background:#1abc9c}
+body .bar .btn-s-green:hover{background:#1abc9c}
+body .bar .btn-s-gray{color:#333;background:#ccc}
+body .bar .btn-s-gray:hover{background:#ccc}

@@ -119,8 +119,8 @@ KISSY.ready(function(S) {
                     return;
                 }
 
-                if (d._id) {
-                    window.top.location.href = "/quiz/" + d._id;
+                if (d.doc && d.doc._id) {
+                    window.top.location.href = "/quiz/" + d.doc._id;
                 }
                 else {
                     alert("生成考卷成功！");

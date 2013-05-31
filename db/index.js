@@ -116,7 +116,7 @@ module.exports = db = {
        if (!opt) return;
 
        var query = _.isObject(opt.query) ? opt.query : {},
-           fields = _.isObject(opt.fields) ? opt.fields : null,
+           fields = _.isObject(opt.fields) ? opt.fields : {},
            options = _.isObject(opt.options) ? opt.options : {},
            collection = _.isString(opt.collection) ? opt.collection : "",
            complete = _.isFunction(opt.complete) ? opt.complete : function(){};
@@ -129,7 +129,10 @@ module.exports = db = {
        var mod = mongoose.model(collection, schema[collection], collection);
 
        query._deleted = false;
-       options["sort"] = options["sort"] || {};
+       options["lean"] = _.isUndefined(options["lean"]) ? true : !!options["lean"];
+       // all fileds setting must be use exclude by 0
+       fields["_deleted"] = 0;
+       fields["__v"] = 0;
 
        mod.find(query, fields, options, function(err, docs) {
            complete(err, docs);

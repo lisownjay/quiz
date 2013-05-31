@@ -1,0 +1,16 @@
+.side .tags li{display:inline-block;padding:5px 0;color:#666;text-shadow:1px 1px 2px #fff;}
+.side .tags li a{display:inline-block;height:20px;color:#333;margin:0 3px 0 0;padding:0 10px;text-decoration:none;vertical-align:middle;background:#ddd;-webkit-border-radius:10px;border-radius:10px;-webkit-box-shadow:inset -1px -1px 1px #aaa;box-shadow:inset -1px -1px 1px #aaa;cursor:pointer}
+.side .tags li a:hover{background:#fff}
+.side .tags li a.active,.side .tags li a:active{padding:2px 9px 0 11px;height:18px;background:#fff;-webkit-box-shadow:inset 1px 1px 1px #999;box-shadow:inset 1px 1px 1px #999}
+.list{padding:40px}
+.quizs{width:100%;font-size:14px;color:#404040;}
+.quizs thead th{font-weight:normal;padding:5px;background:#f1f1f1;border-bottom:1px solid #e5e5e5;text-align:left}
+.quizs tbody td{padding:5px;border-bottom:1px dotted #eee}
+.quizs tr:hover{background:#fffece}
+.quizs a{color:#3498db;text-decoration:none}
+.quizs .btn-s{font-size:12px;padding:3px 8px;margin:0 3px;color:#fff;text-decoration:none;background:#fff;-webkit-border-radius:50px;border-radius:50px;opacity:.75;filter:alpha(opacity=75);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";}
+.quizs .btn-s i{margin-right:3px}
+.quizs .btn-s-blue{background:#3498db}
+.quizs .btn-s-blue:hover{opacity:1;-ms-filter:none;filter:none}
+.quizs .btn-s-green{background:#1abc9c}
+.quizs .btn-s-green:hover{opacity:1;-ms-filter:none;filter:none}

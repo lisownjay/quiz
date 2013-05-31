@@ -105,8 +105,27 @@ module.exports = {
             "default": "",
             "required": true
         },
+        authorNick: {
+            "type": String,
+            "trim": true,
+            "default": "",
+            "required": true
+        },
         created: {
             "type": Date,
+            "required": true
+        },
+        level: {
+            "type": Number,
+            "required": true,
+            "enmu": [4, 5, 6, 7, 8],
+            "default": 0
+        },
+        /*
+         * 答卷期望完成时间
+         */
+        time: {
+            "type": Number,
             "required": true
         },
         

@@ -1,13 +1,19 @@
 extends layout
 block head
     link(type="text/css", rel="stylesheet", href="/global/css/global.css")
-    link(type="text/css", rel="stylesheet", href="/question/css/style.css")
-    link(type="text/css", rel="stylesheet", href="/question/css/quiz.css")
+    link(type="text/css", rel="stylesheet", href="/assets/quiz/css/quiz.css")
 block body
     div.box
-        - var qindex = 0;
-        for quiz in quizs
-            - qindex ++
-            div.quiz
-                span.quiz-index #{qindex}.
-                pre !{quiz.content}
+        - var index = 0;
+        for q in questions
+            - index ++
+            div.question
+                span.question-index #{index}.
+                pre !{q.content}
+    div.bar
+        div.meta
+            span 难度：P#{level}
+            span 时间：#{time}m
+        a(href="#").btn-s.btn-s-blue.btn-print 打印
+        a(href="#").btn-s.btn-s-green.btn-send 发送
+        a(href="#{backurl}").btn-s.btn-s-gray 返回
