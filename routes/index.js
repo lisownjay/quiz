@@ -8,7 +8,7 @@
  * @changelog: 
  */
 var _ = require("underscore"),
-    DB = require("../db"),
+    db = require("../db"),
     Email = require("../email"),
     sha1 = require("../util").testSha1,
     util = require("../util"),
@@ -34,7 +34,7 @@ var question = {
             create();
 
             function create() {
-                DB.put({
+                db.put({
                     collection: "question",
                     doc: doc,
                     complete: function(err, doc) {
@@ -65,7 +65,7 @@ var question = {
                 return;
             }
 
-            DB.post({
+            db.post({
                 collection: "question",
                 query: {
                     _id: req.body._id
@@ -93,7 +93,7 @@ var question = {
 
             if (_id) query._id = _id;
 
-            DB.get({
+            db.get({
                 query: query,
                 collection: "question",
                 options: {
@@ -112,10 +112,9 @@ var question = {
 
                     if (docs) {
                         docs.forEach(function(doc, index){
-                            var content = query._id ? doc.content : util.escapeQuestion(doc.content);
                             docs[index] = {
                                 _id: doc._id,
-                                content: content,
+                                content: util.escapeQuestion(doc.content),
                                 created: doc.created,
                                 author: doc.author,
                                 authorNick: doc.authorNick,
@@ -146,7 +145,7 @@ var question = {
             }
 
 
-            DB.del({
+            db.del({
                 collection: "question",
                 query: {
                     _id: req.body._id
@@ -170,202 +169,133 @@ var question = {
     },
 
     test = {
-        get: function(req, res, callback, _sha1) {
-            var sha1 = _sha1 || req.params[0].replace(/^(?:(?:\/io)?\/test\/)(.+)$/, "$1"),
-                query = {};
-
-            if (sha1) {
-                query.sha1 = sha1;
-                // update visted field
-                if (!_sha1) {
-                    DB.Test.post(query, {$push: {visited: new Date()}}, function(d){
-                        // todo
-                    });
-                }
-            }
-
-            DB.Test.get(query, function(d){
-                if (!d.success || !d.docs.length) {
-                    callback ? callback(d) : res.json(d);
-                    return;
-                }
-
-                var _id = d.docs[0]._id,
-                    score = d.docs[0].score,
-                    email = d.docs[0].email,
-                    now = new Date(),
-                    visited = d.docs[0].visited,
-                    time = d.docs[0].finished ? 0 : (visited.length ? 3600 - (now - visited[0])/1000 : d.docs[0].time),
-                    time = time <= 0 ? 0 : time;
-                    questions = {
-                        _ids: [],
-                        answer: {},
-                        score: {} 
-                    };
-
-                if (time <= 0) {
-                    DB.Test.post(query, {finished: true}, function(d){
-                        // todo
-                    });
-                }
-
-                d.docs[0].questions.forEach(function(question){
-                    questions._ids.push(question._id);
-                    questions.answer[question._id] = question.answer || {};
-                    questions.score[question._id] = question.score || "";
-                });
-
-                DB.Question.get({
-                    _id: {$in: questions._ids},
-                    deleted: false
-                }, function(d){
-                    var docs = [];
-                    if (d.docs) {
-                        d.docs.forEach(function(doc){
-                            var content = util.escapeQuestion(doc.content);
-                            // todo: authorized remove
-                            docs.push({
-                                _id: doc._id,
-                                content: content,
-                                created: GLOBAL.authorized ? doc.created : "",
-                                author: GLOBAL.authorized ? doc.author : "",
-                                time: GLOBAL.authorized ? doc.time : "",
-                                type: GLOBAL.authorized ? doc.type : "",
-                                level: GLOBAL.authorized ? doc.level : "",
-                                skill: GLOBAL.authorized ? doc.skill : "",
-                                remark: GLOBAL.authorized ? doc.remark : "",
-                                answer: questions.answer[doc._id],
-                                score: GLOBAL.authorized ? questions.score[doc._id] : ""
-                            });
+        get: function(req, res) {
+            db.get({
+                collection: "quiz",
+                query: {_id: req.params._id},
+                fields: {
+                    author: 0,
+                    authorNick: 0,
+                    email: 0,
+                    emailed: 0,
+                    created: 0,
+                    level: 0
+                },
+                complete: function(err, docs) {
+                    if (err) {
+                        res.json({
+                            success: false,
+                            message: err.message
                         });
+                        return;
                     }
 
-                    d._id = _id;
-                    d.score = score;
-                    d.email = email;
-                    d.time = Math.floor(time);
-                    d.docs = docs;
-                    callback ? callback(d) : res.json(d);
-                });
+                    if (!docs || !docs.length) {
+                        res.json({
+                            success: false,
+                            message: "No quiz"
+                        });
+                        return;
+                    }
+
+                    docs[0].visited.push(new Date())
+                    db.post({
+                        collection: "quiz",
+                        query: {_id: req.params._id},
+                        doc: {visited: docs[0].visited}
+                    });
+
+                    docs[0].questions.forEach(function(question, index) {
+                        docs[0].questions[index] = {
+                            index: index,
+                            content: util.escapeQuestion(question.content),
+                            answer: question.answer
+                        };
+                    });
+
+                    var leftTime = docs[0].time * 60;
+                    if (docs[0].visited && docs[0].visited.length) {
+                        // default 60min
+                        leftTime = Math.floor(3600 - (new Date() - new Date(docs[0].visited[0])) / 1000);
+                    }
+
+                    res.json({
+                        success: true,
+                        _id: docs[0]._id,
+                        time: leftTime > 0 ? leftTime : 0,
+                        docs: docs[0].questions
+                    });
+                }
             });
         },
         solve: function(req, res) {
-            var query = _.pick(req.body, "_id"),
-                finished = false,
-                questions,
-                docs;
-
-            if(!query._id) {
+            if (!req.body._id) {
                 res.json({
                     success: false,
-                    message: "PARAM ERR"
+                    message: "No _id"
                 });
                 return;
             }
 
-            query.finished = false;
 
-            DB.Test.get(query, function(d){
-                if (!d.success || !d.docs.length || !d.docs[0].questions || !d.docs[0].questions.length) {
-                    res.json({
-                        success: false,
-                        message: "TEST NOT EXSITED || TIMEOUT"
-                    });
-                    return;
-                }
-                else {
-                    var questions = d.docs[0].questions;
-
-                    if (d.docs[0].finished) {
-                        finished = d.docs[0].finished;
-                    }
-                    else if (d.docs[0].visited.length) {
-                        var started = d.docs[0].visited[d.docs[0].visited.length - 1],
-                            now = new Date();
-                        finished = (now - started)/60000 > 60 ? true : false;
+            db.get({
+                collection: "quiz",
+                query: {_id: req.body._id},
+                complete: function(err, docs) {
+                    if (err) {
+                        res.json({
+                            success: false,
+                            message: err.message
+                        });
+                        return;
                     }
 
-                    questions.forEach(function(d, i){
-                        // 答题
-                        questions[i].answer = d.answer = d.answer || {};
-                        var reqq = req.body[d._id] || {};
-                        questions[i].answer.html = reqq.html || d.answer.html || "";
-                        questions[i].answer.css = reqq.css || d.answer.css || "";
-                        questions[i].answer.javascript = reqq.javascript || d.answer.javascript || "";
-                        questions[i].answer.select = reqq.select || d.answer.select || "";
-                    });
-
-                    DB.Test.post(query, {questions: questions, finished: finished}, function(d){
-                        res.json(d);
-                    });
-                }
-            });
-        },
-        // 打分
-        grade: function(req, res) {
-            var query = _.pick(req.body, "_id"),
-                finished = false;
-
-            if(!query._id) {
-                res.json({
-                    success: false,
-                    message: "PARAM ERR"
-                });
-                return;
-            }
-
-            DB.Test.get(query, function(d){
-                if (!d.success || !d.docs.length || !d.docs[0].questions || !d.docs[0].questions.length) {
-                    res.json({
-                        success: false,
-                        message: "TEST NOT EXSITED"
-                    });
-                    return;
-                }
-                else {
-                    var questions = d.docs[0].questions;
-
-                    if (d.docs[0].finished) {
-                        finished = d.docs[0].finished;
-                    }
-                    else if (d.docs[0].visited.length) {
-                        var started = d.docs[0].visited[d.docs[0].visited.length - 1],
-                            now = new Date();
-                        finished = (now - started)/60000 > 65 ? true : false;
+                    if (!docs || !docs.length) {
+                        res.json({
+                            success: false,
+                            message: "No quiz"
+                        });
+                        return;
                     }
 
-                    /*
-                    questions.forEach(function(d, i){
-                        // 超时后不可写入答案
-                        if (!isGrade && !finished) {
-                            // 答题
-                            questions[i].answer = req.body[d._id] || d.answer || "";
+                    var finished = quiz.checkFinished(docs[0]);
+
+                    if (finished) {
+                        res.json({
+                            success: false,
+                            message: "timeout"
+                        });
+                        return;
+                    }
+
+
+                    req.body.answer.forEach(function(a, index) {
+                        docs[0].questions[index].answer = a;
+                    });
+
+                    db.post({
+                        collection: "quiz",
+                        query: {_id: req.body._id},
+                        doc: {questions: docs[0].questions},
+                        complete: function(err, numAffected) {
+                            if (err) {
+                                res.json({
+                                    success: false,
+                                    message: err.message
+                                });
+                                return;
+                            }
+
+                            res.json({
+                                success: true,
+                                numAffected: numAffected
+                            });
                         }
-                        else {
-                            // 为每个题目打分
-                            // questions[i].score = parseInt(req.body[d._id], 10) || 0;
-                        }
-                    });
-                    */
-
-                    DB.Test.post(query, {finished: finished, score: parseInt(req.body.score, 10) || 0}, function(d){
-                        res.json(d);
-                    });
-                }
-            });
-        },
-        sum: function(req, res) {
-            DB.Test.get({deleted: false}, function(d){
-                if (d && d.success) {
-                    res.json({
-                        sum: d.docs.length,
-                        ing: _.filter(d.docs, function(t){return !t.finished}).length,
-                        finished: _.filter(d.docs, function(t){return t.finished}).length
                     });
                 }
             });
         }
-    },
+    }
     
     quiz = {
         get: function(req, res) {
@@ -374,8 +304,15 @@ var question = {
             if (req.params._id) {
                 query._id = req.params._id;
             }
+            else if (!req.user.loginName) {
+                res.json({
+                    success: false,
+                    message: "Permission error"
+                });
+                return;
+            }
 
-            DB.get({
+            db.get({
                 collection: "quiz",
                 query: query,
                 options: {
@@ -394,6 +331,7 @@ var question = {
 
                     docs.forEach(function(doc, index) {
                         doc.created = moment(doc.created).format("YYYY-MM-DD HH:mm:ss");
+                        doc.finished = quiz.checkFinished(doc);
                     });
 
                     res.json({
@@ -411,7 +349,7 @@ var question = {
                 return;
             }
 
-            DB.Quiz.get({
+            db.Quiz.get({
                 _id: _id
             }, function(d){
                 if (!d || !d.success) {
@@ -422,7 +360,7 @@ var question = {
                     return;
                 }
 
-                DB.Question.get({
+                db.Question.get({
                     _id: {$in: d.docs[0].questions}
                 }, function(d){
                     if (!d || !d.success) {
@@ -444,6 +382,21 @@ var question = {
                 })
             })
 
+        },
+        checkFinished: function(quiz) {
+            if (!quiz || !quiz.email || !quiz.visited || !quiz.visited.length) return false;
+
+            var finished = quiz.time * 60 - (new Date() - new Date(quiz.visited[0])) / 1000 <= 0;
+
+            if (finished || !quiz.finished) {
+                db.post({
+                    collection: "quiz",
+                    query: {_id: quiz._id},
+                    doc: {finished: finished}
+                });
+            }
+
+            return finished || quiz.finished;
         },
         generate: function(questions, random) {
             var questions = random ? _.shuffle(questions) : questions,
@@ -487,9 +440,10 @@ var question = {
                 doc.authorNick = req.user.nick;
             }
 
-            DB.get({
+            db.get({
                 collection: "question",
                 query: query,
+                options: {sort: {created: -1}},
                 complete: function(err, docs) {
                     if (err) {
                         res.json({
@@ -509,7 +463,7 @@ var question = {
 
                     doc.created = new Date();
 
-                    DB.put({
+                    db.put({
                         collection: "quiz",
                         doc: _.extend(doc, quiz.generate(docs, true)),
                         complete: function(err, doc) {
@@ -548,11 +502,12 @@ var question = {
             }
 
 
-            DB.get({
+            db.get({
                 collection: "question",
                 query: {
                     _id: {$in: req.body.questions}
                 },
+                options: {sort: {created: -1}},
                 complete: function(err, docs) {
                     if (err) {
                         res.json({
@@ -576,7 +531,7 @@ var question = {
                             authorNick: req.user.nick
                         }, quiz.generate(docs));
 
-                    DB.put({
+                    db.put({
                         collection: "quiz",
                         doc: doc,
                         complete: function(err, doc) {
@@ -597,129 +552,138 @@ var question = {
                 }
             });
         }
-    };
+    },
+    
+    email = {
+        send: function(req, res) {
+            var _email = req.body.email,
+                _id = req.params._id;
 
-exports.index = function(req, res) {
-    var email = req.body.email || '',
-        hash;
-
-    if (!email) {
-        res.redirect("/");
-    }
-    else {
-        DB.Test.get({
-            email: email
-        }, function(d){
-            /*
-             * 账号已创建
-             */
-            if (d.success && d.docs.length) {
-                /*
-                 * 发送过email
-                 */
-                hash = d.docs[0].sha1;
-                if (d.docs[0].emailed.length > 0) {
-                    // 访问过
-                    if (d.docs[0].visited.length) {
-                        //console.log("visited")
-                        /*
-                         *res.render("emailed", {
-                         *    title: "The F2E of world!",
-                         *    sha1: d.docs[0].sha1,
-                         *    text: "答题地址已发送至您的邮箱！"
-                         *});
-                         */
-                    }
-                    // 未访问过
-                    // 可能没有收到email，再次发送
-                    else {
-/*
- *                        util.sendURL(email, GLOBAL.host, function(d){
- *                            if (!d || !d.success) {
- *                                res.send("error");
- *                            }
- *
- *                            res.render("emailed", {
- *                                title: "The F2E of world!",
- *                                sha1: d.docs[0].sha1,
- *                                text: "答题地址已发送至您的邮箱！"
- *                            });
- *                        });
- */
-                        //console.log("not visited")
-                    }
-
-                    util.sendURL(email, GLOBAL.host, function(d){
-                        if (!d || !d.success) {
-                            res.send("error");
-                            return;
-                        }
-
-                        res.render("emailed", {
-                            title: "The F2E of world!",
-                            sha1: hash,
-                            text: "答题地址已发送至您的邮箱！"
-                        });
-                    });
-                }
-                /*
-                 * 没有发送过email
-                 */
-                else {
-                    util.sendURL(email, GLOBAL.host, function(d){
-                        if (!d || !d.success) {
-                            res.send(d.message);
-                        }
-
-                        res.render("emailed", {
-                            title: "The F2E of world!",
-                            sha1: d.docs[0].sha1,
-                            text: "答题地址已发送至您的邮箱！"
-                        });
-                    });
-                }
+            if (!_id || !_email) {
+                res.json({
+                    success: false,
+                    message: "Param error"
+                });
+                return;
             }
-            /*
-             * 创建考卷
-             */
-            else {
-                hash = sha1(email + new Date());
-                DB.Test.put({
-                    email: email,
-                    sha1: hash
-                }, function(d){
-                    if (!d || !d.success) {
-                        res.send("error");
+
+            db.get({
+                collection: "quiz",
+                query: {
+                    _id: _id
+                },
+                complete: function(err, docs) {
+                    if (err) {
+                        res.json({
+                            success: false,
+                            message: err.message
+                        });
                         return;
                     }
 
-                    util.sendURL(email, GLOBAL.host, function(d){
-                        if (!d || !d.success) {
-                            res.send("error");
-                        }
-
-                        res.render("emailed", {
-                            title: "The F2E of world!",
-                            sha1: hash,
-                            text: "答题地址已发送至您的邮箱！"
+                    if (!docs || !docs.length) {
+                        res.json({
+                            success: false,
+                            message: "No question"
                         });
+                        return;
+                    }
+
+                    if (docs[0].email === _email) {
+                        Email({
+                            email: _email,
+                            url: GLOBAL.host + "/test.html?i=" + _id,
+                            complete: function(d) {
+                                if (!d.success) {
+                                    res.json({
+                                        success: false,
+                                        message: "Email error"
+                                    });
+                                    return;
+                                }
+
+                                res.json({
+                                    success: true
+                                });
+                            }
+                        });
+                    }
+                    else {
+                        docs[0].email = _email;
+                        docs[0].author = req.user.loginName;
+                        docs[0].authorNick = req.user.nick;
+
+                        db.put({
+                            collection: "quiz",
+                            doc: docs[0],
+                            complete: function(err, doc) {
+                                if (err) {
+                                    res.json({
+                                        success: false,
+                                        message: err.message
+                                    });
+                                    return;
+                                }
+
+                                Email({
+                                    email: _email,
+                                    url: GLOBAL.host + "/test.html?i=" + _id,
+                                    complete: function(d) {
+                                        if (!d.success) {
+                                            res.json({
+                                                success: false,
+                                                message: "Email error"
+                                            });
+                                            return;
+                                        }
+
+                                        res.json({
+                                            success: true
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+        }
+    };
+
+
+exports.test = {
+    render: function(req, res) {
+        db.get({
+            collection: "quiz",
+            query: {_id: req.params._id},
+            complete: function(err, docs) {
+                if (err) {
+                    res.json({
+                        success: false,
+                        message: err.message
                     });
+                    return;
+                }
+
+                if (!docs || !docs.length) {
+                    res.json({
+                        success: false,
+                        message: "No question"
+                    });
+                    return;
+                }
+
+                docs[0].questions.forEach(function(q, index) {
+                    q.content = util.escapeQuestion(q.content);
+                });
+
+                res.render("test", {
+                    title: "Test",
+                    questions: docs[0].questions
                 });
             }
-        })
-    }
-
-};
-
-exports.test = function(req, res) {
-    test.get(req, res, function(d){
-        res.render("test", {
-            title: "Challenge! The F2E of world!",
-            error: d.success && d.docs.length ? "" : "no test!",
-            questions: d.docs,
-            _id: d._id
         });
-    });
+    }
 };
 
 
@@ -757,7 +721,7 @@ exports.question = {
             return;
         }
 
-        DB.get({
+        db.get({
             collection: "question",
             query: {
                 _id: req.params._id
@@ -808,7 +772,7 @@ exports.quiz = {
             return;
         }
 
-        DB.get({
+        db.get({
             collection: "quiz",
             query: {_id: req.params._id},
             complete: function(err, docs) {
@@ -828,8 +792,13 @@ exports.quiz = {
                     return;
                 }
 
+                docs[0].questions.forEach(function(doc) {
+                    doc.content = util.escapeQuestion(doc.content);
+                });
+
                 res.render("quiz", {
                     title: "quiz",
+                    _id: docs[0]._id,
                     questions: docs[0].questions,
                     level: docs[0].level,
                     time: docs[0].time,
@@ -837,112 +806,132 @@ exports.quiz = {
                 });
             }
         });
-    }
-};
-
-
-/*
- * 发送email
- */
-exports.email = function(req, res) {
-    var sha1 = req.params[0].replace(/^(?:\/io\/email\/)(.+)$/, "$1"),
-        query = {sha1: sha1};
-
-    if (!sha1) {
-        res.json({
-            success: false,
-            message: "PARAM ERR"
-        });
-
-        return;
-    }
-
-    DB.Test.get(query, function(d){
-        if (!d || !d.success || !d.docs.length) {
+    },
+    online: function(req, res) {
+        if (!req.body.email) {
             res.json({
                 success: false,
-                message: "NOT EXSITED"
+                message: "No email"
             });
             return;
         }
 
-        // 最多发送5次
-        if (d.docs[0].emailed.length >= 20) {
-            res.json({
-                success: false,
-                message: "times limited"
-            });
-            return;
-        }
+        db.get({
+            collection: "quiz",
+            query: {email: req.body.email},
+            complete: function(err, docs) {
+                if (err) {
+                    res.json({
+                        success: false,
+                        message: err.message
+                    });
+                    return;
+                }
 
-        util.sendURL(d.docs[0].email, GLOBAL.host, function(d){
-            res.json(d);
-        });
-    });
-};
+                if (!docs) {
+                    res.json({
+                        success: false,
+                        message: "No quiz"
+                    });
+                    return;
+                }
 
-exports.tests = function(req, res) {
-    var sha1 = req.params[0].replace(/^(?:\/tests\/)(.+)$/, "$1");
+                if (!docs.length) {
+                    db.get({
+                        collection: "question",
+                        options: {sort: {created: -1}},
+                        complete: function(err, docs) {
+                            if (err) {
+                                res.json({
+                                    success: false,
+                                    message: err.message
+                                });
+                                return;
+                            }
 
-    if (!sha1 || sha1 === "/tests") {
-        DB.Test.get({}, function(d){
-            if (d && d.docs && d.docs.length) {
-                var now = new Date();
+                            if (!docs || !docs.length) {
+                                res.json({
+                                    success: false,
+                                    message: "No question"
+                                });
+                                return;
+                            }
 
-                d.docs.forEach(function(test, i){
-                    if (test.finished) {
-                        d.docs[i].spend = test.time
-                    }
-                    else {
-                        d.docs[i].spend = test.visited.length ? now - test.visited[0] : 0;
-                        d.docs[i].spend = Math.ceil(d.docs[i].spend / 60000);
-                    }
+                            var doc = {
+                                email: req.body.email,
+                                created: new Date()
+                            };
 
-                    // 更新finished
-                    if (!test.finished && d.docs[i].spend >= test.time) {
-                        d.docs[i].finished = true;
-                        d.docs[i].spend = test.time
-                        DB.Test.post({sha1: test.sha1},{finished: true}, function(d){
-                        });
-                    }
-                });
+                            doc = _.extend(doc, quiz.generate(docs, true));
 
-                res.render("tests", {
-                    title: "tests",
-                    sum: d.docs.length,
-                    ing: _.filter(d.docs, function(t){return !t.finished}).length,
-                    finished: _.filter(d.docs, function(t){return t.finished}).length,
-                    tests: d.docs
-                });
-            }
-            else {
-                res.render("tests", {
-                    title: "tests",
-                    sum: 0,
-                    ing: 0,
-                    finished: 0,
-                    tests: []
-                });
+                            db.put({
+                                collection: "quiz",
+                                doc: doc,
+                                complete: function(err, doc) {
+                                    if (err) {
+                                        res.json({
+                                            success: false,
+                                            message: err.message
+                                        });
+                                        return;
+                                    }
+
+                                    Email({
+                                        email: req.body.email,
+                                        url: GLOBAL.host + "/test.html?i=" + doc._id,
+                                        complete: function(d) {
+                                            if (!d.success) {
+                                                res.json({
+                                                    success: false,
+                                                    message: "Email error"
+                                                });
+                                                return;
+                                            }
+
+                                            res.render("emailed", {
+                                                title: "TaobaoUED",
+                                                email: req.body.email,
+                                                text: "答题地址已发送至您的邮箱！"
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+                else {
+                    Email({
+                        email: req.body.email,
+                        url: GLOBAL.host + "/test.html?i=" + docs[0]._id,
+                        complete: function(d) {
+                            if (!d.success) {
+                                res.json({
+                                    success: false,
+                                    message: "Email error"
+                                });
+                                return;
+                            }
+
+                            res.render("emailed", {
+                                title: "TaobaoUED",
+                                email: req.body.email,
+                                text: "答题地址已发送至您的邮箱！"
+                            });
+                        }
+                    });
+                }
             }
         });
     }
-    else {
-        test.get(req, res, function(d){
-            res.render("tests-item", {
-                title: "tests",
-                _id: d._id,
-                email: d.email,
-                score: d.score,
-                questions: d.docs
-            });
-        }, sha1);
-    }
 };
+
 
 exports.io = {
     question: question,
     test: test,
-    quiz: quiz
+    quiz: quiz,
+    email: email
 };
 
 exports.notfound = function(req, res) {

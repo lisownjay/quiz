@@ -69,8 +69,10 @@ module.exports = db = {
 
        var mod = mongoose.model(collection, schema[collection], collection);
 
-       query._deleted = false;
-       doc._deleted = !!opt.del;
+       /*
+        *query._deleted = false;
+        *doc._deleted = !!opt.del;
+        */
 
        delete doc._id;
 

@@ -45,12 +45,12 @@ app.configure(function(){
     app.use(express.cookieSession());
     app.use(express.methodOverride());
 
-    app.use(nobuc(/^\/(?:__u__|question|tests|admin|authorize|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz\/create).*/, {
+    app.use(nobuc(/^\/(?:__u__|question|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz|io\/email).*/, {
         hostname: GLOBAL.env === "product" ? "login.alibaba-inc.com" : "login-test.alibaba-inc.com",
         appname: "tbuedquiz"
     }));
 
-    app.use(user(/^\/(?:__u__|question|tests|admin|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz\/create).*/));
+    app.use(user(/^\/(?:__u__|question|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz|io\/email).*/));
 
     app.use(stylus.middleware({
         src: __dirname + '/static'
@@ -83,9 +83,9 @@ app.configure('production', function(){
 
 // Routes
 
-/*
- * GET
- */
+app.post("/", function(req, res, next) {
+    routes.quiz.online(req, res);
+});
 
 /*
  * question
@@ -139,6 +139,37 @@ app.get("/io/quiz/:_id", function(req, res, next) {
 
 app.get("/io/quiz", function(req, res, next) {
     routes.io.quiz.get(req, res);
+});
+
+/*
+ * email
+ */
+
+app.post("/io/email/:_id", function(req, res, next) {
+    routes.io.email.send(req, res);
+});
+
+/*
+ * 前台接口
+ * test
+ */
+app.get("/test/:_id", function(req, res, next) {
+    routes.test.render(req, res);
+});
+
+app.get("/io/test/:_id", function(req, res, next) {
+    routes.io.test.get(req, res);
+});
+
+app.post("/io/test/solve", function(req, res, next) {
+    routes.io.test.solve(req, res);
+});
+
+/*
+ * admin
+ */
+app.get(/^\/admin\/*$/, function(req, res, next) {
+    res.redirect(301, "/question");
 });
 
 

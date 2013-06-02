@@ -54,21 +54,24 @@ KISSY.ready(function(S){
     });
 
     var reSend = S.one("#J_ReSend"),
-        s = S.one("#J_S"),
         wait = 60,
         reSending = false,
         clock;
-    reSend && s && reSend.on("click", function(e){
+    reSend && reSend.on("click", function(e){
         if (reSending) return;
 
         reSend.text("正在发送...");
         reSending = true;
         S.io({
-            url: "/io/email/" + s.val(),
+            url: "/",
+            data: {
+                email: reSend.attr("data-email")
+            },
+            cache: false,
             type: "post",
             success: function(d) {
                 reSending = false;
-                if (d && d.success) {
+                if (d && d.success !== false) {
                     reSend.text("发送成功！" + wait-- + "秒后可重新发送");
                     reSending = true;
                     clock = S.later(function(){
@@ -82,9 +85,6 @@ KISSY.ready(function(S){
                             clock.cancel();
                         }
                     }, 1000, true);
-                }
-                else if (d && d.message && d.message === "times limited") {
-                    reSend.text("你已经达到最大重发次数了！");
                 }
                 else {
                     reSend.text("发送失败！请稍后重试");

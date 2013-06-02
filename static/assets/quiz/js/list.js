@@ -40,4 +40,30 @@ KISSY.ready(function(S){
     }
 
     render();
+
+    S.use("quiz/email", function(S, Email) {
+        S.one(document).delegate("click", ".btn-send", function(e){
+            e.halt();
+            var el = S.all(e.currentTarget),
+                email = prompt("请输入email:") || "";
+
+            if (email.match(/[-\w\.]+@\w+(?:(?:\.\w+)+)$/)) {
+                alert("email格式错误!");
+                return;
+            }
+
+            Email({
+                _id: el.attr("data-i"),
+                email: email,
+                complete: function(d) {
+                    if (!d.success) {
+                        alert("发送失败，请重试！");
+                    }
+                    else {
+                        alert("发送成功！");
+                    }
+                }
+            });
+        });
+    });
 });

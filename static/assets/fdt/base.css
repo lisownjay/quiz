@@ -340,6 +340,7 @@ body {
 }
 .topic-slide .slide-content .question pre {
   color: #404040;
+  font:normal 14px/1.6 courier new,courier,monospace;
 }
 .topic-slide .slide-content .answer {
   position: relative;

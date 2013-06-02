@@ -102,14 +102,12 @@ module.exports = {
         author: {
             "type": String,
             "trim": true,
-            "default": "",
-            "required": true
+            "default": ""
         },
         authorNick: {
             "type": String,
             "trim": true,
-            "default": "",
-            "required": true
+            "default": ""
         },
         created: {
             "type": Date,
@@ -164,10 +162,11 @@ module.exports = {
         },
 
         /*
-         * 完成时间
+         * 是否完成
          */
         finished: {
-            "type": Date
+            "type": Boolean,
+            "default": false
         },
 
         _deleted: {

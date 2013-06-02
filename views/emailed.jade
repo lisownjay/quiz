@@ -4,10 +4,8 @@ block head
     script(src="/assets/review/js/base.js")
 block body
     div.link #{text}
-        br
-        input#J_S(type="hidden",value="#{sha1}")
         没收到？
-        a#J_ReSend(href="javascript:void(0)") 重新发送
+        a#J_ReSend(data-email="#{email}", href="javascript:void(0)") 重新发送
         br
         　　　或
         a(href="/") 更换email

@@ -148,23 +148,22 @@ KISSY.add(function(KS, COM, Overlay){
 		commit: function(success, failure){
 			if(!COM.data.isTesting){return;}
 			var idx = COM.data.idx;
-			var questionID = COM.data.question.docs[idx]._id;
+			var questionID = COM.data.question.docs[idx].index;
 			var code = ret.editor.getValue();
 			var data = {};
 			if(code.replace(/\s/g,'')){
-				data[questionID+'[html]'] = code;
-				data[questionID+'[css]'] = '';
-				data[questionID+'[javascript]'] = '';
+				//data["a" + questionID+'[html]'] = code;
+                data["answer[" + questionID + "]"] = code;
 				data['_id'] = COM.data.question._id;
-				data['method'] = 'save';
+				//data['method'] = 'save';
 				KS.io.post(
 					'/io/test/solve',
 					data,
 					function(data){
 						if(data.success){
-							if(typeof success==='function'){success();}
+							if(typeof success==='function'){success(data);}
 						}else{
-							if(typeof failure==='function'){failure();}
+							if(typeof failure==='function'){failure(data);}
 						}
 					},
 					"json"
@@ -174,7 +173,12 @@ KISSY.add(function(KS, COM, Overlay){
 		save: function(){
 			var code = ret.editor.getValue();
 			COM.data.answer[COM.data.idx] = code;
-			ret.commit();
+			ret.commit(function(d){
+            }, function(d){
+                if (d.message === "timeout") {
+                    alert("你已超过答题时间，不能再提交！");
+                }
+            });
 		},
 		bindEvent: function(){
 			ret.view.$textarea.on('keydown', ret.insertTab);

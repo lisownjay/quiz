@@ -97,11 +97,15 @@ KISSY.add(function(KS, COM, TESTDATA, Switchable){
 				type: 'get'
 				,url: '/io/test/' + randomCode
 				,dataType: 'json'
+                ,cache: false
 				,success: function(data){
 					ret.newTest(data);
 					COM.data.isTesting = true;
 					COM.data.question = data;
 					COM.data.answer = {};
+                    KS.each(data.docs, function(q) {
+                        COM.data.answer[q.index] = q.answer;
+                    });
 					COM.invoke(COM.api.topMenu.counting, data.time);
 				}
 			});
