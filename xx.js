@@ -131,7 +131,7 @@ var db = {
 db.get({
     collection: "question",
     options: {
-        sort: {created: -1}
+        sort: {created: 1}
     },
     complete: function(err, docs) {
         if (err) {
@@ -140,11 +140,15 @@ db.get({
         }
 
         docs.forEach(function(doc, index) {
-            doc.id = index + 1;
             var _id = doc._id;
             db.post({
                 collection: "question",
-                doc: doc,
+                query: {
+                    _id: _id
+                },
+                doc: {
+                    id: index + 1
+                },
                 complete: function(err, numAffected) {
                     if (err) {
                         console.log(_id + " " + err.message);
