@@ -29,3 +29,5 @@ Thumbs.db
 .svn/
 *.swp
 node_modules/
+build
+dump
