@@ -589,7 +589,7 @@ var question = {
                         return;
                     }
 
-                    if (!docs[0].email || docs[0].email === _email) {
+                    if (docs[0].email === _email) {
                         Email({
                             email: _email,
                             url: GLOBAL.host + "/test.html?i=" + _id,
