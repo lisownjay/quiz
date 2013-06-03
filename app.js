@@ -45,12 +45,12 @@ app.configure(function(){
     app.use(express.cookieSession());
     app.use(express.methodOverride());
 
-    app.use(nobuc(/^\/(?:__u__|question|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz|io\/email).*/, {
+    app.use(nobuc(/^\/(?:__u__|question|quiz|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz|io\/email).*/, {
         hostname: GLOBAL.env === "product" ? "login.alibaba-inc.com" : "login-test.alibaba-inc.com",
         appname: "tbuedquiz"
     }));
 
-    app.use(user(/^\/(?:__u__|question|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz|io\/email).*/));
+    app.use(user(/^\/(?:__u__|question|quiz|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz|io\/email).*/));
 
     app.use(stylus.middleware({
         src: __dirname + '/static'
