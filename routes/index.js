@@ -628,7 +628,7 @@ var question = {
 
                                 Email({
                                     email: _email,
-                                    url: GLOBAL.host + "/test.html?i=" + _id,
+                                    url: GLOBAL.host + "/test.html?i=" + doc._id,
                                     complete: function(d) {
                                         if (!d.success) {
                                             res.json({
