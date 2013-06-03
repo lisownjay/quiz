@@ -47,7 +47,7 @@ KISSY.ready(function(S){
             var el = S.all(e.currentTarget),
                 email = prompt("请输入email:") || "";
 
-            if (email.match(/[-\w\.]+@\w+(?:(?:\.\w+)+)$/)) {
+            if (!email.match(/[-\w\.]+@\w+(?:(?:\.\w+)+)$/)) {
                 alert("email格式错误!");
                 return;
             }

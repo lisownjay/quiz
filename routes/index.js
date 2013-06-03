@@ -608,6 +608,42 @@ var question = {
                             }
                         });
                     }
+                    else if (!docs[0].email) {
+                        db.post({
+                            collection: "quiz",
+                            query: {_id: _id},
+                            doc: {
+                                email: _email
+                            },
+                            complete: function(err, numAffected) {
+                                if (err) {
+                                    res.json({
+                                        success: false,
+                                        message: err.message
+                                    });
+                                    return;
+                                }
+
+                                Email({
+                                    email: _email,
+                                    url: GLOBAL.host + "/test.html?i=" + _id,
+                                    complete: function(d) {
+                                        if (!d.success) {
+                                            res.json({
+                                                success: false,
+                                                message: "Email error"
+                                            });
+                                            return;
+                                        }
+
+                                        res.json({
+                                            success: true
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
                     else {
                         docs[0].email = _email;
                         docs[0].author = req.user.loginName;
