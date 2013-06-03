@@ -109,7 +109,7 @@ module.exports = exports = function(filter, options) {
     }
 
     function getUrl(req, path) {
-        return req.protocol + "://" + req.host + (path || req.url);
+        return req.protocol + "://" + (options.apphost || req.host) + (path || req.url);
     }
 
     return function(req, res, next) {
