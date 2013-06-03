@@ -213,7 +213,7 @@ var question = {
                         };
                     });
 
-                    var leftTime = docs[0].time * 60;
+                    var leftTime = 3600;
                     if (docs[0].visited && docs[0].visited.length) {
                         // default 60min
                         leftTime = Math.floor(3600 - (new Date() - new Date(docs[0].visited[0])) / 1000);
@@ -386,9 +386,9 @@ var question = {
         checkFinished: function(quiz) {
             if (!quiz || !quiz.email || !quiz.visited || !quiz.visited.length) return false;
 
-            var finished = quiz.time * 60 - (new Date() - new Date(quiz.visited[0])) / 1000 <= 0;
+            var finished = 3600 - (new Date() - new Date(quiz.visited[0])) / 1000 <= 0;
 
-            if (finished || !quiz.finished) {
+            if (finished || !!quiz.finished) {
                 db.post({
                     collection: "quiz",
                     query: {_id: quiz._id},
@@ -589,7 +589,7 @@ var question = {
                         return;
                     }
 
-                    if (docs[0].email === _email) {
+                    if (docs[0].email && docs[0].email === _email) {
                         Email({
                             email: _email,
                             url: GLOBAL.host + "/test.html?i=" + _id,
