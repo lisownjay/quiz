@@ -612,6 +612,7 @@ var question = {
                         docs[0].email = _email;
                         docs[0].author = req.user.loginName;
                         docs[0].authorNick = req.user.nick;
+                        docs[0].created = new Date();
 
                         db.put({
                             collection: "quiz",
