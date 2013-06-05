@@ -2,6 +2,7 @@ extends layout
 block head
     link(type="text/css", rel="stylesheet", href="/global/css/global.css")
     link(type="text/css", rel="stylesheet", href="/assets/quiz/css/quiz.css")
+    link(type="text/css", rel="stylesheet", media="print", href="/assets/quiz/css/print.css")
 block body
     div.box
         - var index = 0;
@@ -18,6 +19,9 @@ block body
         a(href="#",data-i="#{_id}").btn-s.btn-s-green.btn-send 发送
         a(href="#{backurl}").btn-s.btn-s-gray 返回
     script
+        KISSY.one(document).delegate("click", ".btn-print", function(e){
+            window.print();
+        });
         KISSY.use("quiz/email", function(S, Email) {
             S.one(document).delegate("click", ".btn-send", function(e){
                 e.halt();

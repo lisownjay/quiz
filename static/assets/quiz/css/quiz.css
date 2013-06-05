@@ -1,3 +1,4 @@
+html,body,.page,.body{height:auto}
 body{background:#fff;}
 body .page{padding:40px;}
 body .page .question{margin:10px 0;padding:20px 0 100px 24px;border-bottom:1px solid #ccc;position:relative;}
