@@ -748,8 +748,9 @@ exports.question = {
             time: "",
             remark: "",
             from: "",
-            author: req.user.email,
-            authorNick: req.user.nick
+            author: req.user.loginName,
+            authorNick: req.user.nick || req.user.loginName,
+            url: encodeURIComponent("https://login" + (GLOBAL.env === "production" ? "" : "-test") + ".alibaba-inc.com/ssoLogin.htm?APP_NAME=tbuedquiz&BACK_URL=" + encodeURIComponent(req.protocol + "://" + req.host + req.url))
         });
     },
     edit: function(req, res) {
@@ -784,7 +785,8 @@ exports.question = {
                     remark: docs[0].remark,
                     from: docs[0].from || "",
                     author: docs[0].author,
-                    authorNick: docs[0].authorNick
+                    authorNick: docs[0].authorNick || docs[0].authornick,
+                    url: encodeURIComponent("https://login" + (GLOBAL.env === "production" ? "" : "-test") + ".alibaba-inc.com/ssoLogin.htm?APP_NAME=tbuedquiz&BACK_URL=" + encodeURIComponent(req.protocol + "://" + req.host + req.url))
                 });
             }
         });

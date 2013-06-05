@@ -46,7 +46,7 @@ app.configure(function(){
     app.use(express.methodOverride());
 
     app.use(nobuc(/^\/(?:__u__|question|quiz|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz|io\/email).*/, {
-        hostname: GLOBAL.env === "product" ? "login.alibaba-inc.com" : "login-test.alibaba-inc.com",
+        hostname: GLOBAL.env === "production" ? "login.alibaba-inc.com" : "login-test.alibaba-inc.com",
         apphost: "test.ued.taobao.com",
         appname: "tbuedquiz"
     }));
