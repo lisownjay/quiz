@@ -341,48 +341,6 @@ var question = {
                 }
             });
         },
-        render: function(req, res) {
-            var _id = req.params._id;
-
-            if (!_id) {
-                res.send("can not find quiz.");
-                return;
-            }
-
-            db.Quiz.get({
-                _id: _id
-            }, function(d){
-                if (!d || !d.success) {
-                    res.json({
-                        success: false,
-                        message: "find quiz error."
-                    })
-                    return;
-                }
-
-                db.Question.get({
-                    _id: {$in: d.docs[0].questions}
-                }, function(d){
-                    if (!d || !d.success) {
-                        res.json({
-                            success: false,
-                            message: "find question error."
-                        })
-                        return;
-                    }
-
-                    d.docs.forEach(function(doc){
-                        doc.content = util.escapeQuestion(doc.content);
-                    });
-
-                    res.render("quiz", {
-                        title: "quiz",
-                        quizs: d.docs
-                    });
-                })
-            })
-
-        },
         checkFinished: function(quiz) {
             if (!quiz || !quiz.email || !quiz.visited || !quiz.visited.length) return false;
 
@@ -833,6 +791,7 @@ exports.quiz = {
 
                 docs[0].questions.forEach(function(doc) {
                     doc.content = util.escapeQuestion(doc.content);
+                    doc.paddingbottom = doc.type === 2 ? doc.time * 20 : 100;
                 });
 
                 res.render("quiz", {

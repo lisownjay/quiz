@@ -8,9 +8,14 @@ block body
         - var index = 0;
         for q in questions
             - index ++
-            div.question
-                span.question-index #{index}.
-                pre !{q.content}
+            - if (q.paddingbottom)
+                div.question(style="padding-bottom:#{q.paddingbottom}px;")
+                    span.question-index #{index}.
+                    pre !{q.content}
+            - else
+                div.question(data-time="#{q.time}")
+                    span.question-index #{index}.
+                    pre !{q.content}
     div.bar
         div.meta
             span 难度：P#{level}
