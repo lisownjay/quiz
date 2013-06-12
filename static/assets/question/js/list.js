@@ -49,10 +49,18 @@ KISSY.ready(function(S) {
         evt.halt();
 
         var el = S.one(evt.currentTarget),
-            parent = el.parent(".question");
+            _id = el.attr("href"),
+            parent = el.parent(".question"),
+            form = S.one("#J_ListForm");
 
         parent.toggleClass("question-checked");
-        el.prev().prop("checked", parent.hasClass("question-checked"));
+
+        if (parent.hasClass("question-checked") && !form.one("#" + _id)) {
+            form.append('<input type="hidden" id="' + _id + '" name="questions" value="' + _id + '"/>');
+        }
+        else if (form.one("#" + _id)){
+            form.one("#" + _id).remove();
+        }
     });
 
     // del
@@ -60,7 +68,7 @@ KISSY.ready(function(S) {
         evt.halt();
 
         var el = S.one(evt.currentTarget),
-            _id = el.attr("data-id");
+            _id = el.attr("href");
 
         if (!_id) alert("删除失败，请刷新重试！");
 
@@ -129,6 +137,23 @@ KISSY.ready(function(S) {
         });
     });
 
+    function initChecked(questions) {
+        if (!S.isArray(questions)) return questions;
+
+        var form = S.one("#J_ListForm");
+
+        S.each(questions, function(q){
+            if (form.one("#" + q._id)) {
+                q.checked = true;
+            }
+            else {
+                q.checked = false;
+            }
+        });
+
+        return questions;
+    }
+
     render();
 
     function render(data) {
@@ -140,7 +165,7 @@ KISSY.ready(function(S) {
 
         S.use("xtemplate", function(S, XTemplate) {
             if (data = data || window._CACHE_) {
-                list.html(new XTemplate(tpl).render({questions: data}));
+                list.html(new XTemplate(tpl).render({questions: initChecked(data)}));
                 return;
             }
 

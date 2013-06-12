@@ -47,37 +47,36 @@ block body
                         a.label(data-type="type", data-tag="0", href="#nogo") 综合
         div.main
             form#J_ListForm(method="post")
-                div.list#J_List
-                script#J_Template(type="javascript/template")
-                    {{#each questions}}
-                    div.question
-                        input.i-chk(type="checkbox", name="questions", value="{{_id}}")
-                        a.question-chk(href="#nogo", data-id="{{_id}}")✓
-                        pre {{{content}}}
-                        div.question-meta
-                            span.qm-item.qm-skill 分类：
-                                span.qm-tag {{skill}}
-                            span.qm-item.qm-level 难度：
-                                span.qm-tag P{{level}}
-                            span.qm-item.qm-type 题型：
-                                span.qm-tag
-                                    | {{#if type === 1}}选择题{{/if}}
-                                    | {{#if type === 2}}编码题{{/if}}
-                                    | {{#if type === 3}}开放题{{/if}}
-                                    | {{#if type === 0}}综合{{/if}}
-                            span.qm-item.qm-time 耗时：
-                                span.qm-tag {{time}}m
-                            span.qm-item.qm-author 出题人：
-                                span.qm-tag {{#if authorNick}}{{authorNick}}{{else}}{{author}}{{/if}}
-                            {{#if from}}
-                            span.qm-item.qm-from 来源：
-                                span.qm-tag {{from}}
-                            {{/if}}
-                        div.question-panel
-                            a.qp-edit(href="/question/edit/{{_id}}", data-id="{{_id}}")
-                                i ∈
-                                | 编辑
-                            a.qp-del(href="#nogo", data-id="{{_id}}")
-                                i Х
-                                | 删除
-                    {{/each}}
+            div.list#J_List
+            script#J_Template(type="javascript/template")
+                {{#each questions}}
+                div(id="{{_id}}", class="question {{#if checked}}question-checked{{/if}}")
+                    a.question-chk(href="{{_id}}")✓
+                    pre {{{content}}}
+                    div.question-meta
+                        span.qm-item.qm-skill 分类：
+                            span.qm-tag {{skill}}
+                        span.qm-item.qm-level 难度：
+                            span.qm-tag P{{level}}
+                        span.qm-item.qm-type 题型：
+                            span.qm-tag
+                                | {{#if type === 1}}选择题{{/if}}
+                                | {{#if type === 2}}编码题{{/if}}
+                                | {{#if type === 3}}开放题{{/if}}
+                                | {{#if type === 0}}综合{{/if}}
+                        span.qm-item.qm-time 耗时：
+                            span.qm-tag {{time}}m
+                        span.qm-item.qm-author 出题人：
+                            span.qm-tag {{#if authorNick}}{{authorNick}}{{else}}{{author}}{{/if}}
+                        {{#if from}}
+                        span.qm-item.qm-from 来源：
+                            span.qm-tag {{from}}
+                        {{/if}}
+                    div.question-panel
+                        a.qp-edit(href="/question/edit/{{_id}}", data-id="{{_id}}")
+                            i ∈
+                            | 编辑
+                        a.qp-del(href="{{_id}}")
+                            i Х
+                            | 删除
+                {{/each}}
