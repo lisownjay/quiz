@@ -46,14 +46,15 @@ app.configure(function(){
     app.use(express.methodOverride());
 
     app.use(function(req, res, next) {
-        GLOBAL.host = "http://" + req.headers.host;
+        GLOBAL.hostname = req.headers.host;
+        GLOBAL.host = "http://" + GLOBAL.hostname;
         next();
         return;
     });
 
     app.use(nobuc(/^\/(?:__u__|question|quiz|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz|io\/email).*/, {
         hostname: GLOBAL.env === "production" ? "login.alibaba-inc.com" : "login-test.alibaba-inc.com",
-        apphost: "test.ued.taobao.com",
+        apphost: GLOBAL.hostname,
         appname: "tbuedquiz"
     }));
 

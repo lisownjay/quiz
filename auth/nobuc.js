@@ -148,7 +148,7 @@ module.exports = exports = function(filter, options) {
             }
             else {
                 getUser(req.signedCookies._nb_tk_, function(err, data){
-                    if (err) {
+                    if (err || data.errorMessage) {
                         //res.send("Get user info " + err.message + "<br /><a href='#nogo'>重新登录</a>");
                         register(req, res);
                         return;
