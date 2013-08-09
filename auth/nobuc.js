@@ -119,7 +119,7 @@ module.exports = exports = function(filter, options) {
             if (req.query && req.query.SSO_TOKEN) {
                 getUser(req.query.SSO_TOKEN, function(err, data){
 
-                    if (err) {
+                    if (err || data.errorMessage) {
                         //res.send("Get user info " + err.message + "<br /><a href='#nogo'>重新登录</a>");
                         register(req, res);
                         return;
