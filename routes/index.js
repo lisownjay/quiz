@@ -30,6 +30,7 @@ var question = {
 
             doc.author = req.user.loginName;
             doc.authorNick = req.user.nick;
+            doc.tag = "2013campus";
 
             create();
 
@@ -92,6 +93,9 @@ var question = {
                 query = {};
 
             if (_id) query._id = _id;
+
+            // 屏蔽2013-08-10前所有试题
+            query.tag = "2013campus";
 
             db.get({
                 query: query,
@@ -172,7 +176,10 @@ var question = {
         get: function(req, res) {
             db.get({
                 collection: "quiz",
-                query: {_id: req.params._id},
+                query: {
+                    _id: req.params._id,
+                    tag: "2013campus"
+                },
                 fields: {
                     author: 0,
                     authorNick: 0,
@@ -240,7 +247,10 @@ var question = {
 
             db.get({
                 collection: "quiz",
-                query: {_id: req.body._id},
+                query: {
+                    _id: req.body._id,
+                    tag: "2013campus"
+                },
                 complete: function(err, docs) {
                     if (err) {
                         res.json({
@@ -311,6 +321,8 @@ var question = {
                 });
                 return;
             }
+
+            query.tag = "2013campus";
 
             db.get({
                 collection: "quiz",
@@ -420,6 +432,7 @@ var question = {
                     }
 
                     doc.created = new Date();
+                    doc.tag = "2013campus";
 
                     db.put({
                         collection: "quiz",
@@ -488,6 +501,8 @@ var question = {
                             author: req.user.loginName,
                             authorNick: req.user.nick
                         }, quiz.generate(docs));
+
+                    doc.tag = "2013campus";
 
                     db.put({
                         collection: "quiz",
@@ -756,7 +771,7 @@ exports.question = {
  */
 exports.quiz = {
     list: function(req, res) {
-        res.render("quizs", {
+        res.render("quizs-campus", {
             title: "quiz"
         });
     },

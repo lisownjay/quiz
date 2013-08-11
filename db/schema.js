@@ -82,6 +82,9 @@ module.exports = {
         remark: {
             "type": String
         },
+        tag: {
+            "type": String
+        },
         _deleted: {
             "type": Boolean,
             "default": false,
@@ -168,7 +171,9 @@ module.exports = {
             "type": Boolean,
             "default": false
         },
-
+        tag: {
+            "type": String
+        },
         _deleted: {
             "type": Boolean,
             "default": false,

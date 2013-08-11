@@ -10,24 +10,15 @@ block body
                 h1 Quiz
             section.btns
                 a.btn.btn-blue(href="/question") 返回题库
-            //section.tags.online
-                h1 分类
-                ul
-                    li
-                        a.label(data-type="category", data-tag="online", href="#nogo") 在线答题
-                    li
-                        a.label(data-type="category", data-tag="print", href="#nogo") 打印
         div.main
             div.list
                 table.quizs
                     thead
                         tr
-                            th 创建时间
-                            th 创建者
-                            th 面试者
-                            th 难度
-                            th 时长(min)
-                            th(width="120")
+                            th 候选人
+                            th 阅卷人
+                            th 阅卷状态
+                            th 分数
                     tbody#J_List
                         tr
             script#J_Template(type="javascript/template")
