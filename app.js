@@ -28,14 +28,14 @@ app.locals.pretty = true;
 
 // BLOBAL
 GLOBAL.host = "http://test.ued.taobao.com";
-GLOBAL.env = app.get("env");
+GLOBAL.env = "production";
 
 // WTF
 //app.enable('trust proxy');
 
 // Configuration 
 app.configure(function(){
-    app.set('port', process.env.PORT || 80);
+    app.set('port', 3001);
     app.use(express.favicon(__dirname + "/static/favicon.ico"));
     app.use(express.logger("dev"));
     app.set('views', __dirname + '/views');
