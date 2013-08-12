@@ -322,7 +322,12 @@ var question = {
                 return;
             }
 
-            query.tag = "2013campus";
+            if (!query._id) {
+                query.tag = req.params.tag || req.query.tag || "2013campus";
+            }
+
+            console.log(req.params);
+            console.log(query);
 
             db.get({
                 collection: "quiz",
@@ -432,7 +437,7 @@ var question = {
                     }
 
                     doc.created = new Date();
-                    doc.tag = "2013campus";
+                    doc.tag = "2013campuslib";
 
                     db.put({
                         collection: "quiz",
@@ -472,6 +477,7 @@ var question = {
                 return;
             }
 
+            req.body.questions = _.isString(req.body.questions) ? [req.body.questions] : req.body.questions;
 
             db.get({
                 collection: "question",
@@ -502,7 +508,7 @@ var question = {
                             authorNick: req.user.nick
                         }, quiz.generate(docs));
 
-                    doc.tag = "2013campus";
+                    doc.tag = "2013campuslib";
 
                     db.put({
                         collection: "quiz",
@@ -773,6 +779,12 @@ exports.quiz = {
     list: function(req, res) {
         res.render("quizs-campus", {
             title: "quiz"
+        });
+    },
+    lib: function(req, res) {
+        res.render("quizs-lib", {
+            title: "quiz",
+            tag: req.params.tag || ""
         });
     },
     one: function(req, res) {

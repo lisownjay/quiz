@@ -133,6 +133,11 @@ app.get(/^\/quiz\/*$/, function(req, res, next) {
     routes.quiz.list(req, res);
 });
 
+app.get("/quiz/lib/2013campus", function(req, res, next) {
+    req.params.tag = "2013campuslib";
+    routes.quiz.lib(req, res);
+});
+
 app.get("/quiz/:_id", function(req, res, next) {
     routes.quiz.one(req, res);
 });

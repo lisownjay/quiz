@@ -23,6 +23,9 @@ KISSY.ready(function(S){
 
             S.io({
                 url: "/io/quiz",
+                data: {
+                    tag: list.attr("data-tag")
+                },
                 type: "get",
                 cache: false,
                 complete: function(d) {

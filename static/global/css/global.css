@@ -20,6 +20,8 @@ html,body,.page,.body{height:100%;font:13px/1.6 'Terminal Dosis','Helvetica Neue
 .btn-gray:hover{background:#ddd}
 .btn-darkblue{color:#fff;background:#34495e}
 .btn-darkblue:hover{background:#415b76}
+.btn-red{background:#e74c3c}
+.btn-red:hover{background:#ec7063}
 .i-text{padding:3px 5px;border:1px solid #ccc}
 pre{font-family:courier new,courier,monospace;white-space:pre-wrap}
 .clearfix{zoom:1}
