@@ -715,7 +715,7 @@ exports.question = {
     create: function(req, res) {
         res.render("question-form", {
             title: "question.create",
-            content: "",
+            c: "",
             _id: "",
             type: -1,
             skill: {
@@ -751,7 +751,7 @@ exports.question = {
 
                 res.render("question-form", {
                     title: "question.edit",
-                    content: docs[0].content,
+                    c: docs[0].content,
                     _id: docs[0]._id,
                     type: docs[0].type,
                     skill: {
