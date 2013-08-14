@@ -1,0 +1,50 @@
+extends layout
+block head
+    link(type="text/css", rel="stylesheet", href="/global/css/global.css")
+    link(type="text/css", rel="stylesheet", href="/assets/quiz/css/quiz.css")
+block body
+    div.box
+        - var index = 0;
+        for q in questions
+            - index ++
+            div.question
+                span.question-index #{index}.
+                pre !{q.content}
+                - if (q.answer)
+                    pre.answer #{q.answer}
+    div.bar
+        div.meta
+            span 难度：P#{level}
+            span 时间：#{time}m
+            span 答卷人：#{name}(#{mobile} #{mail})
+        a(href="#").btn-s.btn-s-blue.btn-print 打印
+        a(href="#{backurl}").btn-s.btn-s-gray 返回
+    script.
+        KISSY.one(document).delegate("click", ".btn-print", function(e){
+            window.print();
+        });
+        KISSY.use("quiz/email", function(S, Email) {
+            S.one(document).delegate("click", ".btn-send", function(e){
+                e.halt();
+                var el = S.all(e.currentTarget),
+                    email = prompt("请输入email:") || "";
+
+                if (!email.match(/[-\w\.]+@\w+(?:(?:\.\w+)+)$/)) {
+                    alert("email格式错误!");
+                    return;
+                }
+
+                Email({
+                    _id: el.attr("data-i"),
+                    email: email,
+                    complete: function(d) {
+                        if (!d.success) {
+                            alert("发送失败，请重试！");
+                        }
+                        else {
+                            alert("发送成功！");
+                        }
+                    }
+                });
+            });
+        });

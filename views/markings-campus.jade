@@ -1,0 +1,34 @@
+extends layout
+block head
+    link(type="text/css", rel="stylesheet", href="/global/css/global.css")
+    link(type="text/css", rel="stylesheet", href="/assets/quiz/css/style.css")
+    script(type="text/javascript", src="/assets/quiz/js/list.js")
+block body
+    div.box
+        div.side
+            header
+                h1 #{title}
+            section.btns
+                a.btn.btn-blue(href="/question") 返回题库
+        div.main
+            div.list
+                table.quizs
+                    thead
+                        tr
+                            th 答卷人
+                            th 开始时间
+                            th 阅卷人
+                            th 分数
+                            th
+                    tbody#J_List(data-tag="2013campusquiz")
+                        tr
+            script#J_Template(type="javascript/template")
+                {{#each quizs}}
+                tr.quiz
+                    td {{name}}({{mobile}})
+                    td {{start}}
+                    td {{marker}}
+                    td {{score}}
+                    td
+                        a(class="btn-s btn-s-blue", href="/marking/{{_id}}") 阅卷
+                {{/each}}

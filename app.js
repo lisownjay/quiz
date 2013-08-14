@@ -133,7 +133,11 @@ app.get(/^\/quiz\/*$/, function(req, res, next) {
     routes.quiz.list(req, res);
 });
 
-app.get("/quiz/lib/2013campus", function(req, res, next) {
+app.get("/marking/2013campus", function(req, res, next) {
+    routes.quiz.list(req, res);
+});
+
+app.get("/quiz/2013campus", function(req, res, next) {
     req.params.tag = "2013campus";
     routes.quiz.lib(req, res);
 });
@@ -166,8 +170,11 @@ app.post("/io/email/:_id", function(req, res, next) {
  * 前台接口
  * test
  */
-app.get("/test/:_id", function(req, res, next) {
-    routes.test.render(req, res);
+/*
+ *阅卷
+ */
+app.get("/marking/:_id", function(req, res, next) {
+    routes.marking.render(req, res);
 });
 
 app.get("/io/test/:_id", function(req, res, next) {
