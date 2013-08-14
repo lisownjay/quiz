@@ -52,13 +52,13 @@ app.configure(function(){
         return;
     });
 
-    app.use(nobuc(/^\/(?:__u__|question|quiz|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz|io\/email).*/, {
+    app.use(nobuc(/^\/(?:__u__|question|quiz|marking|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz|io\/email).*/, {
         hostname: GLOBAL.env === "production" ? "login.alibaba-inc.com" : "login-test.alibaba-inc.com",
         apphost: GLOBAL.hostname,
         appname: "tbuedquiz"
     }));
 
-    app.use(user(/^\/(?:__u__|question|quiz|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz|io\/email).*/));
+    app.use(user(/^\/(?:__u__|question|quiz|marking|io\/question\/(?:create|update|edit|del)|io\/test\/grade|io\/quiz|io\/email).*/));
 
     app.use(stylus.middleware({
         src: __dirname + '/static'

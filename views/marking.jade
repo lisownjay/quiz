@@ -10,6 +10,8 @@ block body
             div.question
                 span.question-index #{index}.
                 pre !{q.content}
+                - if (q.remark)
+                    pre.remark #{q.remark}
                 - if (q.answer)
                     pre.answer #{q.answer}
     div.bar
