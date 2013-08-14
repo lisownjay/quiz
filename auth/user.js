@@ -60,14 +60,15 @@ module.exports = exports = function(filter) {
                                 loginName: req._user.loginName,
                                 email: req._user.emailAddr,
                                 nick: req._user.nickNameCn || ""
-                            }
-                        }, function(err, doc) {
-                            if (err) {
-                                res.send(err.message);
-                                return;
-                            }
+                            },
+                            complete: function(err, doc) {
+                                if (err) {
+                                    res.send(err.message);
+                                    return;
+                                }
 
-                            next();
+                                next();
+                            }
                         });
 
                         //res.redirect("/authorize");

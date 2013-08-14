@@ -134,7 +134,7 @@ app.get(/^\/quiz\/*$/, function(req, res, next) {
 });
 
 app.get("/quiz/lib/2013campus", function(req, res, next) {
-    req.params.tag = "2013campuslib";
+    req.params.tag = "2013campus";
     routes.quiz.lib(req, res);
 });
 
