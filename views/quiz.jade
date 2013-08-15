@@ -21,7 +21,7 @@ block body
             span 难度：P#{level}
             span 时间：#{time}m
         a(href="#").btn-s.btn-s-blue.btn-print 打印
-        a(href="#",data-i="#{_id}").btn-s.btn-s-green.btn-send 发送
+        //a(href="#",data-i="#{_id}").btn-s.btn-s-green.btn-send 发送
         a(href="#{backurl}").btn-s.btn-s-gray 返回
     script
         KISSY.one(document).delegate("click", ".btn-print", function(e){

@@ -21,3 +21,14 @@ body .bar .btn-s-green{background:#1abc9c}
 body .bar .btn-s-green:hover{background:#1abc9c}
 body .bar .btn-s-gray{color:#333;background:#ccc}
 body .bar .btn-s-gray:hover{background:#ccc}
+body .marking-fix{width:310px;position:fixed;right:-280px;top:50%;margin-top:-115px;opacity:.75;filter:alpha(opacity=75);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=75)";}
+body .marking-fix .marking-score{padding-bottom:1px;background:#ddd}
+body .marking-fix .marking-remark{background:#ddd}
+body .marking-fix label{display:inline-block;width:30px;text-align:center;font-size:16px;background:#000;color:#fff;vertical-align:middle}
+body .marking-fix .label-score{height:50px}
+body .marking-fix .label-remark{height:100px}
+body .marking-fix .i-score{width:268px;height:38px;line-height:38px;padding:3px;border:none;margin:0;font-size:32px;vertical-align:middle}
+body .marking-fix textarea{width:263px;height:86px;margin-left:4px;padding:5px;border:none;vertical-align:middle}
+body .marking-fix button{cursor:pointer}
+body .marking-fix .btn-toggle{display:inline;float:left;width:30px;height:30px;background:#1abc9c;color:#fff;border:none;padding:0;margin:0}
+body .marking-fix .btn-marking{display:inline;float:left;width:279px;height:30px;font-size:16px;border:none;padding:0;margin:0;margin-left:1px;background:#3498db;color:#fff}

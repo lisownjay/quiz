@@ -150,6 +150,10 @@ app.post("/io/quiz/create", function(req, res, next) {
     routes.io.quiz.put(req, res);
 });
 
+app.post("/io/quiz/update/:_id", function(req, res, next) {
+    routes.io.quiz.post(req, res);
+});
+
 app.get("/io/quiz/:_id", function(req, res, next) {
     routes.io.quiz.get(req, res);
 });

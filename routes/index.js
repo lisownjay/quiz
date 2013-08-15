@@ -567,6 +567,32 @@ var question = {
                 }
             });
         },
+        post: function(req, res) {
+            var doc = _.pick(req.body, "score", "remark"),
+                _id = req.params._id;
+
+            db.post({
+                collection: "quiz",
+                query: {
+                    _id: _id
+                },
+                doc: doc,
+                complete: function(err, numAffected) {
+                    if (!err) {
+                        res.json({
+                            success: true,
+                            numAffected: numAffected
+                        });
+                    }
+                    else {
+                        res.json({
+                            success: false,
+                            message: err.message
+                        });
+                    }
+                }
+            });
+        },
         del: function(req, res) {
             var _id = req.params._id;
 
@@ -762,8 +788,6 @@ exports.marking = {
                     q.content = util.escapeQuestion(q.content);
                 });
 
-                console.log(docs[0].email);
-
                 res.render("marking", {
                     title: "Marking",
                     questions: docs[0].questions,
@@ -773,6 +797,8 @@ exports.marking = {
                     name: docs[0].name,
                     mobile: docs[0].mobile,
                     mail: docs[0].email,
+                    remark: docs[0].remark || "",
+                    score: docs[0].score === -1 ? "" : docs[0].score,
                     backurl: req.header("referer")
                 });
             }

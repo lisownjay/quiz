@@ -77,6 +77,7 @@ KISSY.ready(function(S) {
         S.io({
             url: "/io/question/del",
             type: "post",
+            cache: false,
             data: {
                 _id: _id
             },
@@ -121,6 +122,7 @@ KISSY.ready(function(S) {
             data: data,
             type: "post",
             timeout: 3,
+            cache: false,
             complete: function(d) {
                 if (!d || !d.success) {
                     alert("失败，请重试！");
