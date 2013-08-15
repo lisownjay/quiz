@@ -69,4 +69,28 @@ KISSY.ready(function(S){
             });
         });
     });
+
+    S.use("ajax", function(S, IO) {
+        S.all("body").delegate("click", ".btn-quiz-del", function(e) {
+            e.halt();
+            var el = S.one(e.currentTarget);
+
+            if (!confirm("你确认要删除该试卷吗？")) return;
+
+            IO({
+                url: el.attr("href"),
+                type: "get",
+                complete: function(d) {
+                    if (d && d.success) {
+                        alert("删除成功！");
+                        el.parent().parent().remove();
+                    }
+
+                    else {
+                        alert("删除失败！请刷新重试！");
+                    }
+                }
+            });
+        });
+    });
 });

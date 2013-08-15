@@ -7,7 +7,8 @@
  * @todo: 
  * @changelog: 
  */
-var db = require("../db");
+var db = require("../db"),
+    data = require("../db/data");
 
 module.exports = exports = function(filter) {
 
@@ -20,6 +21,10 @@ module.exports = exports = function(filter) {
         }
 
         if (req.user && req.user.nick && req.user.type) {
+            if (!data.has(req.user.nick)) {
+                res.send(403);
+                return;
+            }
             next();
             return;
         }
@@ -51,7 +56,13 @@ module.exports = exports = function(filter) {
                          *}
                          */
 
-                        next();
+                        if (data.has(req.user.nick)) {
+                            next();
+                        }
+                        else {
+                            res.send(403);
+                        }
+
                     }
                     else {
                         db.put({
@@ -67,7 +78,12 @@ module.exports = exports = function(filter) {
                                     return;
                                 }
 
-                                next();
+                                if (data.has(doc.nick)) {
+                                    next();
+                                }
+                                else {
+                                    res.send(403);
+                                }
                             }
                         });
 

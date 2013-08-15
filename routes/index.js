@@ -584,7 +584,7 @@ var question = {
                     _id: _id,
                     tag: "2013campus"
                 },
-                compelte: function(err, numAffected) {
+                complete: function(err, numAffected) {
                     if (!err){
                         res.json({
                             success: true,
