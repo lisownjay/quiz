@@ -102,12 +102,23 @@ module.exports = {
             "required": true,
             "validate": /\d+/
         },
+        /*
+         * 创建者
+         */
         author: {
             "type": String,
             "trim": true,
             "default": ""
         },
         authorNick: {
+            "type": String,
+            "trim": true,
+            "default": ""
+        },
+        /*
+         * 阅卷人
+         */
+        marker: {
             "type": String,
             "trim": true,
             "default": ""
@@ -149,14 +160,24 @@ module.exports = {
             "required": false,
             "validate": /[-\w\.]+@\w+(?:(?:\.\w+)+)$/
         },
-
         /*
          * email时间
          */
         emailed: {
             "type": Array
         },
-
+        name: {
+            "type": String,
+            "trim": true,
+            "required": false,
+            "validate": /.{2,}/
+        },
+        mobile: {
+            "type": String,
+            "trim": true,
+            "required": false,
+            "validate": /\d{8,11}/
+        },
         /*
          * 访问时间
          */
@@ -173,6 +194,16 @@ module.exports = {
         },
         tag: {
             "type": String
+        },
+        /*
+         * 分数
+         * -1: 未评分
+         */
+        score: {
+            "type": Number,
+            "required": false,
+            "enmu": [-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            "default": -1
         },
         _deleted: {
             "type": Boolean,
@@ -213,7 +244,10 @@ module.exports = {
             "type": String,
             "trim": true,
             "required": true,
-            "validate": /[-\w\.]+@\w+(?:(?:\.\w+)+)$/
+            "validate": /[-\w\.]+@\w+(?:(?:\.[-\w]+)+)$/
+        },
+        tag: {
+            "type": String
         },
         _deleted: {
             "type": Boolean,

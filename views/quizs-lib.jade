@@ -1,0 +1,36 @@
+extends layout
+block head
+    link(type="text/css", rel="stylesheet", href="/global/css/global.css")
+    link(type="text/css", rel="stylesheet", href="/assets/quiz/css/style.css")
+    script(type="text/javascript", src="/assets/quiz/js/list.js")
+block body
+    div.box
+        div.side
+            header
+                h1 Quiz
+            section.btns
+                a.btn.btn-blue(href="/question") 返回题库
+        div.main
+            div.list
+                table.quizs
+                    thead
+                        tr
+                            th 创建时间
+                            th 创建人
+                            th 难度
+                            th 时长(min)
+                            th(width="160")
+                    tbody#J_List(data-tag="#{tag}")
+                        tr
+            script#J_Template(type="javascript/template")
+                {{#each quizs}}
+                tr.quiz
+                    td {{created}}
+                    td {{authorNick}}
+                    td P{{level}}
+                    td {{time}}
+                    td
+                        a(class="btn-s btn-s-blue", href="/quiz/{{_id}}") 查看
+                        a(class="btn-s btn-s-green btn-send", href="/io/email/{{_id}}", data-i="{{_id}}") 发送
+                        a(class="btn-s btn-s-red btn-del", href="/io/email/{{_id}}", data-i="{{_id}}") 删除
+                {{/each}}

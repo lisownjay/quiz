@@ -7,7 +7,7 @@ block body
     div.box
         div.side
             header
-                h1 Quiz
+                h1 #{title}
             section.btns
                 a.btn.btn-blue(href="/question") 返回题库
         div.main
@@ -15,21 +15,20 @@ block body
                 table.quizs
                     thead
                         tr
-                            th 候选人
+                            th 答卷人
+                            th 开始时间
                             th 阅卷人
-                            th 阅卷状态
                             th 分数
-                    tbody#J_List
+                            th
+                    tbody#J_List(data-tag="2013campusquiz")
                         tr
             script#J_Template(type="javascript/template")
                 {{#each quizs}}
                 tr.quiz
-                    td {{created}}
-                    td {{authorNick}}
-                    td {{email}}
-                    td P{{level}}
-                    td {{time}}{{#if email}}(<a target="_blank" href="/test/{{_id}}">{{#if finished}}已完成{{else}}进行中{{/if}}</a>){{/if}}
+                    td {{name}}({{mobile}})
+                    td {{start}}
+                    td {{marker}}
+                    td {{score}}
                     td
-                        a(class="btn-s btn-s-blue", href="/quiz/{{_id}}") 查看
-                        a(class="btn-s btn-s-green btn-send", href="/io/email/{{_id}}", data-i="{{_id}}") 发送
+                        a(class="btn-s btn-s-blue", href="/marking/{{_id}}") 阅卷
                 {{/each}}

@@ -137,7 +137,7 @@ var util = {
         return decipherChunks.join('');
     },
     escapeQuestion: function(question) {
-        var imgRegExp = /<\s*img\s+src=[^>]+\/>/g;
+        var imgRegExp = /[^!]{2}<\s*img\s+src=[^>]+\/>/g;
             img = question.match(imgRegExp),
             cursor = 0,
             content = _.escape(question.replace(imgRegExp, function(){
@@ -146,7 +146,7 @@ var util = {
                 return img[parseInt($1, 10)];
             });
 
-        return content;
+        return content.replace(/!!(&lt;\s*img\s+src=)/g, "$1");
     }
 };
 

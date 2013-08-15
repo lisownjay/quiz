@@ -18,8 +18,8 @@ body
             .answer
                 margin-top 10px
                 padding 10px
-                border 1px solid #DDD
-                background #EEE
+                border 1px dotted #DDD
+                background #F4F4F4
                 position relative
             .answer:before
                 content:"答"
@@ -28,6 +28,22 @@ body
                 position absolute
                 left -40px 
                 top -10px
+                opacity .1
+            .remark
+                font-size 12px
+                color: #666
+                margin-top 5px
+                padding 5px
+                border 1px dotted #EEE
+                background #FFF
+                position relative
+            .remark:before
+                content:"析"
+                font-size 24px
+                font-weight bold
+                position absolute
+                left -24px 
+                top -5px
                 opacity .1
         .question:last-child
             border-bottom none

@@ -13,7 +13,7 @@
 .box{font-size:14px;line-height:1.5;margin:150px 0 0 50%;}
 .signin{margin-left:-50%;}
     .signin form{display:inline;}
-    .signin input[type="email"]{width:10px;border:none;outline:none;font-size:12px;}
+    .signin input{width:10px;border:none;outline:none;font-size:12px;}
     .signin .cur{background:url(../images/c.gif) no-repeat 100% 50%;}
     .input-tip{display:none;}
 .email,.link{position:absolute;left:50%;margin-left:-145px;top:100px;}

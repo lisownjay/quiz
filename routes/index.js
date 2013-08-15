@@ -177,8 +177,7 @@ var question = {
             db.get({
                 collection: "quiz",
                 query: {
-                    _id: req.params._id,
-                    tag: "2013campus"
+                    _id: req.params._id
                 },
                 fields: {
                     author: 0,
@@ -248,8 +247,7 @@ var question = {
             db.get({
                 collection: "quiz",
                 query: {
-                    _id: req.body._id,
-                    tag: "2013campus"
+                    _id: req.body._id
                 },
                 complete: function(err, docs) {
                     if (err) {
@@ -322,7 +320,9 @@ var question = {
                 return;
             }
 
-            query.tag = "2013campus";
+            if (!query._id) {
+                query.tag = req.params.tag || req.query.tag || "2013campus";
+            }
 
             db.get({
                 collection: "quiz",
@@ -344,6 +344,8 @@ var question = {
                     docs.forEach(function(doc, index) {
                         doc.created = moment(doc.created).format("YYYY-MM-DD HH:mm:ss");
                         doc.finished = quiz.checkFinished(doc);
+                        doc.start = doc.visited.length ? moment(doc.visited[0]).format("YYYY-MM-DD HH:mm:ss") : "";
+                        doc.score = doc.score === -1 ? "-" : doc.score;
                     });
 
                     res.json({
@@ -455,6 +457,45 @@ var question = {
                 }
             });
         },
+        /*
+         * 随机选择已有测试
+         */
+        select: function(callback) {
+            db.get({
+                collection: "quiz",
+                query: {
+                    tag: "2013campus"
+                },
+                fields: {
+                    "created": 0
+                    ,"tag": 0
+                    ,"_id": 0
+                    ,"id": 0
+                },
+                complete: function(err, docs) {
+                    if (err) {
+                        callback({
+                            success: false,
+                            message: err.message
+                        });
+                        return;
+                    }
+
+                    if (!docs || !docs.length) {
+                        callback({
+                            success: false,
+                            message: "No Quiz"
+                        });
+                        return;
+                    }
+
+                    callback({
+                        success: true,
+                        doc: docs[Math.floor(Math.random() * docs.length)]
+                    });
+                }
+            });
+        },
         put: function(req, res) {
             if (req.body.random) {
                 this.random(req, res);
@@ -472,6 +513,7 @@ var question = {
                 return;
             }
 
+            req.body.questions = _.isString(req.body.questions) ? [req.body.questions] : req.body.questions;
 
             db.get({
                 collection: "question",
@@ -661,7 +703,7 @@ var question = {
     };
 
 
-exports.test = {
+exports.marking = {
     render: function(req, res) {
         db.get({
             collection: "quiz",
@@ -687,9 +729,18 @@ exports.test = {
                     q.content = util.escapeQuestion(q.content);
                 });
 
-                res.render("test", {
-                    title: "Test",
-                    questions: docs[0].questions
+                console.log(docs[0].email);
+
+                res.render("marking", {
+                    title: "Marking",
+                    questions: docs[0].questions,
+                    level: docs[0].level,
+                    time: docs[0].time,
+                    _id: docs[0]._id,
+                    name: docs[0].name,
+                    mobile: docs[0].mobile,
+                    mail: docs[0].email,
+                    backurl: req.header("referer")
                 });
             }
         });
@@ -709,7 +760,7 @@ exports.question = {
     create: function(req, res) {
         res.render("question-form", {
             title: "question.create",
-            content: "",
+            c: "",
             _id: "",
             type: -1,
             skill: {
@@ -745,7 +796,7 @@ exports.question = {
 
                 res.render("question-form", {
                     title: "question.edit",
-                    content: docs[0].content,
+                    c: docs[0].content,
                     _id: docs[0]._id,
                     type: docs[0].type,
                     skill: {
@@ -771,8 +822,14 @@ exports.question = {
  */
 exports.quiz = {
     list: function(req, res) {
-        res.render("quizs-campus", {
-            title: "quiz"
+        res.render("markings-campus", {
+            title: "Marking"
+        });
+    },
+    lib: function(req, res) {
+        res.render("quizs-lib", {
+            title: "Quiz",
+            tag: req.params.tag || ""
         });
     },
     one: function(req, res) {
@@ -821,17 +878,21 @@ exports.quiz = {
         });
     },
     online: function(req, res) {
-        if (!req.body.email) {
+        if (!req.body.email || !req.body.mobile || !req.body.name) {
             res.json({
                 success: false,
-                message: "No email"
+                message: "请输入你的真实姓名，手机、email！"
             });
             return;
         }
 
+        /*
+         * 手机作为唯一标识，不重复随机试卷
+         * 可修改email多次发送
+         */
         db.get({
             collection: "quiz",
-            query: {email: req.body.email},
+            query: {mobile: req.body.mobile, tag: "2013campusquiz"},
             complete: function(err, docs) {
                 if (err) {
                     res.json({
@@ -850,6 +911,56 @@ exports.quiz = {
                 }
 
                 if (!docs.length) {
+                    quiz.select(function(d) {
+                        if (!d.success) {
+                            res.json(d);
+                            return;
+                        }
+
+                        var doc = d.doc;
+
+                        doc.created = new Date();
+                        doc.tag = "2013campusquiz";
+                        doc.email = req.body.email;
+                        doc.mobile = req.body.mobile;
+                        doc.name = req.body.name;
+                        doc.marker = ""
+
+                        db.put({
+                            collection: "quiz",
+                            doc: doc,
+                            complete: function(err, doc) {
+                                if (err) {
+                                    res.json({
+                                        success: false,
+                                        message: err.message
+                                    });
+                                    return;
+                                }
+
+                                Email({
+                                    email: req.body.email,
+                                    url: GLOBAL.host + "/test.html?i=" + doc._id,
+                                    complete: function(d) {
+                                        if (!d.success) {
+                                            res.json({
+                                                success: false,
+                                                message: "Email error"
+                                            });
+                                            return;
+                                        }
+
+                                        res.render("emailed", {
+                                            title: "TaobaoUED",
+                                            email: req.body.email,
+                                            text: "答题地址已发送至您的邮箱！"
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    });
+                    /*
                     db.get({
                         collection: "question",
                         options: {sort: {created: -1}},
@@ -912,8 +1023,20 @@ exports.quiz = {
                             });
                         }
                     });
+                    */
                 }
                 else {
+                    /*
+                     * 重新发送
+                     */
+                    if (docs[0].email !== req.body.email) {
+                        db.post({
+                            collection: "quiz",
+                            query: {_id: docs[0]._id},
+                            doc: {email: req.body.email}
+                        });
+                    }
+
                     Email({
                         email: req.body.email,
                         url: GLOBAL.host + "/test.html?i=" + docs[0]._id,

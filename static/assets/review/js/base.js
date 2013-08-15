@@ -8,26 +8,17 @@
  * @changelog: 
  */
 KISSY.ready(function(S){
-    var emailInput = S.one("#J_Email"),
-        emailBtn = S.one("#J_EmailBtn"),
-        emailForm = S.one("#J_EmailForm"),
-        emailTemp;
+    var nameInput = S.one("#J_Name"),
+        mobileInput = S.one("#J_Mobile"),
+        emailInput = S.one("#J_Email"),
+        form = S.one("#J_Form"),
+        inputTemp;
 
-    /*
-     *emailInput && emailBtn && emailInput.on("valuechange", function(e){
-     *    if (this.value && this.value.match(/^\w+[^@]*@[^@]+\.\w+$/)) emailBtn.show();
-     *    else emailBtn.hide();
-     *});
-     */
 
     //emailInput && emailInput[0].focus();
     emailInput && emailInput.on("valuechange", function(e){
-        if (!emailTemp) {
-            emailTemp = S.one(S.DOM.create("<span>",{style:"alpha:0;color:#FFF;"}));
-            S.one("body").append(emailTemp);
-        }
-        emailTemp.text(emailInput.val());
-        emailInput.width(10 + emailTemp.width());
+
+        adjustInput(emailInput);
 
         if (this.value && this.value.match(/^\w+[^@]*@[^@]+\.\w+$/)) {
             emailInput.css({"color": "#0F790F"});
@@ -35,22 +26,39 @@ KISSY.ready(function(S){
         else {
             emailInput.css({"color": "#F00"});
         }
-    }).on("focus", function(e){
-        //emailInput.removeClass("cur");
-        S.one("#J_InputTip").show();
-    }).on("blur", function(e){
-        
-        if (emailTemp) {
-            emailTemp.remove();
-            emailTemp = null;
+    });
+    
+    nameInput && nameInput.on("valuechange", function(e){
+        adjustInput(nameInput);
+    });
+
+    mobileInput && mobileInput.on("valuechange", function(e){
+        adjustInput(mobileInput);
+    });
+
+    S.all("#J_Name, #J_Mobile, #J_Email").on("focus", function(e){
+        S.all("#J_InputTip").show();
+    }).
+    on("keydown", function(e) {
+        if (e.keyCode !== 13) return;
+
+        if (emailInput && emailInput.val().match(/^.+[^@]*@[^@]+\.\w+$/)) {
+            form[0].submit();
         }
     });
 
-    emailForm && emailForm.on("submit", function(e){
-        e.halt();
-        if (emailInput && emailInput.val().match(/^\w+[^@]*@[^@]+\.\w+$/)) {
-            emailForm[0].submit();
+
+    function adjustInput(input) {
+        if (!inputTemp) {
+            inputTemp = S.one(S.DOM.create("<span>",{style:"alpha:0;color:#FFF;"}));
+            S.one("body").append(inputTemp);
         }
+        inputTemp.text(input.val());
+        input.width(10 + inputTemp.width());
+    }
+
+    form && form.on("submit", function(e){
+        e.halt();
     });
 
     var reSend = S.one("#J_ReSend"),

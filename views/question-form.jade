@@ -9,12 +9,12 @@ block body
         table
             tr
                 th
-                    label(for="J_Content") 题目
+                    label(for="J_Content") 题目*
                 td
-                    textarea#J_Content(name="content") #{content}
+                    textarea#J_Content(name="content") #{c}
             tr
                 th
-                    label 类型
+                    label 类型*
                 td
                     span.td-item
                         - if (type == 1)
@@ -42,7 +42,7 @@ block body
                         label(for="J_Type0") 其他
             tr
                 th
-                    label 知识点
+                    label 知识点*
                 td
                     span.td-item
                         - if (skill.html)
@@ -64,7 +64,7 @@ block body
                         label(for="J_SkillJavaScript") JavaScript
             tr
                 th
-                    label 难度
+                    label 难度*
                 td
                     span.td-item
                         - if (level == 4)
@@ -98,7 +98,7 @@ block body
                         label(for="J_Level8") P8
             tr
                 th
-                    label(for="J_Time") 耗时
+                    label(for="J_Time") 耗时*
                 td
                     input#J_Time(type="text", placeholder="5", name="time", value="#{time}")
                     | 分钟
