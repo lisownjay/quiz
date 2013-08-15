@@ -224,12 +224,18 @@ KISSY.ready(function(S) {
         if (f.skill.length) {
             d = ret.slice(0);
             ret = [];
+
             S.each(f.skill, function(skill) {
-                S.each(d, function(q, index) {
+                var i = 0, q;
+                while (q = d[i]) {
                     if (q && q.skill.indexOf(skill) >= 0) {
                         ret.push(q);
+                        d.splice(i, 1);
                     }
-                });
+                    else {
+                        i++;
+                    }
+                }
             });
         }
 

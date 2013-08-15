@@ -52,6 +52,7 @@ block body
             script#J_Template(type="javascript/template")
                 {{#each questions}}
                 div(id="{{_id}}", class="question {{#if checked}}question-checked{{/if}}")
+                    span.index {{xcount - xindex}}
                     a.question-chk(href="{{_id}}")✓
                     pre {{{content}}}
                     div.question-meta

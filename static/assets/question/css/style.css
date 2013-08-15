@@ -6,6 +6,7 @@
 .question{border:1px solid #ddd;-webkit-border-radius:6px;border-radius:6px;position:relative;left:0;top:0;margin-bottom:30px;zoom:1;}
 .question:before,.question:after{content:"";display:table}
 .question:after{clear:both}
+.question .index{font-size:28px;color:#999;font-weight:bold;opacity:.2;filter:alpha(opacity=20);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";position:absolute;left:-30px}
 .question .i-chk{display:none}
 .question .question-chk{display:block;width:30px;height:30px;color:#fff;line-height:30px;text-align:center;font-size:24px;text-decoration:none;background:#ddd;position:absolute;right:0;top:0;-webkit-border-radius:0 4px 0 4px;border-radius:0 4px 0 4px;cursor:pointer}
 .question .question-chk.hover,.question .question-chk:hover{background:#1abc9c}
