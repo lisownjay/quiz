@@ -158,6 +158,10 @@ app.get("/io/quiz", function(req, res, next) {
     routes.io.quiz.get(req, res);
 });
 
+app.get("/io/quiz/del/:_id", function(req, res, next) {
+    routes.io.quiz.del(req, res);
+});
+
 /*
  * email
  */

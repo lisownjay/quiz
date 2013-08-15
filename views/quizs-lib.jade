@@ -31,6 +31,5 @@ block body
                     td {{time}}
                     td
                         a(class="btn-s btn-s-blue", href="/quiz/{{_id}}") 查看
-                        a(class="btn-s btn-s-green btn-send", href="/io/email/{{_id}}", data-i="{{_id}}") 发送
-                        a(class="btn-s btn-s-red btn-del", href="/io/email/{{_id}}", data-i="{{_id}}") 删除
+                        a(class="btn-s btn-s-red btn-del", href="/io/quiz/del/{{_id}}", data-i="{{_id}}") 删除
                 {{/each}}

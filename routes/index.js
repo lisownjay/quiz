@@ -566,6 +566,39 @@ var question = {
                     });
                 }
             });
+        },
+        del: function(req, res) {
+            var _id = req.params._id;
+
+            if (!_id) {
+                res.json({
+                    success: false,
+                    message: "No _id"
+                });
+                return;
+            }
+
+            db.del({
+                collection: "quiz",
+                query: {
+                    _id: _id,
+                    tag: "2013campus"
+                },
+                compelte: function(err, numAffected) {
+                    if (!err){
+                        res.json({
+                            success: true,
+                            numAffected: numAffected
+                        });
+                    }
+                    else {
+                        res.json({
+                            success: false,
+                            message: err.message
+                        });
+                    }
+                }
+            });
         }
     },
     
