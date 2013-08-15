@@ -53,7 +53,7 @@ block body
                 {{#each questions}}
                 div(id="{{_id}}", class="question {{#if checked}}question-checked{{/if}}")
                     span.index {{xcount - xindex}}
-                    a.question-chk(href="{{_id}}")✓
+                    a.question-chk(href="{{_id}}", data-href="{{_id}}")✓
                     pre {{{content}}}
                     div.question-meta
                         span.qm-item.qm-skill 分类：

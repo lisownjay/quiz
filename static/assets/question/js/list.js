@@ -49,7 +49,7 @@ KISSY.ready(function(S) {
         evt.halt();
 
         var el = S.one(evt.currentTarget),
-            _id = el.attr("href"),
+            _id = el.attr("data-href"),
             parent = el.parent(".question"),
             form = S.one("#J_ListForm");
 
