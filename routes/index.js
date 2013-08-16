@@ -31,6 +31,7 @@ var question = {
             doc.author = req.user.loginName;
             doc.authorNick = req.user.nick;
             doc.tag = "2013campus";
+            doc.stationId = req.user.stationId;
 
             create();
 
@@ -96,6 +97,7 @@ var question = {
 
             // 屏蔽2013-08-10前所有试题
             query.tag = "2013campus";
+            query.stationId = req.user.stationId;
 
             db.get({
                 query: query,
@@ -324,6 +326,8 @@ var question = {
                 query.tag = req.params.tag || req.query.tag || "2013campus";
             }
 
+            query.stationId = req.user.stationId;
+
             db.get({
                 collection: "quiz",
                 query: query,
@@ -412,6 +416,8 @@ var question = {
                 doc.authorNick = req.user.nick;
             }
 
+            query.stationId = req.user.stationId;
+
             db.get({
                 collection: "question",
                 query: query,
@@ -435,6 +441,7 @@ var question = {
 
                     doc.created = new Date();
                     doc.tag = "2013campus";
+                    doc.stationId = req.user.stationId;
 
                     db.put({
                         collection: "quiz",
@@ -459,12 +466,14 @@ var question = {
         },
         /*
          * 随机选择已有测试
+         * 需要根据tag和岗位编号进行stationId
          */
-        select: function(callback) {
+        select: function(stationId, callback) {
             db.get({
                 collection: "quiz",
                 query: {
-                    tag: "2013campus"
+                    tag: "2013campus",
+                    stationId: stationId
                 },
                 fields: {
                     "created": 0
@@ -541,7 +550,8 @@ var question = {
                     var doc = _.extend({
                             created: new Date(),
                             author: req.user.loginName,
-                            authorNick: req.user.nick
+                            authorNick: req.user.nick,
+                            stationId: req.user.stationId
                         }, quiz.generate(docs));
 
                     doc.tag = "2013campus";
@@ -813,7 +823,8 @@ exports.marking = {
 exports.question = {
     list: function(req, res) {
         res.render("question", {
-            title: "question"
+            title: "question",
+            stationId: req.user.stationId
         });
     },
     create: function(req, res) {
@@ -833,7 +844,8 @@ exports.question = {
             from: "",
             author: req.user.loginName,
             authorNick: req.user.nick || req.user.loginName,
-            url: encodeURIComponent("https://login" + (GLOBAL.env === "production" ? "" : "-test") + ".alibaba-inc.com/ssoLogin.htm?APP_NAME=tbuedquiz&BACK_URL=" + encodeURIComponent(req.protocol + "://" + req.host + req.url))
+            url: encodeURIComponent("https://login" + (GLOBAL.env === "production" ? "" : "-test") + ".alibaba-inc.com/ssoLogin.htm?APP_NAME=tbuedquiz&BACK_URL=" + encodeURIComponent(req.protocol + "://" + req.host + req.url)),
+            stationId: req.user.stationId
         });
     },
     edit: function(req, res) {
@@ -861,7 +873,9 @@ exports.question = {
                     skill: {
                         html: docs[0].skill.indexOf("html") >= 0,
                         javascript: docs[0].skill.indexOf("javascript") >= 0,
-                        css: docs[0].skill.indexOf("css") >= 0
+                        css: docs[0].skill.indexOf("css") >= 0,
+                        normal: docs[0].skill.indexOf("normal") >= 0,
+                        design: docs[0].skill.indexOf("design") >= 0
                     },
                     level: docs[0].level,
                     time: docs[0].time,
@@ -869,7 +883,8 @@ exports.question = {
                     from: docs[0].from || "",
                     author: docs[0].author,
                     authorNick: docs[0].authorNick || docs[0].author,
-                    url: encodeURIComponent("https://login" + (GLOBAL.env === "production" ? "" : "-test") + ".alibaba-inc.com/ssoLogin.htm?APP_NAME=tbuedquiz&BACK_URL=" + encodeURIComponent(req.protocol + "://" + req.host + req.url))
+                    url: encodeURIComponent("https://login" + (GLOBAL.env === "production" ? "" : "-test") + ".alibaba-inc.com/ssoLogin.htm?APP_NAME=tbuedquiz&BACK_URL=" + encodeURIComponent(req.protocol + "://" + req.host + req.url)),
+                    stationId: req.user.stationId
                 });
             }
         });
@@ -937,10 +952,27 @@ exports.quiz = {
         });
     },
     online: function(req, res) {
-        if (!req.body.email || !req.body.mobile || !req.body.name) {
+        if (!req.body.email || !req.body.mobile || !req.body.name || !req.body.stationId) {
             res.json({
                 success: false,
                 message: "请输入你的真实姓名，手机、email！"
+            });
+            return;
+        }
+
+        //手机号码格式验证
+        if(!/\d{8,11}/.test(req.body.mobile)){
+            res.json({
+                success: false,
+                message: "请输入正确的手机号码！"
+            });
+            return;
+        }
+        //电子邮件格式验证
+        if(!/[-\w\.]+@[-\w]+(?:(?:\.[-\w]+)+)$/.test(req.body.email)){
+            res.json({
+                success: false,
+                message: "请输入正确的email地址！"
             });
             return;
         }
@@ -970,7 +1002,7 @@ exports.quiz = {
                 }
 
                 if (!docs.length) {
-                    quiz.select(function(d) {
+                    quiz.select(req.body.stationId, function(d) {
                         if (!d.success) {
                             res.json(d);
                             return;

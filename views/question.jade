@@ -1,84 +1,97 @@
 extends layout
 block head
-    link(type="text/css", rel="stylesheet", href="/global/css/global.css")
-    link(type="text/css", rel="stylesheet", href="/assets/question/css/style.css")
-    script(type="text/javascript", src="/assets/question/js/list.js")
+	link(type="text/css", rel="stylesheet", href="/global/css/global.css")
+	link(type="text/css", rel="stylesheet", href="/assets/question/css/style.css")
+	script(type="text/javascript", src="/assets/question/js/list.js")
 block body
-    div.box
-        div.side
-            header
-                h1 Question
-            section.btns
-                a.btn.btn-blue(href="/question/create") 添加题目
-                button.btn.btn-green#J_QuizCreate 生成考卷
-                a.btn.btn-red(href="/quiz/2013campus") 2013校招试卷库
-                a.btn.btn-darkblue(href="/marking/2013campus") 阅卷
-            section.tags.skill
-                h1 分类
-                ul
-                    li
-                        a.label(data-type="skill", data-tag="javascript", href="#nogo") JavaScript
-                    li
-                        a.label(data-type="skill", data-tag="html", href="#nogo") HTML
-                    li
-                        a.label(data-type="skill", data-tag="css", href="#nogo") CSS
-            section.tags.level
-                h1 难度
-                ul
-                    li
-                        a.label(data-type="level", data-tag="4", href="#nogo") P4
-                    li
-                        a.label(data-type="level", data-tag="5", href="#nogo") P5
-                    li
-                        a.label(data-type="level", data-tag="6", href="#nogo") P6
-                    li
-                        a.label(data-type="level", data-tag="7", href="#nogo") P7
-                    li
-                        a.label(data-type="level", data-tag="8", href="#nogo") P8
-            section.tags.type
-                h1 题型
-                ul
-                    li
-                        a.label(data-type="type", data-tag="1", href="#nogo") 选择题
-                    li
-                        a.label(data-type="type", data-tag="2", href="#nogo") 编码题
-                    li
-                        a.label(data-type="type", data-tag="3", href="#nogo") 开放题
-                    li
-                        a.label(data-type="type", data-tag="0", href="#nogo") 综合
-        div.main
-            form#J_ListForm(method="post")
-            div.list#J_List
-            script#J_Template(type="javascript/template")
-                {{#each questions}}
-                div(id="{{_id}}", class="question {{#if checked}}question-checked{{/if}}")
-                    span.index {{xcount - xindex}}
-                    a.question-chk(href="{{_id}}", data-href="{{_id}}")✓
-                    pre {{{content}}}
-                    div.question-meta
-                        span.qm-item.qm-skill 分类：
-                            span.qm-tag {{skill}}
-                        span.qm-item.qm-level 难度：
-                            span.qm-tag P{{level}}
-                        span.qm-item.qm-type 题型：
-                            span.qm-tag
-                                | {{#if type === 1}}选择题{{/if}}
-                                | {{#if type === 2}}编码题{{/if}}
-                                | {{#if type === 3}}开放题{{/if}}
-                                | {{#if type === 0}}综合{{/if}}
-                        span.qm-item.qm-time 耗时：
-                            span.qm-tag {{time}}m
-                        span.qm-item.qm-author 出题人：
-                            span.qm-tag {{#if authorNick}}{{authorNick}}{{else}}{{author}}{{/if}}
-                        {{#if from}}
-                        span.qm-item.qm-from 来源：
-                            span.qm-tag {{from}}
-                        {{/if}}
-                    div.question-panel
-                        a.qp-edit(href="/question/edit/{{_id}}", data-id="{{_id}}")
-                            i ∈
-                            | 编辑
-                        a.qp-del(href="{{_id}}")
-                            i Х
-                            | 删除
-                {{/each}}
+	div.box
+		div.side
+			header
+				h1 Question
+			section.btns
+				a.btn.btn-blue(href="/question/create") 添加题目
+				button.btn.btn-green#J_QuizCreate 生成考卷
+				a.btn.btn-red(href="/quiz/2013campus") 2013校招试卷库
+				a.btn.btn-darkblue(href="/marking/2013campus") 阅卷
+			section.tags
+				- if (stationId == 1)
+					h1 当前岗位：前端开发工程师
+				- else if(stationId == 2)
+					h1 当前岗位：交互设计师
+			section.tags.skill
+				h1 分类
+				- if (stationId == 1)
+					ul
+						li
+							a.label(data-type="skill", data-tag="javascript", href="#nogo") JavaScript
+						li
+							a.label(data-type="skill", data-tag="html", href="#nogo") HTML
+						li
+							a.label(data-type="skill", data-tag="css", href="#nogo") CSS
+				- else if(stationId == 2)
+					ul
+						li
+							a.label(data-type="skill", data-tag="normal", href="#nogo") 常识
+						li
+							a.label(data-type="skill", data-tag="design", href="#nogo") 设计题
+
+			section.tags.level
+				h1 难度
+				ul
+					li
+						a.label(data-type="level", data-tag="4", href="#nogo") P4
+					li
+						a.label(data-type="level", data-tag="5", href="#nogo") P5
+					li
+						a.label(data-type="level", data-tag="6", href="#nogo") P6
+					li
+						a.label(data-type="level", data-tag="7", href="#nogo") P7
+					li
+						a.label(data-type="level", data-tag="8", href="#nogo") P8
+			section.tags.type
+				h1 题型
+				ul
+					li
+						a.label(data-type="type", data-tag="1", href="#nogo") 选择题
+					li
+						a.label(data-type="type", data-tag="2", href="#nogo") 编码题
+					li
+						a.label(data-type="type", data-tag="3", href="#nogo") 开放题
+					li
+						a.label(data-type="type", data-tag="0", href="#nogo") 综合
+		div.main
+			form#J_ListForm(method="post")
+			div.list#J_List
+			script#J_Template(type="javascript/template")
+				{{#each questions}}
+				div(id="{{_id}}", class="question {{#if checked}}question-checked{{/if}}")
+					span.index {{xcount - xindex}}
+					a.question-chk(href="{{_id}}", data-href="{{_id}}")✓
+					pre {{{content}}}
+					div.question-meta
+						span.qm-item.qm-skill 分类：
+							span.qm-tag {{skill}}
+						span.qm-item.qm-level 难度：
+							span.qm-tag P{{level}}
+						span.qm-item.qm-type 题型：
+							span.qm-tag
+								| {{#if type === 1}}选择题{{/if}}
+								| {{#if type === 2}}编码题{{/if}}
+								| {{#if type === 3}}开放题{{/if}}
+								| {{#if type === 0}}综合{{/if}}
+						span.qm-item.qm-time 耗时：
+							span.qm-tag {{time}}m
+						span.qm-item.qm-author 出题人：
+							span.qm-tag {{#if authorNick}}{{authorNick}}{{else}}{{author}}{{/if}}
+						{{#if from}}
+						span.qm-item.qm-from 来源：
+							span.qm-tag {{from}}
+						{{/if}}
+					div.question-panel
+						a.qp-edit(href="/question/edit/{{_id}}", data-id="{{_id}}")
+							i ∈
+							| 编辑
+						a.qp-del(href="{{_id}}")
+							i Х
+							| 删除
+				{{/each}}

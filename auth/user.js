@@ -20,6 +20,7 @@ module.exports = exports = function(filter) {
             return;
         }
 
+
         if (req.user && req.user.nick && req.user.type) {
             if (!data.has(req.user.nick)) {
                 res.send(403);
@@ -33,20 +34,20 @@ module.exports = exports = function(filter) {
             db.get({
                 collection: "user",
                 query: {
-                    loginName: req._user.loginName,
+                    loginName: req._user.loginName
                 },
                 complete: function(err, docs) {
                     if (err) {
                         res.send(err.message);
                         return;
                     }
-
                     if (docs.length) {
                         req.user = {
                             loginName: docs[0].loginName,
                             nick: docs[0].nick || "",
                             email: docs[0].email || "",
-                            type: docs[0].type
+                            type: docs[0].type,
+                            stationId: docs[0].stationId
                         };
 
                         /*
@@ -57,6 +58,7 @@ module.exports = exports = function(filter) {
                          */
 
                         if (data.has(req.user.nick)) {
+
                             next();
                         }
                         else {
@@ -65,25 +67,34 @@ module.exports = exports = function(filter) {
 
                     }
                     else {
+                        if (!data.has(req._user.nickNameCn)) {
+                            res.send(403);
+                            return;
+                        }
+                        //取得相应的岗位
+                        var station = data.station(req._user.nickNameCn);
+
                         db.put({
                             collection: "user",
                             doc: {
                                 loginName: req._user.loginName,
                                 email: req._user.emailAddr,
-                                nick: req._user.nickNameCn || ""
+                                nick: req._user.nickNameCn || "",
+                                stationId: station.id || ""
                             },
-                            complete: function(err, doc) {
+                            complete: function(err, docs) {
                                 if (err) {
                                     res.send(err.message);
                                     return;
                                 }
+                                req.user = {
+                                    loginName: req._user.loginName,
+                                    nick: req._user.nickNameCn || "",
+                                    email: req._user.emailAddr,
+                                    stationId: station.id
+                                };
 
-                                if (data.has(doc.nick)) {
-                                    next();
-                                }
-                                else {
-                                    res.send(403);
-                                }
+                                next();
                             }
                         });
 

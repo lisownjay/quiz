@@ -89,6 +89,13 @@ module.exports = {
             "type": Boolean,
             "default": false,
             "required": true
+        },
+        /**
+         * 所属的岗位编号
+         */
+        stationId:{
+            "type": String,
+            "required": true
         }
     }),
 
@@ -211,6 +218,13 @@ module.exports = {
             "type": Boolean,
             "default": false,
             "required": true
+        },
+        /**
+         * 所属的岗位编号
+         */
+        stationId:{
+            "type": String,
+            "required": true
         }
     }),
 
@@ -254,6 +268,13 @@ module.exports = {
         _deleted: {
             "type": Boolean,
             "default": false,
+            "required": true
+        },
+        /**
+         * 所属的岗位编号
+         */
+        stationId:{
+            "type": String,
             "required": true
         }
     })

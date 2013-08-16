@@ -1,132 +1,146 @@
 extends layout
 block head
-    link(type="text/css", rel="stylesheet", href="/global/css/global.css")
-    link(type="text/css", rel="stylesheet", href="/assets/question/css/style.css")
-    link(type="text/css", rel="stylesheet", href="/assets/question/css/form.css")
-    script(type="text/javascript", src="/assets/question/js/form.js")
+	link(type="text/css", rel="stylesheet", href="/global/css/global.css")
+	link(type="text/css", rel="stylesheet", href="/assets/question/css/style.css")
+	link(type="text/css", rel="stylesheet", href="/assets/question/css/form.css")
+	script(type="text/javascript", src="/assets/question/js/form.js")
 block body
-    form.question-form#J_QuestionForm
-        table
-            tr
-                th
-                    label(for="J_Content") 题目*
-                td
-                    textarea#J_Content(name="content") #{c}
-            tr
-                th
-                    label 类型*
-                td
-                    span.td-item
-                        - if (type == 1)
-                            input#J_Type1(name="type", checked, type="radio", value="1")
-                        - else
-                            input#J_Type1(name="type", type="radio", value="1")
-                        label(for="J_Type1") 选择题
-                    span.td-item
-                        - if (type == 2)
-                            input#J_Type2(name="type", checked, type="radio", value="2")
-                        - else
-                            input#J_Type2(name="type", type="radio", value="2")
-                        label(for="J_Type2") 编码题
-                    span.td-item
-                        - if (type == 3)
-                            input#J_Type3(name="type", checked, type="radio", value="3")
-                        - else
-                            input#J_Type3(name="type", type="radio", value="3")
-                        label(for="J_Type3") 开放题
-                    span.td-item
-                        - if (type == 0)
-                            input#J_Type0(name="type", checked, type="radio", value="0")
-                        - else
-                            input#J_Type0(name="type", type="radio", value="0")
-                        label(for="J_Type0") 其他
-            tr
-                th
-                    label 知识点*
-                td
-                    span.td-item
-                        - if (skill.html)
-                            input#J_SkillHTML(name="skill", checked, type="checkbox", value="html")
-                        - else
-                            input#J_SkillHTML(name="skill", type="checkbox", value="html")
-                        label(for="J_SkillHTML") HTML
-                    span.td-item
-                        - if (skill.css)
-                            input#J_SkillCSS(name="skill", checked, type="checkbox", value="css")
-                        - else
-                            input#J_SkillCSS(name="skill", type="checkbox", value="css")
-                        label(for="J_SkillCSS") CSS
-                    span.td-item
-                        - if (skill.javascript)
-                            input#J_SkillJavaScript(name="skill", checked, type="checkbox", value="javascript")
-                        - else
-                            input#J_SkillJavaScript(name="skill", type="checkbox", value="javascript")
-                        label(for="J_SkillJavaScript") JavaScript
-            tr
-                th
-                    label 难度*
-                td
-                    span.td-item
-                        - if (level == 4)
-                            input#J_Level4(name="level", checked, type="radio", value="4")
-                        - else
-                            input#J_Level4(name="level", type="radio", value="4")
-                        label(for="J_Level4") P4
-                    span.td-item
-                        - if (level == 5)
-                            input#J_Level5(name="level", checked, type="radio", value="5")
-                        - else
-                            input#J_Level5(name="level", type="radio", value="5")
-                        label(for="J_Level5") P5
-                    span.td-item
-                        - if (level == 6)
-                            input#J_Level6(name="level", checked, type="radio", value="6")
-                        - else
-                            input#J_Level6(name="level", type="radio", value="6")
-                        label(for="J_Level6") P6
-                    span.td-item
-                        - if (level == 7)
-                            input#J_Level7(name="level", checked, type="radio", value="7")
-                        - else
-                            input#J_Level7(name="level", type="radio", value="7")
-                        label(for="J_Level7") P7
-                    span.td-item
-                        - if (level == 8)
-                            input#J_Level8(name="level", checked, type="radio", value="8")
-                        - else
-                            input#J_Level8(name="level", type="radio", value="8")
-                        label(for="J_Level8") P8
-            tr
-                th
-                    label(for="J_Time") 耗时*
-                td
-                    input#J_Time(type="text", placeholder="5", name="time", value="#{time}")
-                    | 分钟
-            tr
-                th
-                    label(for="J_Remark") 答案分析
-                td
-                    textarea.ta-remark#J_Remark(name="remark") #{remark}
-            tr
-                th
-                    label(for="J_From") 来源
-                td
-                    input.i-text#J_From(type="text", name="from", value="#{from}")
-            tr
-                th
-                    label(for="J_Author") 出题人
-                td
-                    input.i-text#J_Author(type="hidden", name="author", value="#{author}")
-                    input.i-text#J_AuthorNick(type="hidden", name="authorNick", value="#{authorNick}")
-                    span #{authorNick}
-                    - if (!_id)
-                        a.chuser(href="https://login.alibaba-inc.com/ssoLogout.htm?BACK_URL=#{url}") 更换账户
-            tr
-                th
-                td
-                    - if (_id)
-                        input(name="_id", type="hidden", value="#{_id}")
-                        button.btn.btn-blue(type="submit") 编辑
-                    - else
-                        button.btn.btn-blue(type="submit") 添加
-                    a.btn.btn-gray(href="/question") 返回
+	form.question-form#J_QuestionForm
+		table
+			tr
+				th
+					label(for="J_Content") 题目*
+				td
+					textarea#J_Content(name="content") #{c}
+			tr
+				th
+					label 类型*
+				td
+					span.td-item
+						- if (type == 1)
+							input#J_Type1(name="type", checked, type="radio", value="1")
+						- else
+							input#J_Type1(name="type", type="radio", value="1")
+						label(for="J_Type1") 选择题
+					span.td-item
+						- if (type == 2)
+							input#J_Type2(name="type", checked, type="radio", value="2")
+						- else
+							input#J_Type2(name="type", type="radio", value="2")
+						label(for="J_Type2") 编码题
+					span.td-item
+						- if (type == 3)
+							input#J_Type3(name="type", checked, type="radio", value="3")
+						- else
+							input#J_Type3(name="type", type="radio", value="3")
+						label(for="J_Type3") 开放题
+					span.td-item
+						- if (type == 0)
+							input#J_Type0(name="type", checked, type="radio", value="0")
+						- else
+							input#J_Type0(name="type", type="radio", value="0")
+						label(for="J_Type0") 其他
+			tr
+				th
+					label 知识点*
+				td
+					- if (stationId == 1)
+						span.td-item
+							- if (skill.html)
+								input#J_SkillHTML(name="skill", checked, type="checkbox", value="html")
+							- else
+								input#J_SkillHTML(name="skill", type="checkbox", value="html")
+							label(for="J_SkillHTML") HTML
+						span.td-item
+							- if (skill.css)
+								input#J_SkillCSS(name="skill", checked, type="checkbox", value="css")
+							- else
+								input#J_SkillCSS(name="skill", type="checkbox", value="css")
+							label(for="J_SkillCSS") CSS
+						span.td-item
+							- if (skill.javascript)
+								input#J_SkillJavaScript(name="skill", checked, type="checkbox", value="javascript")
+							- else
+								input#J_SkillJavaScript(name="skill", type="checkbox", value="javascript")
+							label(for="J_SkillJavaScript") JavaScript
+					- else if (stationId == 2)
+						span.td-item
+							- if (skill.normal)
+								input#J_SkillNormal(name="skill", checked, type="checkbox", value="normal")
+							- else
+								input#J_SkillNormal(name="skill", type="checkbox", value="normal")
+							label(for="J_SkillNormal") 常识
+						span.td-item
+							- if (skill.design)
+								input#J_SkillDesign(name="skill", checked, type="checkbox", value="design")
+							- else
+								input#J_SkillDesign(name="skill", type="checkbox", value="design")
+							label(for="J_SkillDesign") 设计师
+			tr
+				th
+					label 难度*
+				td
+					span.td-item
+						- if (level == 4)
+							input#J_Level4(name="level", checked, type="radio", value="4")
+						- else
+							input#J_Level4(name="level", type="radio", value="4")
+						label(for="J_Level4") P4
+					span.td-item
+						- if (level == 5)
+							input#J_Level5(name="level", checked, type="radio", value="5")
+						- else
+							input#J_Level5(name="level", type="radio", value="5")
+						label(for="J_Level5") P5
+					span.td-item
+						- if (level == 6)
+							input#J_Level6(name="level", checked, type="radio", value="6")
+						- else
+							input#J_Level6(name="level", type="radio", value="6")
+						label(for="J_Level6") P6
+					span.td-item
+						- if (level == 7)
+							input#J_Level7(name="level", checked, type="radio", value="7")
+						- else
+							input#J_Level7(name="level", type="radio", value="7")
+						label(for="J_Level7") P7
+					span.td-item
+						- if (level == 8)
+							input#J_Level8(name="level", checked, type="radio", value="8")
+						- else
+							input#J_Level8(name="level", type="radio", value="8")
+						label(for="J_Level8") P8
+			tr
+				th
+					label(for="J_Time") 耗时*
+				td
+					input#J_Time(type="text", placeholder="5", name="time", value="#{time}")
+					| 分钟
+			tr
+				th
+					label(for="J_Remark") 答案分析
+				td
+					textarea.ta-remark#J_Remark(name="remark") #{remark}
+			tr
+				th
+					label(for="J_From") 来源
+				td
+					input.i-text#J_From(type="text", name="from", value="#{from}")
+			tr
+				th
+					label(for="J_Author") 出题人
+				td
+					input.i-text#J_Author(type="hidden", name="author", value="#{author}")
+					input.i-text#J_AuthorNick(type="hidden", name="authorNick", value="#{authorNick}")
+					span #{authorNick}
+					- if (!_id)
+						a.chuser(href="https://login.alibaba-inc.com/ssoLogout.htm?BACK_URL=#{url}") 更换账户
+			tr
+				th
+				td
+					- if (_id)
+						input(name="_id", type="hidden", value="#{_id}")
+						button.btn.btn-blue(type="submit") 编辑
+					- else
+						button.btn.btn-blue(type="submit") 添加
+					a.btn.btn-gray(href="/question") 返回
