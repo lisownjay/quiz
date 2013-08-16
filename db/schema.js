@@ -158,7 +158,7 @@ module.exports = {
             "type": String,
             "trim": true,
             "required": false,
-            "validate": /[-\w\.]+@\w+(?:(?:\.[-\w]+)+)$/
+            "validate": /[-\w\.]+@[-\w]+(?:(?:\.[-\w]+)+)$/
         },
         /*
          * email时间
@@ -246,7 +246,7 @@ module.exports = {
             "type": String,
             "trim": true,
             "required": true,
-            "validate": /[-\w\.]+@\w+(?:(?:\.[-\w]+)+)$/
+            "validate": /[-\w\.]+@[-\w]+(?:(?:\.[-\w]+)+)$/
         },
         tag: {
             "type": String
