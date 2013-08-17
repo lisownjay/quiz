@@ -185,7 +185,6 @@ var question = {
                 fields: {
                     author: 0,
                     authorNick: 0,
-                    email: 0,
                     emailed: 0,
                     created: 0,
                     level: 0
@@ -203,6 +202,16 @@ var question = {
                         res.json({
                             success: false,
                             message: "No quiz"
+                        });
+                        return;
+                    }
+                    //如果已经提交过或者是时间已到，则提示错误
+                    var finished = quiz.checkFinished(docs[0]);
+
+                    if(finished){
+                        res.json({
+                            success: false,
+                            message: "试卷已经提交，无法再次答题！"
                         });
                         return;
                     }
@@ -238,7 +247,7 @@ var question = {
             });
         },
         solve: function(req, res) {
-            if (!req.body._id || !req.body.id) {
+            if (!req.body._id) {
                 res.json({
                     success: false,
                     message: "Invalid!"
@@ -268,52 +277,72 @@ var question = {
                         });
                         return;
                     }
-
-                    //验证问题id的有效性
-                    if(req.body.id >= docs[0].questions.length || req.body.id < 0){
-                        res.json({
-                            success: false,
-                            message: "Invalid"
-                        });
-                        return;
-                    }
-
-                    var finished = quiz.checkFinished(docs[0]);
-
-                    if (finished) {
-                        res.json({
-                            success: false,
-                            message: "timeout"
-                        });
-                        return;
-                    }
-
-                    /*req.body.answer.forEach(function(a, index) {
-                        console.log(a +"," + index);
-                        docs[0].questions[index].answer = a;
-                    });*/
-
-                    docs[0].questions[req.body.id].answer = req.body.answer;
-
-                    db.post({
-                        collection: "quiz",
-                        query: {_id: req.body._id},
-                        doc: {questions: docs[0].questions},
-                        complete: function(err, numAffected) {
-                            if (err) {
+                    //提交试卷
+                    if(req.body.method == "submit"){
+                        db.post({
+                            collection: "quiz",
+                            query: {_id: req.body._id},
+                            doc: {finished: true},
+                            complete: function(err){
+                                if (err) {
+                                    res.json({
+                                        success: false,
+                                        message: err.message
+                                    });
+                                    return;
+                                }
                                 res.json({
-                                    success: false,
-                                    message: err.message
+                                    success: true
                                 });
-                                return;
                             }
-
+                        });
+                    }else{
+                        //验证问题id的有效性
+                        if(req.body.id >= docs[0].questions.length || req.body.id < 0){
                             res.json({
-                                success: true,
-                                numAffected: numAffected
+                                success: false,
+                                message: "Invalid"
                             });
+                            return;
                         }
-                    });
+
+                        var finished = quiz.checkFinished(docs[0]);
+
+                        if (finished) {
+                            res.json({
+                                success: false,
+                                message: "timeout"
+                            });
+                            return;
+                        }
+
+                        /*req.body.answer.forEach(function(a, index) {
+                            console.log(a +"," + index);
+                            docs[0].questions[index].answer = a;
+                        });*/
+
+                        docs[0].questions[req.body.id].answer = req.body.answer;
+
+                        db.post({
+                            collection: "quiz",
+                            query: {_id: req.body._id},
+                            doc: {questions: docs[0].questions},
+                            complete: function(err, numAffected) {
+                                if (err) {
+                                    res.json({
+                                        success: false,
+                                        message: err.message
+                                    });
+                                    return;
+                                }
+
+                                res.json({
+                                    success: true,
+                                    numAffected: numAffected
+                                });
+                            }
+                        });
+                    }
                 }
             });
         }
@@ -376,7 +405,6 @@ var question = {
             if (!quiz || !quiz.email || !quiz.visited || !quiz.visited.length) return false;
 
             var finished = 3600 - (new Date() - new Date(quiz.visited[0])) / 1000 <= 0;
-
             if (finished || !!quiz.finished) {
                 db.post({
                     collection: "quiz",
@@ -938,7 +966,7 @@ exports.quiz = {
                 if (!docs || !docs.length) {
                     res.json({
                         success: false,
-                        message: "No quiz"
+                        message: "Invalid"
                     });
                     return;
                 }
@@ -949,6 +977,7 @@ exports.quiz = {
                 });
 
                 res.render("quiz", {
+                    success: true,
                     title: "quiz",
                     _id: docs[0]._id,
                     questions: docs[0].questions,

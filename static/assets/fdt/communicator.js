@@ -38,7 +38,8 @@ KISSY.add(function(KS){
 				hide: 'HIDE' + uuid(),
 				setTitle: 'SETTITLE' + uuid(),
 				debug: 'DEBUG' + uuid(),
-				save: 'SAVE' + uuid()
+				save: 'SAVE' + uuid(),
+                submit: 'SUBMIT' + uuid()
 			},
 			topMenu: {
 				counting: 'COUNTING' + uuid()

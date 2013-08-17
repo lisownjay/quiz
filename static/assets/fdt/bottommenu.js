@@ -10,7 +10,8 @@ KISSY.add(function(KS, COM){
 			$btnDebug: null,
 			$btnSaveAndNext: null,
 			$btnSaveAndPrev: null,
-			$title: null
+			$title: null,
+            $btnSubmit: null
 		},
 		handleAnswer: function(e){
 			e.preventDefault();
@@ -59,12 +60,17 @@ KISSY.add(function(KS, COM){
 				ret.view.$btnSaveAndNext.hide();
 			}
 		},
+        handleSubmit: function(){
+            COM.invoke(COM.api.answer.save);
+            COM.invoke(COM.api.answer.submit);
+        },
 		bindEvent: function(){
 			ret.view.$btnAnswer.on('click', ret.handleAnswer);
 			ret.view.$btnSaveAndNext.on('click', ret.handleSaveAndNext);
 			ret.view.$btnSaveAndPrev.on('click', ret.handleSaveAndPrev);
 			ret.view.$btnDebug.on('click', ret.handleDebug);
 			ret.view.$btnSave.on('click', ret.handleSave);
+            ret.view.$btnSubmit.on('click', ret.handleSubmit);
 		},
 		exposeAPI: function(){
 			COM.expose(COM.api.bottomMenu.switchToAnswer, ret.switchToAnswer);
@@ -78,6 +84,7 @@ KISSY.add(function(KS, COM){
 			ret.view.$btnDebug = $('#bottommenu .debug');
 			ret.view.$btnSaveAndNext = $('#bottommenu .saveandnext');
 			ret.view.$btnSaveAndPrev = $('#bottommenu .saveandprev');
+            ret.view.$btnSubmit = $('#btn-submit');
 			ret.bindEvent();
 			ret.exposeAPI();
 		}

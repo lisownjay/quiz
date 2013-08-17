@@ -99,6 +99,11 @@ KISSY.add(function(KS, COM, TESTDATA, Switchable){
 				,dataType: 'json'
                 ,cache: false
 				,success: function(data){
+                    if(!data.success){
+                        alert(data.message);
+                        $("#topmenu .btn-action-deactive").html('开始答题').removeClass('btn-action-deactive').addClass('btn-action');
+                        return;
+                    }
 					ret.newTest(data);
 					COM.data.isTesting = true;
 					COM.data.question = data;

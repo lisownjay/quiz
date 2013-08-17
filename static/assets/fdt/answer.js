@@ -180,6 +180,23 @@ KISSY.add(function(KS, COM, Overlay){
                 }
             });
 		},
+        submit: function(){
+            if(!COM.data.question._id)
+                return false;
+            KS.io.post(
+                '/io/test/solve',
+                {"method":"submit", "_id":COM.data.question._id},
+                function(data){
+                    if(data.success){
+                        window.location.href = "test-finished.html";
+                    }else{
+                        alert(data.message +"\n" + "请刷新后再次尝试提交！");
+                    }
+                },
+                "json"
+            );
+            return false;
+        },
 		bindEvent: function(){
 			ret.view.$textarea.on('keydown', ret.insertTab);
 			ret.view.$btnBack.on('click', ret.back);
@@ -192,6 +209,7 @@ KISSY.add(function(KS, COM, Overlay){
 			COM.expose(COM.api.answer.setTitle, ret.setTitle);
 			COM.expose(COM.api.answer.debug, ret.debug);
 			COM.expose(COM.api.answer.save, ret.save);
+            COM.expose(COM.api.answer.submit, ret.submit);
 		},
 		init: function(){
 			ret.view.$container = $('#answer');
