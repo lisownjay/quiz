@@ -1,0 +1,70 @@
+html,body{height:100%}
+body{
+    background:#000 url(../../images/bg.jpg) no-repeat center 0;
+}
+.hide{
+    display: none;
+}
+#wrap{
+    width:990px;
+    height:100%;
+    margin: 0 auto;
+    background: url(../../images/wrap-bg.jpg) no-repeat center 0;
+    position: relative;
+    min-height: 660px;
+}
+#login-wrap{
+    width:388px;
+    height:416px;
+    background: url(../../images/login-bg.png) no-repeat center 0;
+    margin: 0 auto;
+    position: absolute;
+    top: 240px;
+    left: 301px;
+}
+#login-wrap input{
+    border:0;
+    background: none;
+    outline:none;
+}
+.login-content{
+    padding: 160px 0 0 0;
+    width: 210px;
+    margin: 0 auto;
+}
+.login-content li{
+    margin-top: 20px;
+    border-bottom: 1px solid #222;
+    position:relative;
+}
+.login-content .input-field{
+    color: #db637b;
+    font-size:18px;
+    font-family: Microsoft YaHei;
+    text-align: center;
+    width:100%;
+}
+.login-content .ui-msg{
+    position: absolute;
+    left: 210px;
+    width: 100px;
+    top: 0px;
+}
+#btn-wrap{
+    position: absolute;
+    right: 33px;
+    bottom: 44px;
+}
+#btn-wrap input{
+    color: #151515;
+    font-size: 18px;
+    font-family: Microsoft YaHei;
+    cursor: pointer;
+    line-height: 1.2;
+    border-bottom: 1px solid #151515;
+}
+#btn-wrap input:hover{
+    color: #fff;
+    text-decoration: none;
+    border-bottom: 1px solid #fff;
+}
