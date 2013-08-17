@@ -72,7 +72,7 @@ module.exports = exports = function(filter) {
                             return;
                         }
                         //取得相应的岗位
-                        var station = data.station(req._user.nickNameCn);
+                        var station = data.getStation(req._user.nickNameCn);
 
                         db.put({
                             collection: "user",

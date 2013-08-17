@@ -1012,7 +1012,8 @@ exports.quiz = {
                         doc.email = req.body.email;
                         doc.mobile = req.body.mobile;
                         doc.name = req.body.name;
-                        doc.marker = ""
+                        //分配阅卷人
+                        doc.marker = settingData.getNextMarker(req.body.stationId);
 
                         db.put({
                             collection: "quiz",
