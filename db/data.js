@@ -34,7 +34,7 @@ var data = {
         {"id": 1, "description": "前端开发工程师"}
         ,{"id": 2, "description": "交互设计师"}
     ],
-    //岗位的配置信息，types代表分类，questionType代表题型，level代表难度
+    //岗位的配置信息，types代表分类，questionType代表题型，level代表难度(必须是数字)
     "stationSetting":[
         {"id":1, "stationId":1,
             "skill":[

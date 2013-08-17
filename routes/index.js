@@ -581,7 +581,7 @@ var question = {
         post: function(req, res) {
             var doc = _.pick(req.body, "score", "remark"),
                 _id = req.params._id;
-
+            doc.marker = req.user.nick;
             db.post({
                 collection: "quiz",
                 query: {
