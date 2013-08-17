@@ -76,11 +76,12 @@ module.exports = {
             return user.nick === nick;
         });
     },
-    getUserStation: function(nick){
-        return data.campus2013.forEach(function(item){
-            if(item.nick === nick)
-                return item;
-        });
+    getStation: function(id){
+        for(var i=0; i < data.station.length; ++i){
+            if(data.station[i].id == id){
+                return data.station[i];
+            }
+        }
     },
     getStationSetting: function(id){
         for(var i=0; i < data.stationSetting.length; ++i){

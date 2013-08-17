@@ -351,6 +351,7 @@ var question = {
                         doc.finished = quiz.checkFinished(doc);
                         doc.start = doc.visited.length ? moment(doc.visited[0]).format("YYYY-MM-DD HH:mm:ss") : "";
                         doc.score = doc.score === -1 ? "-" : doc.score;
+                        doc.stationName = settingData.getStation(doc.stationId).description;
                     });
 
                     res.json({
@@ -823,7 +824,7 @@ exports.marking = {
  */
 exports.question = {
     list: function(req, res) {
-        var station = settingData.station(req.user.nick);
+        var station = settingData.getStation(req.user.stationId);
         var stationSetting = settingData.getStationSetting(req.user.stationId);
         res.render("question", {
             title: "question",

@@ -16,6 +16,7 @@ block body
                     thead
                         tr
                             th 创建时间
+                            th 所属岗位
                             th 创建人
                             th 难度
                             th 时长(min)
@@ -26,6 +27,7 @@ block body
                 {{#each quizs}}
                 tr.quiz
                     td {{created}}
+                    td {{stationName}}
                     td {{authorNick}}
                     td P{{level}}
                     td {{time}}
