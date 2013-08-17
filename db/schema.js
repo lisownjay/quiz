@@ -29,26 +29,20 @@ module.exports = {
         level: {
             "type": Number,
             "required": true,
-            "enmu": [4, 5, 6, 7, 8],
             "default": 1
         },
         skill: {
             "type": String,
             "required": true,
-            "enmu": ["css", "javascript", "html", "mixed"],
-            "default": "mixed"
+            "default": ""
         },
         /*
-         * 1: 选择题
-         * 2: 编码题
-         * 3: 开放题
-         * 0: 默认
+         * 试题类型
          */
         type: {
-            "type": Number,
+            "type": String,
             "required": false,
-            "enmu": [0, 1, 2, 3],
-            "default": 0
+            "default": ""
         },
         created: {
             "type": Date,
@@ -137,7 +131,6 @@ module.exports = {
         level: {
             "type": Number,
             "required": true,
-            "enmu": [4, 5, 6, 7, 8],
             "default": 0
         },
         /*

@@ -12,7 +12,8 @@ var _ = require("underscore"),
     Email = require("../email"),
     sha1 = require("../util").testSha1,
     util = require("../util"),
-    moment = require("moment");
+    moment = require("moment"),
+    settingData = require("../db/data");
 
 var question = {
         put: function(req, res) {
@@ -822,22 +823,22 @@ exports.marking = {
  */
 exports.question = {
     list: function(req, res) {
+        var station = settingData.station(req.user.nick);
+        var stationSetting = settingData.getStationSetting(req.user.stationId);
         res.render("question", {
             title: "question",
-            stationId: req.user.stationId
+            stationName: station.description,
+            stationSetting: stationSetting
         });
     },
     create: function(req, res) {
+        var stationSetting = settingData.getStationSetting(req.user.stationId);
         res.render("question-form", {
             title: "question.create",
             c: "",
             _id: "",
-            type: -1,
-            skill: {
-                html: false,
-                javascript: false,
-                css: false
-            },
+            type: "",
+            skill: "",
             level: -1,
             time: "",
             remark: "",
@@ -845,7 +846,7 @@ exports.question = {
             author: req.user.loginName,
             authorNick: req.user.nick || req.user.loginName,
             url: encodeURIComponent("https://login" + (GLOBAL.env === "production" ? "" : "-test") + ".alibaba-inc.com/ssoLogin.htm?APP_NAME=tbuedquiz&BACK_URL=" + encodeURIComponent(req.protocol + "://" + req.host + req.url)),
-            stationId: req.user.stationId
+            stationSetting: stationSetting
         });
     },
     edit: function(req, res) {
@@ -854,6 +855,7 @@ exports.question = {
             return;
         }
 
+        var stationSetting = settingData.getStationSetting(req.user.stationId);
         db.get({
             collection: "question",
             query: {
@@ -870,13 +872,7 @@ exports.question = {
                     c: docs[0].content,
                     _id: docs[0]._id,
                     type: docs[0].type,
-                    skill: {
-                        html: docs[0].skill.indexOf("html") >= 0,
-                        javascript: docs[0].skill.indexOf("javascript") >= 0,
-                        css: docs[0].skill.indexOf("css") >= 0,
-                        normal: docs[0].skill.indexOf("normal") >= 0,
-                        design: docs[0].skill.indexOf("design") >= 0
-                    },
+                    skill: docs[0].skill,
                     level: docs[0].level,
                     time: docs[0].time,
                     remark: docs[0].remark,
@@ -884,7 +880,7 @@ exports.question = {
                     author: docs[0].author,
                     authorNick: docs[0].authorNick || docs[0].author,
                     url: encodeURIComponent("https://login" + (GLOBAL.env === "production" ? "" : "-test") + ".alibaba-inc.com/ssoLogin.htm?APP_NAME=tbuedquiz&BACK_URL=" + encodeURIComponent(req.protocol + "://" + req.host + req.url)),
-                    stationId: req.user.stationId
+                    stationSetting: stationSetting
                 });
             }
         });

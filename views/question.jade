@@ -14,51 +14,26 @@ block body
 				a.btn.btn-red(href="/quiz/2013campus") 2013校招试卷库
 				a.btn.btn-darkblue(href="/marking/2013campus") 阅卷
 			section.tags
-				- if (stationId == 1)
-					h1 当前岗位：前端开发工程师
-				- else if(stationId == 2)
-					h1 当前岗位：交互设计师
+				h1 当前岗位：#{stationName}
 			section.tags.skill
 				h1 分类
-				- if (stationId == 1)
-					ul
+				ul
+					- each val in stationSetting.skill
 						li
-							a.label(data-type="skill", data-tag="javascript", href="#nogo") JavaScript
-						li
-							a.label(data-type="skill", data-tag="html", href="#nogo") HTML
-						li
-							a.label(data-type="skill", data-tag="css", href="#nogo") CSS
-				- else if(stationId == 2)
-					ul
-						li
-							a.label(data-type="skill", data-tag="normal", href="#nogo") 常识
-						li
-							a.label(data-type="skill", data-tag="design", href="#nogo") 设计题
+							a.label(data-type="skill", data-tag="#{val.description}", href="#nogo") #{val.description}
 
 			section.tags.level
 				h1 难度
 				ul
-					li
-						a.label(data-type="level", data-tag="4", href="#nogo") P4
-					li
-						a.label(data-type="level", data-tag="5", href="#nogo") P5
-					li
-						a.label(data-type="level", data-tag="6", href="#nogo") P6
-					li
-						a.label(data-type="level", data-tag="7", href="#nogo") P7
-					li
-						a.label(data-type="level", data-tag="8", href="#nogo") P8
+					- each val in stationSetting.level
+						li
+							a.label(data-type="level", data-tag="#{val}", href="#nogo") P#{val}
 			section.tags.type
 				h1 题型
 				ul
-					li
-						a.label(data-type="type", data-tag="1", href="#nogo") 选择题
-					li
-						a.label(data-type="type", data-tag="2", href="#nogo") 编码题
-					li
-						a.label(data-type="type", data-tag="3", href="#nogo") 开放题
-					li
-						a.label(data-type="type", data-tag="0", href="#nogo") 综合
+					- each val in stationSetting.questionType
+						li
+							a.label(data-type="type", data-tag="#{val.description}", href="#nogo") #{val.description}
 		div.main
 			form#J_ListForm(method="post")
 			div.list#J_List
@@ -66,7 +41,7 @@ block body
 				{{#each questions}}
 				div(id="{{_id}}", class="question {{#if checked}}question-checked{{/if}}")
 					span.index {{xcount - xindex}}
-					a.question-chk(href="{{_id}}", data-href="{{_id}}")✓
+					a.question-chk(href="{{_id}}", data-href="{{_id}}")?
 					pre {{{content}}}
 					div.question-meta
 						span.qm-item.qm-skill 分类：
@@ -74,11 +49,7 @@ block body
 						span.qm-item.qm-level 难度：
 							span.qm-tag P{{level}}
 						span.qm-item.qm-type 题型：
-							span.qm-tag
-								| {{#if type === 1}}选择题{{/if}}
-								| {{#if type === 2}}编码题{{/if}}
-								| {{#if type === 3}}开放题{{/if}}
-								| {{#if type === 0}}综合{{/if}}
+							span.qm-tag {{type}}
 						span.qm-item.qm-time 耗时：
 							span.qm-tag {{time}}m
 						span.qm-item.qm-author 出题人：

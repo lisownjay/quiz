@@ -28,8 +28,6 @@ KISSY.ready(function(S) {
 
         if (S.isUndefined(type) || S.isUndefined(tag)) return;
 
-        tag = type != "skill" ? window.parseInt(tag, 10) : tag;
-
         if (el.hasClass("active")) {
             window._FILTER_[type].push(tag);
         }
@@ -215,7 +213,7 @@ KISSY.ready(function(S) {
             ret = [];
             S.each(f.level, function(level) {
                 S.each(d, function(q, index) {
-                    if (q && q.level === level) {
+                    if (q && q.level == level) {
                         ret.push(q);
                     }
                 });

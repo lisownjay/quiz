@@ -82,7 +82,7 @@ KISSY.ready(function(S){
                 type: "get",
                 complete: function(d) {
                     if (d && d.success) {
-                        alert("删除成功！");
+                        //alert("删除成功！");
                         el.parent().parent().remove();
                     }
 

@@ -16,100 +16,35 @@ block body
 				th
 					label 类型*
 				td
-					span.td-item
-						- if (type == 1)
-							input#J_Type1(name="type", checked, type="radio", value="1")
-						- else
-							input#J_Type1(name="type", type="radio", value="1")
-						label(for="J_Type1") 选择题
-					span.td-item
-						- if (type == 2)
-							input#J_Type2(name="type", checked, type="radio", value="2")
-						- else
-							input#J_Type2(name="type", type="radio", value="2")
-						label(for="J_Type2") 编码题
-					span.td-item
-						- if (type == 3)
-							input#J_Type3(name="type", checked, type="radio", value="3")
-						- else
-							input#J_Type3(name="type", type="radio", value="3")
-						label(for="J_Type3") 开放题
-					span.td-item
-						- if (type == 0)
-							input#J_Type0(name="type", checked, type="radio", value="0")
-						- else
-							input#J_Type0(name="type", type="radio", value="0")
-						label(for="J_Type0") 其他
+					- each val in stationSetting.questionType
+						span.td-item
+							- if (type.indexOf(val.description) >= 0)
+								input(id="#{val.name}",name="type", type="radio", value="#{val.description}", checked)
+							- else
+								input(id="#{val.name}",name="type", type="radio", value="#{val.description}")
+							label(for="#{val.name}") #{val.description}
 			tr
 				th
 					label 知识点*
 				td
-					- if (stationId == 1)
-						span.td-item
-							- if (skill.html)
-								input#J_SkillHTML(name="skill", checked, type="checkbox", value="html")
+					- each val in stationSetting.skill
+						span.td-item(data-tag=skill)
+							- if (skill.indexOf(val.description) >= 0)
+								input(id="#{val.name}skill",name="skill", type="checkbox", value="#{val.description}", checked)
 							- else
-								input#J_SkillHTML(name="skill", type="checkbox", value="html")
-							label(for="J_SkillHTML") HTML
-						span.td-item
-							- if (skill.css)
-								input#J_SkillCSS(name="skill", checked, type="checkbox", value="css")
-							- else
-								input#J_SkillCSS(name="skill", type="checkbox", value="css")
-							label(for="J_SkillCSS") CSS
-						span.td-item
-							- if (skill.javascript)
-								input#J_SkillJavaScript(name="skill", checked, type="checkbox", value="javascript")
-							- else
-								input#J_SkillJavaScript(name="skill", type="checkbox", value="javascript")
-							label(for="J_SkillJavaScript") JavaScript
-					- else if (stationId == 2)
-						span.td-item
-							- if (skill.normal)
-								input#J_SkillNormal(name="skill", checked, type="checkbox", value="normal")
-							- else
-								input#J_SkillNormal(name="skill", type="checkbox", value="normal")
-							label(for="J_SkillNormal") 常识
-						span.td-item
-							- if (skill.design)
-								input#J_SkillDesign(name="skill", checked, type="checkbox", value="design")
-							- else
-								input#J_SkillDesign(name="skill", type="checkbox", value="design")
-							label(for="J_SkillDesign") 设计师
+								input(id="#{val.name}skill",name="skill", type="checkbox", value="#{val.description}")
+							label(for="#{val.name}skill") #{val.description}
 			tr
 				th
 					label 难度*
 				td
-					span.td-item
-						- if (level == 4)
-							input#J_Level4(name="level", checked, type="radio", value="4")
-						- else
-							input#J_Level4(name="level", type="radio", value="4")
-						label(for="J_Level4") P4
-					span.td-item
-						- if (level == 5)
-							input#J_Level5(name="level", checked, type="radio", value="5")
-						- else
-							input#J_Level5(name="level", type="radio", value="5")
-						label(for="J_Level5") P5
-					span.td-item
-						- if (level == 6)
-							input#J_Level6(name="level", checked, type="radio", value="6")
-						- else
-							input#J_Level6(name="level", type="radio", value="6")
-						label(for="J_Level6") P6
-					span.td-item
-						- if (level == 7)
-							input#J_Level7(name="level", checked, type="radio", value="7")
-						- else
-							input#J_Level7(name="level", type="radio", value="7")
-						label(for="J_Level7") P7
-					span.td-item
-						- if (level == 8)
-							input#J_Level8(name="level", checked, type="radio", value="8")
-						- else
-							input#J_Level8(name="level", type="radio", value="8")
-						label(for="J_Level8") P8
+					- each val in stationSetting.level
+						span.td-item(data-tag=level)
+							- if (level == val)
+								input(id="#{val}level",name="level", type="radio", value="#{val}", checked)
+							- else
+								input(id="#{val}level",name="level", type="radio", value="#{val}")
+							label(for="#{val}level") P#{val}
 			tr
 				th
 					label(for="J_Time") 耗时*
