@@ -98,7 +98,7 @@ module.exports = exports = {
             var markers = setting.marker;
             //使用global存放所有岗位下一个将要分配的阅卷人,这样在程序运行期间都能够访问到
             if(!global.nextMarkers){
-                console.log("enter!!!!");
+
                 global.nextMarkers = [];
                 for(var i=0; i < data.stationSetting.length; ++i){
                     var item = {};

@@ -152,10 +152,10 @@ KISSY.add(function(KS, COM, Overlay){
 			var code = ret.editor.getValue();
 			var data = {};
 			if(code.replace(/\s/g,'')){
-				//data["a" + questionID+'[html]'] = code;
-                data["answer[" + questionID + "]"] = code;
+                data["id"] = questionID;
+                data["answer"] = code;
 				data['_id'] = COM.data.question._id;
-				//data['method'] = 'save';
+
 				KS.io.post(
 					'/io/test/solve',
 					data,

@@ -238,10 +238,10 @@ var question = {
             });
         },
         solve: function(req, res) {
-            if (!req.body._id) {
+            if (!req.body._id || !req.body.id) {
                 res.json({
                     success: false,
-                    message: "No _id"
+                    message: "Invalid!"
                 });
                 return;
             }
@@ -269,6 +269,15 @@ var question = {
                         return;
                     }
 
+                    //验证问题id的有效性
+                    if(req.body.id >= docs[0].questions.length || req.body.id < 0){
+                        res.json({
+                            success: false,
+                            message: "Invalid"
+                        });
+                        return;
+                    }
+
                     var finished = quiz.checkFinished(docs[0]);
 
                     if (finished) {
@@ -279,10 +288,12 @@ var question = {
                         return;
                     }
 
-
-                    req.body.answer.forEach(function(a, index) {
+                    /*req.body.answer.forEach(function(a, index) {
+                        console.log(a +"," + index);
                         docs[0].questions[index].answer = a;
-                    });
+                    });*/
+
+                    docs[0].questions[req.body.id].answer = req.body.answer;
 
                     db.post({
                         collection: "quiz",
