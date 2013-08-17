@@ -15,7 +15,6 @@ block body
                 table.quizs
                     thead
                         tr
-                            th 所属岗位
                             th 答卷人
                             th 开始时间
                             th 阅卷人
@@ -26,7 +25,6 @@ block body
             script#J_Template(type="javascript/template")
                 {{#each quizs}}
                 tr.quiz
-                    td {{stationName}}
                     td {{name}}({{mobile}})
                     td {{start}}
                     td {{marker}}

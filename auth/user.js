@@ -47,7 +47,7 @@ module.exports = exports = function(filter) {
                             nick: docs[0].nick || "",
                             email: docs[0].email || "",
                             type: docs[0].type,
-                            stationId: docs[0].stationId
+                            jobId: docs[0].jobId
                         };
 
                         /*
@@ -72,7 +72,7 @@ module.exports = exports = function(filter) {
                             return;
                         }
                         //取得相应的岗位
-                        var station = data.getStation(req._user.nickNameCn);
+                        var job = data.getJob(req._user.nickNameCn);
 
                         db.put({
                             collection: "user",
@@ -80,7 +80,7 @@ module.exports = exports = function(filter) {
                                 loginName: req._user.loginName,
                                 email: req._user.emailAddr,
                                 nick: req._user.nickNameCn || "",
-                                stationId: station.id || ""
+                                jobId: job.id || 0
                             },
                             complete: function(err, docs) {
                                 if (err) {
@@ -91,7 +91,7 @@ module.exports = exports = function(filter) {
                                     loginName: req._user.loginName,
                                     nick: req._user.nickNameCn || "",
                                     email: req._user.emailAddr,
-                                    stationId: station.id
+                                    jobId: job.id
                                 };
 
                                 next();

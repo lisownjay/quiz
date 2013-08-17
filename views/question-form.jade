@@ -16,7 +16,7 @@ block body
 				th
 					label 类型*
 				td
-					- each val in stationSetting.questionType
+					- each val in jobSetting.questionType
 						span.td-item
 							- if (type.indexOf(val.description) >= 0)
 								input(id="#{val.name}",name="type", type="radio", value="#{val.description}", checked)
@@ -27,7 +27,7 @@ block body
 				th
 					label 知识点*
 				td
-					- each val in stationSetting.skill
+					- each val in jobSetting.skill
 						span.td-item(data-tag=skill)
 							- if (skill.indexOf(val.description) >= 0)
 								input(id="#{val.name}skill",name="skill", type="checkbox", value="#{val.description}", checked)
@@ -38,7 +38,7 @@ block body
 				th
 					label 难度*
 				td
-					- each val in stationSetting.level
+					- each val in jobSetting.level
 						span.td-item(data-tag=level)
 							- if (level == val)
 								input(id="#{val}level",name="level", type="radio", value="#{val}", checked)

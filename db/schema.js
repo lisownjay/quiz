@@ -87,8 +87,8 @@ module.exports = {
         /**
          * 所属的岗位编号
          */
-        stationId:{
-            "type": String,
+        jobId:{
+            "type": Number,
             "required": true
         }
     }),
@@ -215,8 +215,8 @@ module.exports = {
         /**
          * 所属的岗位编号
          */
-        stationId:{
-            "type": String,
+        jobId:{
+            "type": Number,
             "required": true
         }
     }),
@@ -266,8 +266,8 @@ module.exports = {
         /**
          * 所属的岗位编号
          */
-        stationId:{
-            "type": String,
+        jobId:{
+            "type": Number,
             "required": true
         }
     })

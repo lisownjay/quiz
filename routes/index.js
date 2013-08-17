@@ -32,7 +32,7 @@ var question = {
             doc.author = req.user.loginName;
             doc.authorNick = req.user.nick;
             doc.tag = "2013campus";
-            doc.stationId = req.user.stationId;
+            doc.jobId = req.user.jobId;
 
             create();
 
@@ -98,7 +98,7 @@ var question = {
 
             // 屏蔽2013-08-10前所有试题
             query.tag = "2013campus";
-            query.stationId = req.user.stationId;
+            query.jobId = req.user.jobId;
 
             db.get({
                 query: query,
@@ -367,7 +367,7 @@ var question = {
                 query.tag = req.params.tag || req.query.tag || "2013campus";
             }
 
-            query.stationId = req.user.stationId;
+            query.jobId = req.user.jobId;
 
             db.get({
                 collection: "quiz",
@@ -391,7 +391,7 @@ var question = {
                         doc.finished = quiz.checkFinished(doc);
                         doc.start = doc.visited.length ? moment(doc.visited[0]).format("YYYY-MM-DD HH:mm:ss") : "";
                         doc.score = doc.score === -1 ? "-" : doc.score;
-                        doc.stationName = settingData.getStation(doc.stationId).description;
+                        doc.jobName = settingData.getJob(doc.jobId).description;
                     });
 
                     res.json({
@@ -457,7 +457,7 @@ var question = {
                 doc.authorNick = req.user.nick;
             }
 
-            query.stationId = req.user.stationId;
+            query.jobId = req.user.jobId;
 
             db.get({
                 collection: "question",
@@ -482,7 +482,7 @@ var question = {
 
                     doc.created = new Date();
                     doc.tag = "2013campus";
-                    doc.stationId = req.user.stationId;
+                    doc.jobId = req.user.jobId;
 
                     db.put({
                         collection: "quiz",
@@ -507,14 +507,14 @@ var question = {
         },
         /*
          * 随机选择已有测试
-         * 需要根据tag和岗位编号进行stationId
+         * 需要根据tag和岗位编号进行jobId
          */
-        select: function(stationId, callback) {
+        select: function(jobId, callback) {
             db.get({
                 collection: "quiz",
                 query: {
                     tag: "2013campus",
-                    stationId: stationId
+                    jobId: jobId
                 },
                 fields: {
                     "created": 0
@@ -592,7 +592,7 @@ var question = {
                             created: new Date(),
                             author: req.user.loginName,
                             authorNick: req.user.nick,
-                            stationId: req.user.stationId
+                            jobId: req.user.jobId
                         }, quiz.generate(docs));
 
                     doc.tag = "2013campus";
@@ -863,16 +863,17 @@ exports.marking = {
  */
 exports.question = {
     list: function(req, res) {
-        var station = settingData.getStation(req.user.stationId);
-        var stationSetting = settingData.getStationSetting(req.user.stationId);
+        var job = settingData.getJob(req.user.jobId);
+        var jobSetting = settingData.getJobSetting(req.user.jobId);
+
         res.render("question", {
             title: "question",
-            stationName: station.description,
-            stationSetting: stationSetting
+            jobName: job.description,
+            jobSetting: jobSetting
         });
     },
     create: function(req, res) {
-        var stationSetting = settingData.getStationSetting(req.user.stationId);
+        var jobSetting = settingData.getJobSetting(req.user.jobId);
         res.render("question-form", {
             title: "question.create",
             c: "",
@@ -886,7 +887,7 @@ exports.question = {
             author: req.user.loginName,
             authorNick: req.user.nick || req.user.loginName,
             url: encodeURIComponent("https://login" + (GLOBAL.env === "production" ? "" : "-test") + ".alibaba-inc.com/ssoLogin.htm?APP_NAME=tbuedquiz&BACK_URL=" + encodeURIComponent(req.protocol + "://" + req.host + req.url)),
-            stationSetting: stationSetting
+            jobSetting: jobSetting
         });
     },
     edit: function(req, res) {
@@ -895,7 +896,7 @@ exports.question = {
             return;
         }
 
-        var stationSetting = settingData.getStationSetting(req.user.stationId);
+        var jobSetting = settingData.getJobSetting(req.user.jobId);
         db.get({
             collection: "question",
             query: {
@@ -920,7 +921,7 @@ exports.question = {
                     author: docs[0].author,
                     authorNick: docs[0].authorNick || docs[0].author,
                     url: encodeURIComponent("https://login" + (GLOBAL.env === "production" ? "" : "-test") + ".alibaba-inc.com/ssoLogin.htm?APP_NAME=tbuedquiz&BACK_URL=" + encodeURIComponent(req.protocol + "://" + req.host + req.url)),
-                    stationSetting: stationSetting
+                    jobSetting: jobSetting
                 });
             }
         });
@@ -989,7 +990,7 @@ exports.quiz = {
         });
     },
     online: function(req, res) {
-        if (!req.body.email || !req.body.mobile || !req.body.name || !req.body.stationId) {
+        if (!req.body.email || !req.body.mobile || !req.body.name || !req.body.jobId) {
             res.json({
                 success: false,
                 message: "请输入你的真实姓名，手机、email！"
@@ -1039,7 +1040,7 @@ exports.quiz = {
                 }
 
                 if (!docs.length) {
-                    quiz.select(req.body.stationId, function(d) {
+                    quiz.select(req.body.jobId, function(d) {
                         if (!d.success) {
                             res.json(d);
                             return;
@@ -1053,7 +1054,7 @@ exports.quiz = {
                         doc.mobile = req.body.mobile;
                         doc.name = req.body.name;
                         //分配阅卷人
-                        doc.marker = settingData.getNextMarker(req.body.stationId);
+                        doc.marker = settingData.getNextMarker(req.body.jobId);
 
                         db.put({
                             collection: "quiz",
